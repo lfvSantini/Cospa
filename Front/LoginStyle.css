@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+:root {
+    /* Tipografia */
+    --font-heading: 'Georgia', serif;
+    --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-logo: 'Quicksand', sans-serif;
+    
+        /* Cores */
+    --color-text: #ffffff;
+    --color-accent: #e6b981; 
+    --color-overlay-1: rgba(30, 20, 15, 0.4); 
+    --color-overlay-2: rgba(30, 20, 15, 0.3);
+    --color-overlay-3: rgba(30, 20, 15, 0.7);
+    
+    /* Botão */
+    --button-bg: rgba(255, 255, 255, 0.15);
+    --button-hover-bg: var(--color-accent);
+    --button-hover-text: #2c1e16; 
+    
+    /* Layout */
+    --radius: 50px;
+    --max-content-width: 900px;
+    --transition-fast: 0.3s ease;
+    --transition-slow: 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth; 
+}
+
+
+body {
+    font-family: var(--font-body);
+    line-height: 1.6;
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+.header-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5625rem 3.75rem;
+    color: var(--color-text);
+    z-index: 2;
+    
+    background-color: rgb(5, 84, 129);
+    -webkit-backdrop-filter: blur(5px); 
+    backdrop-filter: blur(5px); 
+    width: 100%; 
+}
+
+/* --- Logo --- */
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    object-fit: cover;
+}
+    
+
+.logo-img {
+ width: 5rem;
+  height: 5rem;
+  object-fit: cover;
+  border-radius: 100%;
+}
+/* ------------- */
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 1rem;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}

@@ -4,7 +4,13 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
+### Arquivos de Log e Sistema ###
+*.log
+*.err
+.DS_Store
+Thumbs.db
+
+### STS / Eclipse ###
 .apt_generated
 .classpath
 .factorypath
@@ -14,7 +20,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -31,3 +37,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Configurações Sensíveis (Opcional) ###
+# Descomente a linha abaixo se for criar um 'application-local.properties' ou '.env' com senhas do banco
+# application-local.properties
+# .env

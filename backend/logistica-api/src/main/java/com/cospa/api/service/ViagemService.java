@@ -1,88 +1,105 @@
 package com.cospa.api.service;
 
+import com.cospa.api.dto.ViagemRequestDTO;
+import com.cospa.api.dto.ViagemResponseDTO;
 import com.cospa.api.model.StatusViagem;
 import com.cospa.api.model.Viagem;
 import com.cospa.api.repository.ViagemRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.Duration;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ViagemService {
 
-    @Autowired
-    private ViagemRepository viagemRepository;
+    private final ViagemRepository repository;
+    private final String uploadDir = "uploads/comprovantes";
 
-    // Listar todas as viagens
-    public List<Viagem> listarTodas() {
-        return viagemRepository.findAll();
+    public ViagemService(ViagemRepository repository) {
+        this.repository = repository;
     }
 
-    // Buscar viagem por ID
-    public Optional<Viagem> buscarPorId(Long id) {
-        return viagemRepository.findById(id);
+    public List<ViagemResponseDTO> listarTodas() {
+        return repository.findAll()
+                .stream()
+                .map(ViagemResponseDTO::new)
+                .toList();
     }
 
-    // Criar uma viagem
-    public Viagem criarViagem(Viagem viagem) {
+    public ViagemResponseDTO buscarPorId(Long id) {
+        Viagem viagem = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Viagem não encontrada com o ID: " + id));
+        return new ViagemResponseDTO(viagem);
+    }
+
+    public ViagemResponseDTO salvar(ViagemRequestDTO dto) {
+        Viagem viagem = new Viagem();
+        viagem.setLocalColeta(dto.localColeta());
+        viagem.setLocalEntrega(dto.localEntrega());
+        viagem.setNomeMotorista(dto.nomeMotorista());
+        viagem.setTransportadora(dto.transportadora());
+        viagem.setObservacao(dto.observacao());
         viagem.setStatus(StatusViagem.CRIADA);
-        return viagemRepository.save(viagem);
+
+        Viagem salva = repository.save(viagem);
+        return new ViagemResponseDTO(salva);
     }
 
-    // Avançar status e gravar horários automaticamente
-    public Viagem atualizarStatus(Long id, StatusViagem novoStatus, String observacao, String urlFoto) {
-        Viagem viagem = viagemRepository.findById(id)
+    public ViagemResponseDTO salvarComprovante(Long id, MultipartFile arquivo) {
+        Viagem viagem = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Viagem não encontrada com o ID: " + id));
 
-        LocalDateTime agora = LocalDateTime.now();
+        try {
+            Path pastaUpload = Paths.get(uploadDir);
+            if (!Files.exists(pastaUpload)) {
+                Files.createDirectories(pastaUpload);
+            }
 
-        // Lógica de transição de status e marcação de tempo
-        switch (novoStatus) {
-            case EM_CARREGAMENTO:
-                viagem.setInicioCarregamento(agora);
-                break;
-            case CARREGADO:
-                viagem.setFimCarregamento(agora);
-                break;
-            case EM_DESCARREGAMENTO:
-                viagem.setInicioDescarregamento(agora);
-                break;
-            case FINALIZADA:
-                viagem.setFimDescarregamento(agora);
-                if (urlFoto != null && !urlFoto.isBlank()) {
-                    viagem.setUrlFotoComprovante(urlFoto);
-                }
-                break;
-            default:
-                break;
+            String nomeArquivo = UUID.randomUUID() + "_" + arquivo.getOriginalFilename();
+            Path caminhoCompleto = pastaUpload.resolve(nomeArquivo);
+
+            Files.copy(arquivo.getInputStream(), caminhoCompleto, StandardCopyOption.REPLACE_EXISTING);
+
+            viagem.setUrlFotoComprovante("/uploads/comprovantes/" + nomeArquivo);
+            Viagem atualizada = repository.save(viagem);
+
+            return new ViagemResponseDTO(atualizada);
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao salvar o arquivo do comprovante", e);
         }
+    }
+
+    public ViagemResponseDTO atualizarStatus(Long id, StatusViagem novoStatus) {
+        Viagem viagem = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Viagem não encontrada com o ID: " + id));
 
         viagem.setStatus(novoStatus);
 
-        if (observacao != null && !observacao.isBlank()) {
-            viagem.setObservacao(observacao);
+        LocalDateTime agora = LocalDateTime.now();
+        switch (novoStatus) {
+            case EM_CARREGAMENTO -> viagem.setInicioCarregamento(agora);
+            case CARREGADO -> viagem.setFimCarregamento(agora);
+            case EM_DESCARREGAMENTO -> viagem.setInicioDescarregamento(agora);
+            case FINALIZADA -> viagem.setFimDescarregamento(agora);
+            default -> {}
         }
 
-        return viagemRepository.save(viagem);
+        Viagem atualizada = repository.save(viagem);
+        return new ViagemResponseDTO(atualizada);
     }
 
-    // Método auxiliar para calcular o tempo de carregamento em minutos
-    public Long calcularTempoCarregamentoMinutos(Viagem viagem) {
-        if (viagem.getInicioCarregamento() != null && viagem.getFimCarregamento() != null) {
-            return Duration.between(viagem.getInicioCarregamento(), viagem.getFimCarregamento()).toMinutes();
+    public void deletar(Long id) {
+        if (!repository.existsById(id)) {
+            throw new RuntimeException("Viagem não encontrada com o ID: " + id);
         }
-        return 0L;
-    }
-
-    // Método auxiliar para calcular o tempo de descarregamento em minutos
-    public Long calcularTempoDescarregamentoMinutos(Viagem viagem) {
-        if (viagem.getInicioDescarregamento() != null && viagem.getFimDescarregamento() != null) {
-            return Duration.between(viagem.getInicioDescarregamento(), viagem.getFimDescarregamento()).toMinutes();
-        }
-        return 0L;
+        repository.deleteById(id);
     }
 }

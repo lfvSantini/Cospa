@@ -1,52 +1,57 @@
 package com.cospa.api.controller;
 
+import com.cospa.api.dto.ViagemRequestDTO;
+import com.cospa.api.dto.ViagemResponseDTO;
 import com.cospa.api.model.StatusViagem;
-import com.cospa.api.model.Viagem;
 import com.cospa.api.service.ViagemService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/viagens")
-@CrossOrigin(origins = "*") // Permite chamadas do HTML/JS local
 public class ViagemController {
 
-    @Autowired
-    private ViagemService viagemService;
+    private final ViagemService service;
 
-    // Listar todas as viagens -> http://localhost:8080/api/viagens
+    public ViagemController(ViagemService service) {
+        this.service = service;
+    }
+
     @GetMapping
-    public ResponseEntity<List<Viagem>> listarTodas() {
-        return ResponseEntity.ok(viagemService.listarTodas());
+    public ResponseEntity<List<ViagemResponseDTO>> listar() {
+        return ResponseEntity.ok(service.listarTodas());
     }
 
-    // Buscar viagem específica por ID -> http://localhost:8080/api/viagens/1
     @GetMapping("/{id}")
-    public ResponseEntity<Viagem> buscarPorId(@PathVariable Long id) {
-        return viagemService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ViagemResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
-    // Criar nova viagem
     @PostMapping
-    public ResponseEntity<Viagem> criarViagem(@RequestBody Viagem viagem) {
-        Viagem novaViagem = viagemService.criarViagem(viagem);
-        return ResponseEntity.ok(novaViagem);
+    public ResponseEntity<ViagemResponseDTO> criar(@RequestBody @Valid ViagemRequestDTO dto) {
+        ViagemResponseDTO viagemCriada = service.salvar(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(viagemCriada);
     }
 
-    // Atualizar o status da viagem -> http://localhost:8080/api/viagens/1/status
-    @PutMapping("/{id}/status")
-    public ResponseEntity<Viagem> atualizarStatus(
-            @PathVariable Long id,
-            @RequestParam StatusViagem novoStatus,
-            @RequestParam(required = false) String observacao,
-            @RequestParam(required = false) String urlFoto) {
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ViagemResponseDTO> atualizarStatus(@PathVariable Long id, @RequestParam StatusViagem status) {
+        return ResponseEntity.ok(service.atualizarStatus(id, status));
+    }
 
-        Viagem viagemAtualizada = viagemService.atualizarStatus(id, novoStatus, observacao, urlFoto);
-        return ResponseEntity.ok(viagemAtualizada);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
+    @PostMapping(value = "/{id}/comprovante", consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ViagemResponseDTO> salvarComprovante(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(service.salvarComprovante(id, file));
     }
 }

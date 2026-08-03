@@ -10,6 +10,13 @@ target/
 .DS_Store
 Thumbs.db
 
+### Uploads Locais de Arquivos ###
+uploads/
+
+### Arquivos de Configuração com Credenciais ###
+.env
+application-local.properties
+
 ### STS / Eclipse ###
 .apt_generated
 .classpath
@@ -37,8 +44,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-### Configurações Sensíveis (Opcional) ###
-# Descomente a linha abaixo se for criar um 'application-local.properties' ou '.env' com senhas do banco
-# application-local.properties
-# .env

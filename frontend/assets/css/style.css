@@ -1,90 +1,360 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
-:root {
-    /* Tipografia */
-    --font-heading: 'Georgia', serif;
-    --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    --font-logo: 'Quicksand', sans-serif;
-    
-        /* Cores */
-    --color-text: #ffffff;
-    --color-accent: #e6b981; 
-    --color-overlay-1: rgba(30, 20, 15, 0.4); 
-    --color-overlay-2: rgba(30, 20, 15, 0.3);
-    --color-overlay-3: rgba(30, 20, 15, 0.7);
-    
-    /* Botão */
-    --button-bg: rgba(255, 255, 255, 0.15);
-    --button-hover-bg: var(--color-accent);
-    --button-hover-text: #2c1e16; 
-    
-    /* Layout */
-    --radius: 50px;
-    --max-content-width: 900px;
-    --transition-fast: 0.3s ease;
-    --transition-slow: 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-}
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
-html {
-    scroll-behavior: smooth; 
-}
-
 
 body {
-    font-family: var(--font-body);
-    line-height: 1.6;
-    overflow-x: hidden;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
+    background-color: #f4f6f9;
+    min-height: 100vh;
+    color: #333;
 }
 
-.header-nav {
+/* --- TELA DE LOGIN (index.html) --- */
+.login-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f4f6f9;
+    z-index: 9999;
+}
+
+.login-container {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 0;
+}
+
+.logo-area {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo-area img {
+    width: 220px;
+    height: 60px;
+    object-fit: cover;
+    object-position: center;
+    margin-bottom: 0.5rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.logo-area h2 {
+    color: #333333;
+    font-size: 1.25rem;
+}
+
+.error-message {
+    color: #d9534f;
+    background-color: #fdf7f7;
+    border: 1px solid transparent;
+    padding: 0.5rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    text-align: center;
+    min-height: 38px;
+    visibility: hidden;
+}
+
+.error-message.ativo {
+    visibility: visible;
+    border-color: #f8b4b4;
+}
+
+.input-group {
+    margin-bottom: 0.75rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.3rem;
+    color: #555555;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.input-group input, .input-group select {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+    background-color: #fff;
+}
+
+.input-group input:focus, .input-group select:focus {
+    border-color: #0056b3;
+}
+
+#loginForm button[type="submit"],
+.login-container button[type="submit"] {
+    margin-top: 1.5rem; 
+}
+
+button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+}
+
+button:hover {
+    background-color: #004085;
+}
+
+/* --- PAINEL PRINCIPAL (dashboard.html) --- */
+.dashboard-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5625rem 3.75rem;
-    color: var(--color-text);
-    z-index: 2;
-    
-    background-color: rgb(5, 84, 129);
-    -webkit-backdrop-filter: blur(5px); 
-    backdrop-filter: blur(5px); 
-    width: 100%; 
+    background: #ffffff;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 1.5rem;
 }
 
-/* --- Logo --- */
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
 
-.logo-container {
+.header-logo h1 {
+    font-size: 1.25rem;
+    color: #2c3e50;
+}
+
+.nav-logo {
+    height: 38px;
+}
+
+.nav-actions {
     display: flex;
     align-items: center;
     gap: 0.75rem;
 }
 
-.logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    object-fit: cover;
-}
-    
-
-.logo-img {
- width: 5rem;
-  height: 5rem;
-  object-fit: cover;
-  border-radius: 100%;
-}
-/* ------------- */
-
-nav a {
+.btn-primary {
+    width: auto;
+    padding: 0.6rem 1.2rem;
+    background-color: #28a745;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 6px;
     color: white;
-    text-decoration: none;
-    margin-left: 1rem;
+    font-weight: 600;
+    cursor: pointer;
 }
 
-nav a:hover {
-    text-decoration: underline;
+.btn-primary:hover {
+    background-color: #218838;
+}
+
+.btn-secondary {
+    background-color: #34495e;
+}
+
+.btn-secondary:hover {
+    background-color: #2c3e50;
+}
+
+.btn-logout {
+    width: auto;
+    background-color: #dc3545;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-logout:hover {
+    background-color: #c82333;
+}
+
+/* Tabela e Ações */
+.table-container {
+    background: #ffffff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    overflow-x: auto;
+}
+
+/* CENTRALIZAÇÃO DOS TÍTULOS DAS TABELAS (Requisito da Anotação) */
+.table-container h2,
+.modal-content h3 {
+    text-align: center;
+    margin-bottom: 1.2rem;
+    color: #2c3e50;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid #eeeeee;
+    font-size: 0.875rem;
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+.btn-obs {
+    background-color: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.775rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-block;
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-obs:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    background: #e9ecef;
+    color: #495057;
+}
+
+.btn-action {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.775rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    background-color: #0056b3;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+/* Modais */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 1.75rem;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto; /* Permite rolar o modal se a tela for pequena */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.modal-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modal-table td, .modal-table th {
+    padding: 0.6rem;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.btn-submit {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    width: auto;
+}
+
+.btn-cancel {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    width: auto;
 }

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cospa Logística - Painel de Viagens</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+        <!-- Navbar Superior -->
+        <header class="navbar">
+            <div class="header-logo">
+                <img src="assets/img/Logo.png" alt="Cospa Logística" class="nav-logo" onerror="this.style.display='none'">
+                <h1>Painel de Viagens</h1>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-primary btn-secondary" onclick="abrirModalMotoristas()">Gerenciar Motoristas</button>
+                <button class="btn-primary" onclick="abrirModalNovaViagem()">+ Nova Viagem</button>
+                <button id="btnLogout" class="btn-logout">Sair</button>
+            </div>
+        </header>
+
+        <!-- Tabela Principal de Viagens -->
+        <main class="table-container">
+            <h2>Viagens Cadastradas</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Viagem</th>
+                        <th>Cliente</th>
+                        <th>Origem</th>
+                        <th>Destino</th>
+                        <th>Placa</th>
+                        <th>Motorista</th>
+                        <th>Status</th>
+                        <th>Obs</th>
+                        <th>Comprovante</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="viagensTbody">
+                    <!-- Conteúdo gerado via JS -->
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <!-- Modal de Observação -->
+    <div id="obsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Observação</h3>
+            <p id="obsContent" style="margin-bottom: 1.5rem; word-break: break-all;"></p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="fecharModalObs()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 1: Nova Viagem -->
+    <div id="novaViagemModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Cadastrar Nova Viagem</h3>
+            <form id="novaViagemForm">
+                <div class="input-group">
+                    <label for="viagemId">Nº da Viagem (ID)</label>
+                    <input type="number" id="viagemId" required placeholder="Ex: 101">
+                </div>
+
+                <div class="input-group">
+                    <label for="cliente">Cliente</label>
+                    <input type="text" id="cliente" required placeholder="Cecília e Marli Entregas Expressas Ltda">
+                </div>
+
+                <div class="input-group">
+                    <label for="origem">Origem</label>
+                    <input type="text" id="origem" required placeholder="Maringá - PR">
+                </div>
+
+                <div class="input-group">
+                    <label for="destino">Destino</label>
+                    <input type="text" id="destino" required placeholder="São Paulo - SP">
+                </div>
+
+                <div class="input-group">
+                    <label for="selectMotorista">Motorista / Placa</label>
+                    <select id="selectMotorista" required>
+                        <option value="">Selecione um Motorista</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="observacao">Observação</label>
+                    <input type="text" id="observacao" placeholder="Carga Frágil">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="fecharModalNovaViagem()">Cancelar</button>
+                    <button type="submit" class="btn-submit">Cadastrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Editar Viagem (COM OS NOVOS CAMPOS) -->
+    <div id="editarViagemModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <h3>Alterar Viagem <span id="editViagemIdTitle"></span></h3>
+            <form id="editarViagemForm">
+                <input type="hidden" id="editViagemIdAntigo">
+
+                <div class="input-group">
+                    <label for="editViagemId">Nº da Viagem (ID)</label>
+                    <input type="number" id="editViagemId" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="editCliente">Cliente</label>
+                    <input type="text" id="editCliente" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="editOrigem">Origem</label>
+                    <input type="text" id="editOrigem" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="editDestino">Destino</label>
+                    <input type="text" id="editDestino" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="editSelectMotorista">Motorista / Placa</label>
+                    <select id="editSelectMotorista" required></select>
+                </div>
+
+                <!-- CPF do Motorista -->
+                <div class="input-group">
+                    <label for="editCpfMotorista">CPF do Motorista</label>
+                    <input type="text" id="editCpfMotorista" placeholder="000.000.000-00" maxlength="14">
+                </div>
+
+                <!-- Datas/Horários de Coleta -->
+                <div style="display: flex; gap: 10px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label for="editDataColetaPrevista">Data/Hora Coleta (Prevista)</label>
+                        <input type="datetime-local" id="editDataColetaPrevista">
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label for="editDataColetaReal">Data/Hora Coleta (Chegada Real)</label>
+                        <input type="datetime-local" id="editDataColetaReal">
+                    </div>
+                </div>
+
+                <!-- Datas/Horários de Entrega -->
+                <div style="display: flex; gap: 10px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label for="editDataEntregaPrevista">Data/Hora Entrega (Prevista)</label>
+                        <input type="datetime-local" id="editDataEntregaPrevista">
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label for="editDataEntregaReal">Data/Hora Entrega (Real)</label>
+                        <input type="datetime-local" id="editDataEntregaReal">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="editStatus">Status da Viagem</label>
+                    <select id="editStatus" required>
+                        <option value="CRIADA">CRIADA</option>
+                        <option value="EM_TRANSITO">EM TRANSITO</option>
+                        <option value="ENTREGUE">ENTREGUE</option>
+                        <option value="CANCELADA">CANCELADA</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="editObservacao">Observação</label>
+                    <input type="text" id="editObservacao">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="fecharModalEditarViagem()">Cancelar</button>
+                    <button type="submit" class="btn-submit">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Gerenciar Motoristas -->
+    <div id="motoristasModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 750px;">
+            <h3>Gerenciar Motoristas</h3>
+
+            <form id="motoristaForm" style="display: flex; gap: 10px; margin-bottom: 1.5rem;">
+                <input type="hidden" id="motoristaId">
+                <input type="text" id="motoristaNome" placeholder="Nome do Motorista" required style="flex: 2; padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px;">
+                <input type="text" id="motoristaCpf" placeholder="CPF (000.000.000-00)" maxlength="14" style="flex: 1.5; padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px;">
+                <input type="text" id="motoristaPlaca" placeholder="Placa (Ex: B3C1A15)" required style="flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px;">
+                <button type="submit" id="btnSalvarMotorista" class="btn-submit" style="white-space: nowrap;">Cadastrar</button>
+            </form>
+
+            <div style="max-height: 250px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px;">
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th>Placa</th>
+                            <th style="text-align: right;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="motoristasTbody">
+                        <!-- Gerado via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-actions" style="margin-top: 1rem;">
+                <button type="button" class="btn-cancel" onclick="fecharModalMotoristas()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Upload de Comprovante -->
+    <div id="uploadModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Upload de Comprovante</h3>
+            <p id="modalViagemInfo" style="margin-bottom: 1rem; color: #666;">Viagem #--</p>
+
+            <form id="uploadForm">
+                <input type="hidden" id="modalViagemId">
+
+                <div class="input-group">
+                    <label for="fileInput">Selecione o arquivo/foto</label>
+                    <input type="file" id="fileInput" accept="image/*" required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+                    <button type="submit" class="btn-submit">Enviar Comprovante</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/js/dashboard.js"></script>
+</body>
+
+</html>

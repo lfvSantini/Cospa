@@ -31,20 +31,31 @@ class ViagemServiceTest {
     @DisplayName("Deve criar uma viagem com status CRIADA com sucesso")
     void deveCriarViagem() {
         ViagemRequestDTO request = new ViagemRequestDTO(
-                "Maringá - PR",
-                "Curitiba - PR",
-                "Carlos Silva",
-                "TransLog",
-                "Carga frágil"
+                null,                   // 1: id (Long)
+                "Cliente Exemplo",      // 2: cliente (String)
+                "Maringá - PR",         // 3: localColeta (String)
+                "Curitiba - PR",        // 4: localEntrega (String)
+                "ABC-1234",             // 5: placa (String)
+                "Carlos Silva",         // 6: nomeMotorista (String)
+                "123.456.789-00",       // 7: cpfMotorista (String) -> NOVO
+                null,                   // 8: dataColetaPrevista (LocalDateTime) -> NOVO
+                null,                   // 9: dataColetaReal (LocalDateTime) -> NOVO
+                null,                   // 10: dataEntregaPrevista (LocalDateTime) -> NOVO
+                null,                   // 11: dataEntregaReal (LocalDateTime) -> NOVO
+                StatusViagem.CRIADA,    // 12: status (StatusViagem)
+                "Carga frágil"          // 13: observacao (String)
         );
 
         Viagem viagemSalva = new Viagem();
         viagemSalva.setId(1L);
+        viagemSalva.setCliente(request.cliente());
         viagemSalva.setLocalColeta(request.localColeta());
         viagemSalva.setLocalEntrega(request.localEntrega());
+        viagemSalva.setPlaca(request.placa());
         viagemSalva.setNomeMotorista(request.nomeMotorista());
-        viagemSalva.setTransportadora(request.transportadora());
+        viagemSalva.setCpfMotorista(request.cpfMotorista());
         viagemSalva.setStatus(StatusViagem.CRIADA);
+        viagemSalva.setObservacao(request.observacao());
 
         when(repository.save(any(Viagem.class))).thenReturn(viagemSalva);
 

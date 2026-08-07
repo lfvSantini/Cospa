@@ -6,10 +6,10 @@ import com.cospa.api.model.Usuario;
 public record UsuarioResponseDTO(
         Long id,
         String nome,
-        String email,
+        String username,
         PerfilUsuario perfil
 ) {
-    public UsuarioResponseDTO(Usuario usuario) {
-        this(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getPerfil());
+    public UsuarioResponseDTO(Usuario u) {
+        this(u.getId(), u.getNome(), u.getUsername(), u.getPerfil());
     }
 }

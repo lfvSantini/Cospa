@@ -15,14 +15,20 @@ import java.time.LocalDateTime;
 public class Viagem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, length = 100)
     private Long id;
 
     @Column(nullable = false, length = 100)
-    private String transportadora;
+    private String cliente;
+
+    @Column(nullable = false, length = 7)
+    private String placa;
 
     @Column(nullable = false, length = 100)
     private String nomeMotorista;
+
+    @Column(name = "cpf_motorista")
+    private String cpfMotorista;
 
     @Column(nullable = false)
     private String localColeta;
@@ -33,6 +39,19 @@ public class Viagem {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private StatusViagem status;
+
+    //Horários e Datas
+    @Column(name = "data_coleta_prevista")
+    private LocalDateTime dataColetaPrevista;
+
+    @Column(name = "data_coleta_real")
+    private LocalDateTime dataColetaReal;
+
+    @Column(name = "data_entrega_prevista")
+    private LocalDateTime dataEntregaPrevista;
+
+    @Column(name = "data_entrega_real")
+    private LocalDateTime dataEntregaReal;
 
     // Data e hora do começo/fim do carregamento
     private LocalDateTime inicioCarregamento;

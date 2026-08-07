@@ -1,41 +1,36 @@
-package com.cospa.api.controller;
+package com.cospa.api.service;
 
 import com.cospa.api.dto.LoginRequestDTO;
 import com.cospa.api.dto.TokenResponseDTO;
 import com.cospa.api.model.Usuario;
 import com.cospa.api.repository.UsuarioRepository;
-import com.cospa.api.service.TokenService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
 
-@RestController
-@RequestMapping("/api/auth")
-public class AuthController {
+@Service
+public class AutenticacaoService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
 
-    public AuthController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, TokenService tokenService) {
+    public AutenticacaoService(UsuarioRepository usuarioRepository, 
+                               PasswordEncoder passwordEncoder, 
+                               TokenService tokenService) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<TokenResponseDTO> login(@RequestBody @Valid LoginRequestDTO dto) {
+    public TokenResponseDTO autenticar(LoginRequestDTO dto) {
         Usuario usuario = usuarioRepository.findByUsername(dto.username())
                 .orElseThrow(() -> new RuntimeException("Usuário ou senha inválidos"));
 
-        // Validação REAL de senha (sem bypass)
         if (!passwordEncoder.matches(dto.senha(), usuario.getSenha())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new RuntimeException("Usuário ou senha inválidos");
         }
 
         String token = tokenService.gerarToken(usuario);
-        return ResponseEntity.ok(new TokenResponseDTO(token));
+        return new TokenResponseDTO(token, "Bearer");
     }
 }

@@ -36,10 +36,8 @@ public class UsuarioService {
     public UsuarioResponseDTO salvar(UsuarioRequestDTO dto) {
         Usuario usuario = new Usuario();
         usuario.setNome(dto.nome());
-        usuario.setEmail(dto.email());
-
+        usuario.setUsername(dto.username());
         usuario.setSenha(passwordEncoder.encode(dto.senha()));
-
         usuario.setPerfil(dto.perfil());
 
         Usuario salvo = repository.save(usuario);

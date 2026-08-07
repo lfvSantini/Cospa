@@ -1,6 +1,7 @@
 package com.cospa.api.service;
 
 import com.cospa.api.model.Usuario;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,36 +14,38 @@ import java.util.Date;
 @Service
 public class TokenService {
 
-    @Value("${api.security.token.secret:sua-chave-secreta-super-segura-com-pelo-menos-32-caracteres}")
+    @Value("${api.security.token.secret:minha-chave-secreta-super-segura-com-no-minimo-32-caracteres}")
     private String secret;
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String gerarToken(Usuario usuario) {
-        long expiracaoMillis = 86400000; // 24 horas
-
-        return Jwts.builder()
-                .subject(usuario.getEmail())
-                .claim("id", usuario.getId())
-                .claim("perfil", usuario.getPerfil().name())
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiracaoMillis))
-                .signWith(getSigningKey())
-                .compact();
+        try {
+            return Jwts.builder()
+                    .subject(usuario.getUsername())
+                    .issuer("logistica-api")
+                    .expiration(new Date(System.currentTimeMillis() + 8 * 3600 * 1000)) // 8 horas
+                    .signWith(getSigningKey())
+                    .compact();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar token JWT", e);
+        }
     }
 
     public String validarToken(String token) {
         try {
-            return Jwts.parser()
+            Claims claims = Jwts.parser()
                     .verifyWith(getSigningKey())
                     .build()
                     .parseSignedClaims(token)
-                    .getPayload()
-                    .getSubject();
+                    .getPayload();
+
+            return claims.getSubject();
         } catch (Exception e) {
-            return null;
+            return "";
         }
     }
 }

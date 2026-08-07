@@ -1,19 +1,22 @@
 package com.cospa.api.dto;
 
+import com.cospa.api.model.StatusViagem;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 public record ViagemRequestDTO(
-        @NotBlank(message = "O local de coleta é obrigatório")
-        String localColeta,
-
-        @NotBlank(message = "O local de entrega é obrigatório")
-        String localEntrega,
-
-        @NotBlank(message = "O nome do motorista é obrigatório")
-        String nomeMotorista,
-
-        @NotBlank(message = "A transportadora é obrigatória")
-        String transportadora,
-
+        @NotNull Long id,
+        @NotBlank String cliente,
+        @NotBlank String localColeta,
+        @NotBlank String localEntrega,
+        @NotBlank String placa,
+        @NotBlank String nomeMotorista,
+        String cpfMotorista,
+        LocalDateTime dataColetaPrevista,
+        LocalDateTime dataColetaReal,
+        LocalDateTime dataEntregaPrevista,
+        LocalDateTime dataEntregaReal,
+        StatusViagem status,
         String observacao
 ) {}

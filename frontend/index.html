@@ -3,29 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cospa - Login</title>
-    <!-- Links -->
-    <link rel="stylesheet" href="../frontend/assets/css/style.css">
-
+    <title>Cospa Logística - Login</title>
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <!-- Cabeçalho com navegação -->
-    <header class="header-nav">
-        <!-- Logo -->
-        <div class="logo-container">
-        <img src="../frontend/assets/img/Logo.png" alt="Logo da Cospa" class="logo-img">
-        <span class="logo">Cospa</span>
+
+    <!-- Wrapper exclusivo para centralização cravada sem interferência do body -->
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="logo-area">
+                <img src="assets/img/Logo.png" alt="Cospa Logística" onerror="this.style.display='none'">
+                <h2>Portal de Logística</h2>
+            </div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="usuario">Usuário</label>
+                    <input type="text" id="usuario" required placeholder="Digite seu usuário">
+                </div>
+
+                <div class="input-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" required placeholder="Digite sua senha">
+                </div>
+
+                <!-- MENSAGEM DE ERRO (Agora posicionada logo abaixo da senha) -->
+                <div id="errorMessage" class="error-message"></div>
+
+                <button type="submit">Entrar</button>
+            </form>
         </div>
-        <nav>
-            <a href="Login.html">Início</a>
-            <a href="Login.html">Login</a>
-        </nav>
-    </header>
+    </div>
 
-    <!-- Aqui você colocará o formulário de login futuramente -->
-    <main>
-        
-    </main>
-
+    <script src="assets/js/login.js"></script>
 </body>
 </html>

@@ -6,6 +6,7 @@ import com.cospa.api.model.StatusViagem;
 import com.cospa.api.service.ViagemService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +39,12 @@ public class ViagemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(viagemCriada);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ViagemResponseDTO> atualizar(@PathVariable Long id, @RequestBody @Valid ViagemRequestDTO dto) {
+        ViagemResponseDTO atualizada = service.atualizar(id, dto);
+        return ResponseEntity.ok(atualizada);
+    }
+
     @PatchMapping("/{id}/status")
     public ResponseEntity<ViagemResponseDTO> atualizarStatus(@PathVariable Long id, @RequestParam StatusViagem status) {
         return ResponseEntity.ok(service.atualizarStatus(id, status));
@@ -48,8 +55,10 @@ public class ViagemController {
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }
-    @PostMapping(value = "/{id}/comprovante", consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ViagemResponseDTO> salvarComprovante(
+
+    // Apenas UM endpoint de upload (evita conflito no Spring Web)
+    @PostMapping(value = "/{id}/comprovante", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ViagemResponseDTO> uploadComprovante(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) {
         return ResponseEntity.ok(service.salvarComprovante(id, file));

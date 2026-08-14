@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cospa Logística - Login</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <!-- Aplica o tema instantaneamente para evitar piscar branco -->
+    <script>
+        (function () {
+            const tema = localStorage.getItem('theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', tema);
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="login-wrapper">
+        <!-- Switch de tema posicionado no topo -->
+        <div style="position: absolute; top: 1.25rem; right: 1.25rem;">
+            <label class="theme-switch" for="themeToggle" title="Alternar Tema">
+                <input type="checkbox" id="themeToggle" aria-label="Alternar tema claro e escuro">
+                <span class="slider">
+                    <svg class="icon sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="icon moon-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <span class="thumb"></span>
+                </span>
+            </label>
+        </div>
+
+        <div class="login-container">
+            <div class="logo-area">
+                <img src="../assets/img/Logo.png" alt="Cospa Logística" onerror="this.style.display='none'">
+                <h2>Painel de Login</h2>
+            </div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="username">Usuário</label>
+                    <input type="text" id="username" required placeholder="Usuario123">
+                </div>
+                <div class="input-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" required placeholder="********">
+                </div>
+
+                <div id="errorMessage" class="error-message">Usuário ou senha inválidos.</div>
+
+                <button type="submit">Entrar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sincroniza o toggle do tema com o localStorage
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.checked = (localStorage.getItem('theme') === 'dark');
+
+        themeToggle.addEventListener('change', () => {
+            const novoTema = themeToggle.checked ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', novoTema);
+            localStorage.setItem('theme', novoTema);
+        });
+
+        // Lógica de Login via API
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const senha = document.getElementById('senha').value.trim();
+            const errorDiv = document.getElementById('errorMessage');
+
+            errorDiv.classList.remove('ativo');
+
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, senha })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.token || data);
+                    window.location.href = 'dashboard.html';
+                } else {
+                    errorDiv.textContent = 'E-mail ou senha inválidos.';
+                    errorDiv.classList.add('ativo');
+                }
+            } catch (err) {
+                console.error('Erro de login:', err);
+                errorDiv.textContent = 'Erro de conexão com o servidor.';
+                errorDiv.classList.add('ativo');
+            }
+        });
+    </script>
+</body>
+
+</html>

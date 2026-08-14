@@ -1,0 +1,2 @@
+ALTER TABLE viagens ADD COLUMN origem TEXT;
+ALTER TABLE viagens ADD COLUMN destino TEXT;

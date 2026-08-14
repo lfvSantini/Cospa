@@ -1,0 +1,1 @@
+ALTER TABLE viagens MODIFY COLUMN status VARCHAR(30);

@@ -1,22 +1,15 @@
 package com.cospa.api.service;
 
-import com.cospa.api.dto.ViagemRequestDTO;
-import com.cospa.api.dto.ViagemResponseDTO;
 import com.cospa.api.model.StatusViagem;
 import com.cospa.api.model.Viagem;
 import com.cospa.api.repository.ViagemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 @Service
 public class ViagemService {
@@ -24,138 +17,102 @@ public class ViagemService {
     @Autowired
     private ViagemRepository repository;
 
-    private final Path uploadDir = Paths.get("uploads");
-
-    public ViagemService() {
-        try {
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Não foi possível criar o diretório de uploads", e);
-        }
+    // 1. Listar todas as viagens
+    public List<Viagem> listarTodas() {
+        return repository.findAll();
     }
 
-    public List<ViagemResponseDTO> listarTodas() {
-        return repository.findAll().stream()
-                .map(ViagemResponseDTO::new)
-                .toList();
+    // 2. Buscar viagem por ID
+    public Optional<Viagem> buscarPorId(Long id) {
+        return repository.findById(id);
     }
 
-    public ViagemResponseDTO buscarPorId(Long id) {
-        Viagem viagem = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Viagem não encontrada com o ID: " + id));
-        return new ViagemResponseDTO(viagem);
-    }
-
+    // 3. Cadastrar nova viagem
     @Transactional
-    public ViagemResponseDTO salvar(ViagemRequestDTO dto) {
-        if (dto.id() != null && repository.existsById(dto.id())) {
-            throw new RuntimeException("Já existe uma viagem cadastrada com o ID: " + dto.id());
+    public Viagem salvar(Viagem viagem) {
+        if (viagem.getStatus() == null) {
+            viagem.setStatus(StatusViagem.PROGRAMADO);
         }
 
-        Viagem viagem = new Viagem();
-        if (dto.id() != null) {
-            viagem.setId(dto.id());
+        // Garante valores padrão caso venham nulos do frontend
+        if (viagem.getValorAdicionalReceber() == null) {
+            viagem.setValorAdicionalReceber(BigDecimal.ZERO);
         }
-        viagem.setCliente(dto.cliente());
-        viagem.setLocalColeta(dto.localColeta());
-        viagem.setLocalEntrega(dto.localEntrega());
-        viagem.setPlaca(dto.placa());
-        viagem.setNomeMotorista(dto.nomeMotorista());
-        viagem.setCpfMotorista(dto.cpfMotorista());
-        viagem.setDataColetaPrevista(dto.dataColetaPrevista());
-        viagem.setDataColetaReal(dto.dataColetaReal());
-        viagem.setDataEntregaPrevista(dto.dataEntregaPrevista());
-        viagem.setDataEntregaReal(dto.dataEntregaReal());
-        viagem.setObservacao(dto.observacao());
-        viagem.setStatus(dto.status() != null ? dto.status() : StatusViagem.CRIADA);
+        if (viagem.getValorAdicionalPagar() == null) {
+            viagem.setValorAdicionalPagar(BigDecimal.ZERO);
+        }
+        if (viagem.getPagamentoLiberado() == null) {
+            viagem.setPagamentoLiberado(false);
+        }
+        if (viagem.getPagamentoRealizadoStatus() == null || viagem.getPagamentoRealizadoStatus().isBlank()) {
+            viagem.setPagamentoRealizadoStatus("NAO_REALIZADO");
+        }
 
-        Viagem salva = repository.save(viagem);
-        return new ViagemResponseDTO(salva);
+        return repository.save(viagem);
     }
 
+    // 4. Atualizar viagem existente
     @Transactional
-    public ViagemResponseDTO atualizar(Long idAntigo, ViagemRequestDTO dto) {
-        Viagem viagem = repository.findById(idAntigo)
-                .orElseThrow(() -> new RuntimeException("Viagem não encontrada com o ID: " + idAntigo));
+    public Optional<Viagem> atualizar(Long id, Viagem dadosAtualizados) {
+        return repository.findById(id).map(viagem -> {
+            viagem.setCliente(dadosAtualizados.getCliente());
+            viagem.setLocalColeta(dadosAtualizados.getLocalColeta());
+            viagem.setLocalEntrega(dadosAtualizados.getLocalEntrega());
+            viagem.setOrigem(dadosAtualizados.getOrigem());
+            viagem.setDestino(dadosAtualizados.getDestino());
+            viagem.setOrigemNome(dadosAtualizados.getOrigemNome());
+            viagem.setDestinoNome(dadosAtualizados.getDestinoNome());
+            viagem.setNomeMotorista(dadosAtualizados.getNomeMotorista());
+            viagem.setPlaca(dadosAtualizados.getPlaca());
 
-        // Atualização da chave primária (ID) se o usuário enviou um ID diferente
-        if (dto.id() != null && !dto.id().equals(idAntigo)) {
-            if (repository.existsById(dto.id())) {
-                throw new RuntimeException("O ID " + dto.id() + " já está em uso por outra viagem!");
-            }
-            repository.atualizarId(idAntigo, dto.id());
-            viagem = repository.findById(dto.id())
-                    .orElseThrow(() -> new RuntimeException("Erro ao buscar a viagem com o novo ID"));
-        }
+            // Datas e observações
+            viagem.setDataColetaPrevista(dadosAtualizados.getDataColetaPrevista());
+            viagem.setDataColetaReal(dadosAtualizados.getDataColetaReal());
+            viagem.setDataEntregaPrevista(dadosAtualizados.getDataEntregaPrevista());
+            viagem.setDataEntregaReal(dadosAtualizados.getDataEntregaReal());
+            viagem.setObservacao(dadosAtualizados.getObservacao());
 
-        viagem.setCliente(dto.cliente());
-        viagem.setLocalColeta(dto.localColeta());
-        viagem.setLocalEntrega(dto.localEntrega());
-        viagem.setPlaca(dto.placa());
-        viagem.setNomeMotorista(dto.nomeMotorista());
-        viagem.setCpfMotorista(dto.cpfMotorista());
-        viagem.setDataColetaPrevista(dto.dataColetaPrevista());
-        viagem.setDataColetaReal(dto.dataColetaReal());
-        viagem.setDataEntregaPrevista(dto.dataEntregaPrevista());
-        viagem.setDataEntregaReal(dto.dataEntregaReal());
-        if (dto.status() != null) {
-            viagem.setStatus(dto.status());
-        }
-        viagem.setObservacao(dto.observacao());
+            // Valores e adicionais
+            viagem.setValorAReceber(dadosAtualizados.getValorAReceber());
+            viagem.setValorAPagar(dadosAtualizados.getValorAPagar());
+            viagem.setValorAdicionalReceber(dadosAtualizados.getValorAdicionalReceber() != null ? dadosAtualizados.getValorAdicionalReceber() : BigDecimal.ZERO);
+            viagem.setValorAdicionalPagar(dadosAtualizados.getValorAdicionalPagar() != null ? dadosAtualizados.getValorAdicionalPagar() : BigDecimal.ZERO);
 
-        Viagem salva = repository.save(viagem);
-        return new ViagemResponseDTO(salva);
-    }
+            // Status de Pagamento
+            viagem.setPagamentoLiberado(dadosAtualizados.getPagamentoLiberado() != null ? dadosAtualizados.getPagamentoLiberado() : false);
 
-    @Transactional
-    public ViagemResponseDTO salvarComprovante(Long id, MultipartFile arquivo) {
-        Viagem viagem = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Viagem não encontrada com o ID: " + id));
+            // Valor padrão String "NAO_REALIZADO"
+            viagem.setPagamentoRealizadoStatus(
+                    dadosAtualizados.getPagamentoRealizadoStatus() != null && !dadosAtualizados.getPagamentoRealizadoStatus().isBlank()
+                            ? dadosAtualizados.getPagamentoRealizadoStatus()
+                            : "NAO_REALIZADO"
+            );
 
-        if (arquivo.isEmpty()) {
-            throw new RuntimeException("O arquivo enviado está vazio.");
-        }
-
-        try {
-            String nomeArquivoOriginal = arquivo.getOriginalFilename();
-            String extensao = "";
-            if (nomeArquivoOriginal != null && nomeArquivoOriginal.contains(".")) {
-                extensao = nomeArquivoOriginal.substring(nomeArquivoOriginal.lastIndexOf("."));
+            // Status da viagem
+            if (dadosAtualizados.getStatus() != null) {
+                viagem.setStatus(dadosAtualizados.getStatus());
             }
 
-            String novoNomeArquivo = UUID.randomUUID().toString() + extensao;
-            Path caminhoDestino = this.uploadDir.resolve(novoNomeArquivo);
-
-            Files.copy(arquivo.getInputStream(), caminhoDestino, StandardCopyOption.REPLACE_EXISTING);
-
-            String urlRelativa = "/uploads/" + novoNomeArquivo;
-            viagem.setUrlFotoComprovante(urlRelativa);
-
-            Viagem salva = repository.save(viagem);
-            return new ViagemResponseDTO(salva);
-
-        } catch (IOException e) {
-            throw new RuntimeException("Erro ao salvar o arquivo do comprovante", e);
-        }
+            return repository.save(viagem);
+        });
     }
 
+    // 5. Finalizar viagem (troca status para FINALIZADO)
     @Transactional
-    public ViagemResponseDTO atualizarStatus(Long id, StatusViagem status) {
-        Viagem viagem = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Viagem não encontrada com o ID: " + id));
-
-        viagem.setStatus(status);
-        Viagem salva = repository.save(viagem);
-        return new ViagemResponseDTO(salva);
+    public Optional<Viagem> finalizar(Long id) {
+        return repository.findById(id).map(viagem -> {
+            viagem.setStatus(StatusViagem.FINALIZADO);
+            return repository.save(viagem);
+        });
     }
 
+    // 6. Deletar viagem
     @Transactional
-    public void deletar(Long id) {
-        if (!repository.existsById(id)) {
-            throw new RuntimeException("Viagem não encontrada com o ID: " + id);
+    public boolean deletar(Long id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return true;
         }
-        repository.deleteById(id);
+        return false;
     }
 }

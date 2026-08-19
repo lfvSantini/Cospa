@@ -1,31 +1,60 @@
 package com.cospa.api.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Entity
 @Table(name = "usuarios")
-@Data
+@Entity(name = "Usuario")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 100)
+    private String login;
     private String username;
-
-    @Column(nullable = false)
     private String senha;
+    private String password;
 
-    @Column(nullable = false, length = 100)
-    private String nome;
+    // Métodos manuais para compatibilidade garantida
+    public String getSenha() {
+        return this.senha != null ? this.senha : this.password;
+    }
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private PerfilUsuario perfil;
+    public void setSenha(String senha) {
+        this.senha = senha;
+        this.password = senha;
+    }
+
+    public String getPassword() {
+        return this.password != null ? this.password : this.senha;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+        this.senha = password;
+    }
+
+    public String getLogin() {
+        return this.login != null ? this.login : this.username;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+        this.username = login;
+    }
+
+    public String getUsername() {
+        return this.username != null ? this.username : this.login;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+        this.login = username;
+    }
 }

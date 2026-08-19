@@ -29,14 +29,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                // Adiciona o CorsFilter como o PRIMEIRO filtro de todos
+                // Garante que o CorsFilter processe o preflight antes do Spring Security
                 .addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
-                    // Libera todas as requisições OPTIONS de preflight
                     req.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
-
-                    // Rotas públicas
                     req.requestMatchers(
                             "/v3/api-docs/**",
                             "/swagger-ui/**",
@@ -44,10 +41,7 @@ public class SecurityConfig {
                             "/uploads/**",
                             "/error"
                     ).permitAll();
-
-                    // Rotas de login públicas (com e sem /api)
                     req.requestMatchers(HttpMethod.POST, "/auth/login", "/api/auth/login").permitAll();
-
                     req.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

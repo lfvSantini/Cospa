@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.PATCH})
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
@@ -27,13 +26,20 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponseDTO> login(@RequestBody @Valid LoginRequestDTO dto) {
-        Usuario usuario = usuarioRepository.findByUsername(dto.username())
-                .orElseThrow(() -> new RuntimeException("Usuário ou senha inválidos"));
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDTO dto) {
+        var usuarioOptional = usuarioRepository.findByUsername(dto.username());
+        if (usuarioOptional.isEmpty()) {
+            usuarioOptional = usuarioRepository.findByLogin(dto.username());
+        }
 
-        // Validação REAL de senha (sem bypass)
+        if (usuarioOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário ou senha inválidos");
+        }
+
+        Usuario usuario = usuarioOptional.get();
+
         if (!passwordEncoder.matches(dto.senha(), usuario.getSenha())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário ou senha inválidos");
         }
 
         String token = tokenService.gerarToken(usuario);

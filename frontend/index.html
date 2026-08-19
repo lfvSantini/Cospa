@@ -1,20 +1,144 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="light">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cospa Logística - Login</title>
-    <link rel="stylesheet" href="./assets/css/style.css">
-</head>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Regras de garantia para centralização perfeita do Login */
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-body, #f4f6f9);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
+        .login-wrapper {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .login-container {
+            background: var(--bg-card, #ffffff);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .logo-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .logo-area img {
+            max-width: 140px;
+            max-height: 70px;
+            object-fit: contain;
+            margin-bottom: 12px;
+        }
+
+        .logo-area h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: var(--text-primary, #2c3e50);
+        }
+
+        #loginForm {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: left;
+        }
+
+        .input-group label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary, #4a5568);
+        }
+
+        .input-group input {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color, #cbd5e0);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background: var(--bg-input, #ffffff);
+            color: var(--text-primary, #2d3748);
+            outline: none;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .input-group input:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
+        }
+
+        #btnLogin {
+            margin-top: 8px;
+            padding: 12px;
+            background-color: #0056b3;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        #btnLogin:hover {
+            background-color: #004085;
+        }
+
+        .error-message {
+            display: none;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: #fde8e8;
+            color: #9b1c1c;
+            font-size: 0.85rem;
+            text-align: center;
+            border: 1px solid #f8b4b4;
+        }
+
+        .error-message.ativo {
+            display: block;
+        }
+
+        .login-header-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+    </style>
+</head>
 <body>
     <div class="login-header-switch">
         <label class="theme-switch" for="themeToggle">
             <input type="checkbox" id="themeToggle">
             <span class="slider">
-                <svg class="icon sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
+                <svg class="icon sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="5"></circle>
                     <line x1="12" y1="1" x2="12" y2="3"></line>
                     <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -25,8 +149,7 @@
                     <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
                     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                 </svg>
-                <svg class="icon moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
+                <svg class="icon moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
                 <span class="thumb"></span>
@@ -35,30 +158,30 @@
     </div>
 
     <div class="login-wrapper">
-        <div class="logo-area">
-            <img src="assets/img/logo.png" alt="Cospa Logística Logo">
-            <h2>Painel de Login</h2>
+        <div class="login-container">
+            <div class="logo-area">
+                <img src="assets/img/logo.png" alt="Cospa Logística Logo" onerror="this.style.display='none'">
+                <h2>Painel de Login</h2>
+            </div>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="username">Usuário</label>
+                    <input type="text" id="username" placeholder="Digite seu usuário..." required autocomplete="username">
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" placeholder="Digite sua senha..." required autocomplete="current-password">
+                </div>
+                
+                <div id="errorMessage" class="error-message"></div>
+                
+                <button type="submit" id="btnLogin">Entrar</button>
+            </form>
         </div>
-        <form id="loginForm">
-            <div class="input-group">
-                <label for="username">Usuário</label>
-                <input type="text" id="username" placeholder="Digite seu usuário..." required autocomplete="username">
-            </div>
-
-            <div class="input-group">
-                <label for="password">Senha</label>
-                <input type="password" id="password" placeholder="Digite sua senha..." required
-                    autocomplete="current-password">
-            </div>
-
-            <div id="errorMessage" class="error-message"></div>
-
-            <button type="submit" id="btnLogin">Entrar</button>
-        </form>
-    </div>
     </div>
 
-    <script src="./assets/js/login.js"></script>
+    <script src="assets/js/login.js"></script>
 </body>
-
 </html>

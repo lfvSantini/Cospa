@@ -31,26 +31,22 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
+                    // Documentação Swagger e arquivos estáticos públicos
                     req.requestMatchers(
                             "/v3/api-docs/**",
                             "/swagger-ui/**",
                             "/swagger-ui.html",
                             "/uploads/**",
-                            "/api/motoristas",
-                            "/api/motoristas/**",
-                            "/api/fornecedores",
-                            "/api/fornecedores/**",
-                            "/api/clientes",
-                            "/api/clientes/**",
-                            "/api/viagens",
-                            "/api/viagens/**",
-                            "/api/usuarios/**",
                             "/error"
                     ).permitAll();
 
+                    // Rota de login
                     req.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
+
+                    // Preflight CORS (navegadores enviam OPTIONS antes de POST/PUT/DELETE)
                     req.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
+                    // Todas as demais rotas exigem token JWT válido
                     req.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
@@ -60,10 +56,19 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
+
+        // Permite origens do Cloudflare Pages, Railway e ambientes locais de desenvolvimento
+        configuration.setAllowedOriginPatterns(List.of(
+                "https://*.pages.dev",
+                "https://cospa-de9.pages.dev",
+                "http://localhost:*",
+                "http://127.0.0.1:*"
+        ));
+
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "X-Requested-With", "Origin"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L); // Cache do preflight por 1 hora
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

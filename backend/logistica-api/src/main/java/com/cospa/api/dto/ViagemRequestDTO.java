@@ -2,37 +2,47 @@ package com.cospa.api.dto;
 
 import com.cospa.api.model.StatusViagem;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ViagemRequestDTO {
 
-    private Long id; // <--- Adicione este campo
+    private Long id;
 
     @NotBlank(message = "O cliente é obrigatório")
     private String cliente;
 
     private String origem;
     private String destino;
+    private String origemNome;
+    private String destinoNome;
     private String localColeta;
     private String localEntrega;
 
-    @NotBlank(message = "O nome do motorista é obrigatório")
     private String nomeMotorista;
-
-    @NotBlank(message = "A placa é obrigatória")
     private String placa;
+    private String fornecedorAgencia;
 
-    private LocalDateTime dataColetaPrevista;
-    private LocalDateTime dataColetaReal;
-    private LocalDateTime dataEntregaPrevista;
-    private LocalDateTime dataEntregaReal;
+    private String dataColetaPrevista;
+    private String dataColetaReal;
+    private String dataEntregaPrevista;
+    private String dataEntregaReal;
 
     private BigDecimal valorAReceber;
     private BigDecimal valorAPagar;
+    private BigDecimal valorAdicionalReceber;
+    private BigDecimal valorAdicionalPagar;
+    private BigDecimal valorAdicionalAgencia;
+
+    private Boolean pagamentoLiberado;
+    private String pagamentoRealizadoStatus;
+    private String dataHoraPagamento;
 
     private StatusViagem status;
     private String observacao;

@@ -26,8 +26,8 @@ public class ViagemResponseDTO {
     private String localEntrega;
     private String nomeMotorista;
     private String placa;
+    private String fornecedorAgencia;
 
-    // Datas aceitam texto/ISO
     private String dataColetaPrevista;
     private String dataColetaReal;
     private String dataEntregaPrevista;
@@ -37,9 +37,11 @@ public class ViagemResponseDTO {
     private BigDecimal valorAPagar;
     private BigDecimal valorAdicionalReceber;
     private BigDecimal valorAdicionalPagar;
+    private BigDecimal valorAdicionalAgencia;
 
     private Boolean pagamentoLiberado;
-    private String pagamentoRealizadoStatus; // 👈 Atualizado para String
+    private String pagamentoRealizadoStatus;
+    private String dataHoraPagamento;
 
     private StatusViagem status;
     private String observacao;
@@ -59,6 +61,7 @@ public class ViagemResponseDTO {
             this.localEntrega = entity.getLocalEntrega();
             this.nomeMotorista = entity.getNomeMotorista();
             this.placa = entity.getPlaca();
+            this.fornecedorAgencia = entity.getFornecedorAgencia();
 
             this.dataColetaPrevista = entity.getDataColetaPrevista();
             this.dataColetaReal = entity.getDataColetaReal();
@@ -69,9 +72,11 @@ public class ViagemResponseDTO {
             this.valorAPagar = entity.getValorAPagar();
             this.valorAdicionalReceber = entity.getValorAdicionalReceber();
             this.valorAdicionalPagar = entity.getValorAdicionalPagar();
+            this.valorAdicionalAgencia = entity.getValorAdicionalAgencia();
 
             this.pagamentoLiberado = entity.getPagamentoLiberado();
             this.pagamentoRealizadoStatus = entity.getPagamentoRealizadoStatus();
+            this.dataHoraPagamento = entity.getDataHoraPagamento();
 
             this.status = entity.getStatus();
             this.observacao = entity.getObservacao();

@@ -1,63 +1,97 @@
 package com.cospa.api.controller;
 
+import com.cospa.api.dto.ViagemRequestDTO;
+import com.cospa.api.dto.ViagemResponseDTO;
+import com.cospa.api.model.StatusViagem;
 import com.cospa.api.model.Viagem;
-import com.cospa.api.service.ViagemService;
+import com.cospa.api.repository.ViagemRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/viagens")
+@CrossOrigin(origins = "*")
 public class ViagemController {
 
     @Autowired
-    private ViagemService service;
+    private ViagemRepository viagemRepository;
 
-    // 1. Listar todas as viagens
     @GetMapping
-    public List<Viagem> listarTodas() {
-        return service.listarTodas();
+    public ResponseEntity<List<ViagemResponseDTO>> listarTodas() {
+        List<ViagemResponseDTO> lista = viagemRepository.findAll().stream()
+                .map(ViagemResponseDTO::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(lista);
     }
 
-    // 2. Buscar viagem por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Viagem> buscarPorId(@PathVariable Long id) {
-        return service.buscarPorId(id)
-                .map(ResponseEntity::ok)
+    public ResponseEntity<ViagemResponseDTO> buscarPorId(@PathVariable Long id) {
+        return viagemRepository.findById(id)
+                .map(v -> ResponseEntity.ok(new ViagemResponseDTO(v)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 3. Cadastrar nova viagem
     @PostMapping
-    public ResponseEntity<Viagem> salvar(@RequestBody Viagem viagem) {
-        Viagem salva = service.salvar(viagem);
-        return ResponseEntity.ok(salva);
+    public ResponseEntity<ViagemResponseDTO> criar(@RequestBody @Valid ViagemRequestDTO dto) {
+        Viagem v = new Viagem();
+        v.setId(dto.getId());
+        copiarDtoParaEntidade(dto, v);
+        Viagem salva = viagemRepository.save(v);
+        return ResponseEntity.ok(new ViagemResponseDTO(salva));
     }
 
-    // 4. Atualizar viagem
     @PutMapping("/{id}")
-    public ResponseEntity<Viagem> atualizar(@PathVariable Long id, @RequestBody Viagem viagem) {
-        return service.atualizar(id, viagem)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ViagemResponseDTO> atualizar(@PathVariable Long id, @RequestBody @Valid ViagemRequestDTO dto) {
+        return viagemRepository.findById(id).map(v -> {
+            copiarDtoParaEntidade(dto, v);
+            Viagem atualizada = viagemRepository.save(v);
+            return ResponseEntity.ok(new ViagemResponseDTO(atualizada));
+        }).orElse(ResponseEntity.notFound().build());
     }
 
-    // 5. Finalizar viagem (PATCH)
-    @PatchMapping("/{id}/finalizar")
-    public ResponseEntity<Viagem> finalizar(@PathVariable Long id) {
-        return service.finalizar(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // 6. Deletar viagem
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        if (service.deletar(id)) {
-            return ResponseEntity.ok().build();
+        if (!viagemRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
+        viagemRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    private void copiarDtoParaEntidade(ViagemRequestDTO dto, Viagem v) {
+        v.setCliente(dto.getCliente());
+        v.setLocalColeta(dto.getLocalColeta());
+        v.setLocalEntrega(dto.getLocalEntrega());
+        v.setOrigem(dto.getOrigem());
+        v.setDestino(dto.getDestino());
+        v.setOrigemNome(dto.getOrigemNome());
+        v.setDestinoNome(dto.getDestinoNome());
+        v.setNomeMotorista(dto.getNomeMotorista());
+        v.setPlaca(dto.getPlaca());
+        v.setFornecedorAgencia(dto.getFornecedorAgencia());
+        v.setDataColetaPrevista(dto.getDataColetaPrevista());
+        v.setDataColetaReal(dto.getDataColetaReal());
+        v.setDataEntregaPrevista(dto.getDataEntregaPrevista());
+        v.setDataEntregaReal(dto.getDataEntregaReal());
+        v.setValorAReceber(dto.getValorAReceber());
+        v.setValorAPagar(dto.getValorAPagar());
+        v.setValorAdicionalReceber(dto.getValorAdicionalReceber());
+        v.setValorAdicionalPagar(dto.getValorAdicionalPagar());
+        v.setValorAdicionalAgencia(dto.getValorAdicionalAgencia());
+        v.setPagamentoLiberado(dto.getPagamentoLiberado());
+        v.setPagamentoRealizadoStatus(dto.getPagamentoRealizadoStatus());
+        v.setDataHoraPagamento(dto.getDataHoraPagamento());
+        v.setObservacao(dto.getObservacao());
+
+        if (dto.getStatus() != null) {
+            v.setStatus(dto.getStatus());
+        } else {
+            v.setStatus(StatusViagem.PROGRAMADO);
+        }
     }
 }

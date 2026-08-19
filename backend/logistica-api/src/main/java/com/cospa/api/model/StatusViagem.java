@@ -1,6 +1,7 @@
 package com.cospa.api.model;
 
 public enum StatusViagem {
+    A_CONTRATAR("Contratando"),
     CRIADA("Criada"),
     PROGRAMADO("Programado"),
     EM_ROTA("Em Rota"),

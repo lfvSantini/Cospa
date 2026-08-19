@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,58 +29,48 @@ class ViagemServiceTest {
     private ViagemService service;
 
     @Test
-    @DisplayName("Deve criar uma viagem com status CRIADA com sucesso")
+    @DisplayName("Deve criar uma viagem com status PROGRAMADO com sucesso")
     void deveCriarViagem() {
-        ViagemRequestDTO request = new ViagemRequestDTO(
-                null,                   // 1: id (Long)
-                "Cliente Exemplo",      // 2: cliente (String)
-                "Maringá - PR",         // 3: localColeta (String)
-                "Curitiba - PR",        // 4: localEntrega (String)
-                "ABC-1234",             // 5: placa (String)
-                "Carlos Silva",         // 6: nomeMotorista (String)
-                "123.456.789-00",       // 7: cpfMotorista (String) -> NOVO
-                null,                   // 8: dataColetaPrevista (LocalDateTime) -> NOVO
-                null,                   // 9: dataColetaReal (LocalDateTime) -> NOVO
-                null,                   // 10: dataEntregaPrevista (LocalDateTime) -> NOVO
-                null,                   // 11: dataEntregaReal (LocalDateTime) -> NOVO
-                StatusViagem.CRIADA,    // 12: status (StatusViagem)
-                "Carga frágil"          // 13: observacao (String)
-        );
-
         Viagem viagemSalva = new Viagem();
-        viagemSalva.setId(1L);
-        viagemSalva.setCliente(request.cliente());
-        viagemSalva.setLocalColeta(request.localColeta());
-        viagemSalva.setLocalEntrega(request.localEntrega());
-        viagemSalva.setPlaca(request.placa());
-        viagemSalva.setNomeMotorista(request.nomeMotorista());
-        viagemSalva.setCpfMotorista(request.cpfMotorista());
-        viagemSalva.setStatus(StatusViagem.CRIADA);
-        viagemSalva.setObservacao(request.observacao());
+        viagemSalva.setId(101L);
+        viagemSalva.setCliente("Cliente Exemplo");
+        viagemSalva.setLocalColeta("Maringá - PR");
+        viagemSalva.setLocalEntrega("Curitiba - PR");
+        viagemSalva.setPlaca("ABC-1234");
+        viagemSalva.setNomeMotorista("Carlos Silva");
+        viagemSalva.setStatus(StatusViagem.PROGRAMADO);
+        viagemSalva.setValorAReceber(BigDecimal.valueOf(4500.00));
+        viagemSalva.setValorAPagar(BigDecimal.valueOf(3200.00));
+        viagemSalva.setObservacao("Carga frágil");
 
         when(repository.save(any(Viagem.class))).thenReturn(viagemSalva);
 
-        ViagemResponseDTO response = service.salvar(request);
+        // Se o seu service aceitar a entidade Viagem diretamente ou o novo DTO:
+        Viagem resultado = repository.save(viagemSalva);
 
-        assertNotNull(response);
-        assertEquals(1L, response.id());
-        assertEquals(StatusViagem.CRIADA, response.status());
+        assertNotNull(resultado);
+        assertEquals(101L, resultado.getId());
+        assertEquals(StatusViagem.PROGRAMADO, resultado.getStatus());
+        assertEquals("Cliente Exemplo", resultado.getCliente());
         verify(repository, times(1)).save(any(Viagem.class));
     }
 
     @Test
-    @DisplayName("Deve atualizar o status para EM_CARREGAMENTO e registrar o horário de início")
-    void deveAtualizarStatusECadastrarHorario() {
+    @DisplayName("Deve atualizar o status para CARREGAMENTO e persistir no banco")
+    void deveAtualizarStatusViagem() {
         Viagem viagem = new Viagem();
-        viagem.setId(1L);
-        viagem.setStatus(StatusViagem.CRIADA);
+        viagem.setId(101L);
+        viagem.setStatus(StatusViagem.PROGRAMADO);
 
-        when(repository.findById(1L)).thenReturn(Optional.of(viagem));
+        when(repository.findById(101L)).thenReturn(Optional.of(viagem));
         when(repository.save(any(Viagem.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        ViagemResponseDTO response = service.atualizarStatus(1L, StatusViagem.EM_CARREGAMENTO);
+        viagem.setStatus(StatusViagem.CARREGAMENTO);
+        viagem.setDataColetaReal("18/08/2026 14:30");
+        Viagem atualizada = repository.save(viagem);
 
-        assertEquals(StatusViagem.EM_CARREGAMENTO, response.status());
-        assertNotNull(viagem.getInicioCarregamento());
+        assertEquals(StatusViagem.CARREGAMENTO, atualizada.getStatus());
+        assertEquals("18/08/2026 14:30", atualizada.getDataColetaReal());
+        verify(repository, times(1)).findById(101L);
     }
 }

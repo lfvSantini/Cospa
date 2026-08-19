@@ -26,12 +26,14 @@
                 <label class="theme-switch" title="Alternar tema">
                     <input type="checkbox" id="themeToggle">
                     <span class="slider">
-                        <svg class="icon sun-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+                        <svg class="icon sun-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zm-7-11v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
                         <svg class="icon moon-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12.3 2a10 10 0 0 0 9.7 11.5 10 10 0 1 1-11.2-11.4c.5-.1 1-.1 1.5-.1z"/></svg>
                         <span class="thumb"></span>
                     </span>
                 </label>
 
+                <button type="button" class="btn-primary btn-secondary" onclick="abrirModalClientes()">Gerenciar Clientes</button>
+                <button type="button" class="btn-primary btn-secondary" onclick="abrirModalFornecedores()">Gerenciar Fornecedor</button>
                 <button type="button" class="btn-primary btn-secondary" onclick="abrirModalMotoristas()">Gerenciar Motoristas</button>
                 <button type="button" class="btn-primary" onclick="abrirModalNovaViagem()">+ Nova Viagem</button>
                 <button type="button" id="btnLogout" class="btn-logout">Sair</button>
@@ -39,6 +41,7 @@
         </header>
 
         <main class="table-container">
+            <!-- 1. Viagens em Andamento -->
             <section style="margin-bottom: 2.5rem;">
                 <h2>Viagens em Andamento</h2>
                 <table>
@@ -61,8 +64,37 @@
 
             <hr style="border: 0; height: 1px; background: var(--border-color); margin: 2.5rem 0;">
 
+            <!-- 2. Viagens a Pagar -->
+            <section style="margin-bottom: 2.5rem;">
+                <div class="section-header" onclick="toggleSecao('containerPagar', 'toggleIconPagar')">
+                    <h2>Viagens a Pagar</h2>
+                    <span id="toggleIconPagar" class="toggle-icon">▼</span>
+                </div>
+                <div id="containerPagar" class="collapsible-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Viagem</th>
+                                <th>Cliente</th>
+                                <th>Origem</th>
+                                <th>Destino</th>
+                                <th>Placa</th>
+                                <th>Motorista</th>
+                                <th>Status</th>
+                                <th>Obs</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pagarTbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <hr style="border: 0; height: 1px; background: var(--border-color); margin: 2.5rem 0;">
+
+            <!-- 3. Histórico de Viagens Finalizadas -->
             <section>
-                <div class="section-header" onclick="toggleHistorico()">
+                <div class="section-header" onclick="toggleSecao('containerHistorico', 'toggleIconHistorico')">
                     <h2>Histórico de Viagens Finalizadas</h2>
                     <span id="toggleIconHistorico" class="toggle-icon">▼</span>
                 </div>
@@ -101,7 +133,7 @@
 
     <!-- Modal: Nova Viagem -->
     <div id="novaViagemModal" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-content" style="max-width: 750px;">
             <h3>Cadastrar Nova Viagem</h3>
             <div id="novaViagemForm">
                 <div class="input-group">
@@ -110,8 +142,11 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="cliente">Cliente</label>
-                    <input type="text" id="cliente" placeholder="Cliente Exemplo Ltda">
+                    <label for="selectCliente">Cliente</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="selectCliente" style="flex: 1;"></select>
+                        <input type="text" id="clienteManual" placeholder="Ou digite o nome do cliente" style="flex: 1;">
+                    </div>
                 </div>
 
                 <div style="display: flex; gap: 10px;">
@@ -125,9 +160,15 @@
                     </div>
                 </div>
 
-                <div class="input-group">
-                    <label for="selectMotorista">Motorista / Placa (Apenas Ativos)</label>
-                    <select id="selectMotorista"></select>
+                <div style="display: flex; gap: 10px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label for="selectMotorista">Motorista (Opcional)</label>
+                        <select id="selectMotorista"></select>
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label for="selectFornecedorViagem">Agência / Fornecedor</label>
+                        <select id="selectFornecedorViagem"></select>
+                    </div>
                 </div>
 
                 <div style="display: flex; gap: 10px;">
@@ -144,12 +185,17 @@
                     <div class="input-group" style="flex: 1;"><label>Adicional a Receber (R$)</label><input type="number" step="0.01" id="valorAdicionalReceber" placeholder="0,00"></div>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <div class="input-group" style="flex: 1;"><label>Valor a Pagar (R$)</label><input type="number" step="0.01" id="valorAPagar" placeholder="0,00"></div>
-                    <div class="input-group" style="flex: 1;"><label>Adicional a Pagar (R$)</label><input type="number" step="0.01" id="valorAdicionalPagar" placeholder="0,00"></div>
+                    <div class="input-group" style="flex: 1;"><label>Valor a Pagar Motorista (R$)</label><input type="number" step="0.01" id="valorAPagar" placeholder="0,00"></div>
+                    <div class="input-group" style="flex: 1;"><label>Adicional a Pagar Motorista (R$)</label><input type="number" step="0.01" id="valorAdicionalPagar" placeholder="0,00"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="valorAdicionalAgencia">Valor Adicional da Agência (R$)</label>
+                    <input type="number" step="0.01" id="valorAdicionalAgencia" placeholder="0,00">
                 </div>
 
                 <div class="payment-status-row">
-                    <div class="input-group" style="flex: 1; margin-bottom: 0;">
+                    <div class="input-group">
                         <label>Liberação</label>
                         <label class="custom-checkbox-container" for="pagamentoLiberado">
                             <input type="checkbox" id="pagamentoLiberado">
@@ -157,7 +203,7 @@
                         </label>
                     </div>
 
-                    <div class="input-group" style="flex: 1; margin-bottom: 0;">
+                    <div class="input-group">
                         <label for="pagamentoRealizadoStatus">Pagamento Realizado</label>
                         <select id="pagamentoRealizadoStatus">
                             <option value="NAO_REALIZADO">Não Realizado</option>
@@ -168,11 +214,30 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="observacao">Observação</label>
+                    <label for="dataHoraPagamento">Hora / Data Pagada (Opcional)</label>
+                    <input type="text" id="dataHoraPagamento" placeholder="Ex: 14/08/2026 15:45">
+                </div>
+
+                <div class="input-group">
+                    <label>Status Inicial</label>
+                    <select id="novoStatus">
+                        <option value="A_CONTRATAR">A CONTRATAR</option>
+                        <option value="PROGRAMADO" selected>PROGRAMADO</option>
+                        <option value="AG_CARREGAMENTO">AG CARREGAMENTO</option>
+                        <option value="CARREGAMENTO">CARREGAMENTO</option>
+                        <option value="EM_ROTA">EM ROTA</option>
+                        <option value="AG_DOCUMENTACAO">AG DOCUMENTAÇÃO</option>
+                        <option value="AG_DESCARGA">AG DESCARGA</option>
+                        <option value="DESCARGA">DESCARGA</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="observacao">Observação (pressione Enter para nova linha)</label>
                     <textarea id="observacao" rows="3"></textarea>
                 </div>
 
-                <div class="modal-actions">
+                <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem; width: 100%;">
                     <button type="button" class="btn-submit" onclick="salvarNovaViagem()">Cadastrar</button>
                     <button type="button" class="btn-cancel" onclick="fecharModalNovaViagem()">Cancelar</button>
                 </div>
@@ -182,18 +247,28 @@
 
     <!-- Modal: Editar Viagem -->
     <div id="editarViagemModal" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-content" style="max-width: 750px;">
             <h3>Alterar Viagem</h3>
             <div id="editarViagemForm">
                 <div class="input-group"><label>Nº da Viagem (ID)</label><input type="number" id="editViagemId" disabled></div>
-                <div class="input-group"><label>Cliente</label><input type="text" id="editCliente"></div>
+                
+                <div class="input-group">
+                    <label for="editClienteManual">Cliente</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="editSelectCliente" style="flex: 1;"></select>
+                        <input type="text" id="editClienteManual" placeholder="Ou digite o nome do cliente" style="flex: 1;">
+                    </div>
+                </div>
 
                 <div style="display: flex; gap: 10px;">
                     <div class="input-group" style="flex: 1;"><label>Origem / Coleta</label><div id="containerEditOrigens"></div></div>
                     <div class="input-group" style="flex: 1;"><label>Destino / Entrega</label><div id="containerEditDestinos"></div></div>
                 </div>
 
-                <div class="input-group"><label>Motorista</label><select id="editSelectMotorista"></select></div>
+                <div style="display: flex; gap: 10px;">
+                    <div class="input-group" style="flex: 1;"><label>Motorista</label><select id="editSelectMotorista"></select></div>
+                    <div class="input-group" style="flex: 1;"><label>Agência / Fornecedor</label><select id="editSelectFornecedorViagem"></select></div>
+                </div>
 
                 <div style="display: flex; gap: 10px;">
                     <div class="input-group" style="flex: 1;"><label>Coleta Prevista</label><input type="text" id="editDataColetaPrevista"></div>
@@ -209,12 +284,17 @@
                     <div class="input-group" style="flex: 1;"><label>Adicional a Receber (R$)</label><input type="number" step="0.01" id="editValorAdicionalReceber" placeholder="0,00"></div>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <div class="input-group" style="flex: 1;"><label>Valor a Pagar (R$)</label><input type="number" step="0.01" id="editValorAPagar" placeholder="0,00"></div>
-                    <div class="input-group" style="flex: 1;"><label>Adicional a Pagar (R$)</label><input type="number" step="0.01" id="editValorAdicionalPagar" placeholder="0,00"></div>
+                    <div class="input-group" style="flex: 1;"><label>Valor a Pagar Motorista (R$)</label><input type="number" step="0.01" id="editValorAPagar" placeholder="0,00"></div>
+                    <div class="input-group" style="flex: 1;"><label>Adicional a Pagar Motorista (R$)</label><input type="number" step="0.01" id="editValorAdicionalPagar" placeholder="0,00"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="editValorAdicionalAgencia">Valor Adicional da Agência (R$)</label>
+                    <input type="number" step="0.01" id="editValorAdicionalAgencia" placeholder="0,00">
                 </div>
 
                 <div class="payment-status-row">
-                    <div class="input-group" style="flex: 1; margin-bottom: 0;">
+                    <div class="input-group">
                         <label>Liberação</label>
                         <label class="custom-checkbox-container" for="editPagamentoLiberado">
                             <input type="checkbox" id="editPagamentoLiberado">
@@ -222,7 +302,7 @@
                         </label>
                     </div>
 
-                    <div class="input-group" style="flex: 1; margin-bottom: 0;">
+                    <div class="input-group">
                         <label for="editPagamentoRealizadoStatus">Pagamento Realizado</label>
                         <select id="editPagamentoRealizadoStatus">
                             <option value="NAO_REALIZADO">Não Realizado</option>
@@ -233,12 +313,18 @@
                 </div>
 
                 <div class="input-group">
+                    <label for="editDataHoraPagamento">Hora / Data Pagada</label>
+                    <input type="text" id="editDataHoraPagamento" placeholder="Ex: 14/08/2026 15:45">
+                </div>
+
+                <div class="input-group">
                     <label>Status</label>
                     <select id="editStatus">
+                        <option value="A_CONTRATAR">A CONTRATAR</option>
                         <option value="PROGRAMADO">PROGRAMADO</option>
-                        <option value="EM_ROTA">EM ROTA</option>
                         <option value="AG_CARREGAMENTO">AG CARREGAMENTO</option>
                         <option value="CARREGAMENTO">CARREGAMENTO</option>
+                        <option value="EM_ROTA">EM ROTA</option>
                         <option value="AG_DOCUMENTACAO">AG DOCUMENTAÇÃO</option>
                         <option value="AG_DESCARGA">AG DESCARGA</option>
                         <option value="DESCARGA">DESCARGA</option>
@@ -248,9 +334,12 @@
 
                 <div class="input-group"><label>Observação</label><textarea id="editObservacao" rows="3"></textarea></div>
 
-                <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px;">
-                    <button type="button" class="btn-submit" onclick="salvarEdicaoViagem()">Salvar</button>
-                    <button type="button" class="btn-cancel" onclick="fecharModalEditarViagem()">Cancelar</button>
+                <div class="modal-actions" style="display: flex; align-items: center; margin-top: 1.5rem; width: 100%;">
+                    <button type="button" id="btnFinalizarViagemModal" class="btn-finalizar">Finalizar Viagem</button>
+                    <div style="display: flex; gap: 10px; margin-left: auto;">
+                        <button type="button" class="btn-submit" onclick="salvarEdicaoViagem()">Salvar</button>
+                        <button type="button" class="btn-cancel" onclick="fecharModalEditarViagem()">Cancelar</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -271,7 +360,7 @@
                 </div>
 
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" id="motoristaFornecedor" placeholder="Fornecedor / Transportadora (Opcional)" style="flex: 2;">
+                    <select id="motoristaFornecedorSelect" style="flex: 2;"></select>
                     <select id="motoristaAtivo" style="flex: 1;">
                         <option value="true">Situação: ATIVO</option>
                         <option value="false">Situação: INATIVO</option>
@@ -284,14 +373,14 @@
                     <div style="flex: 1;">
                         <label style="font-size: 11px; font-weight: bold;">Anexar CNH (Arraste ou Cole)</label>
                         <div class="drop-zone" id="dropZoneCnh" onclick="document.getElementById('motoristaCnhFile').click()" style="height: 42px; padding: 0;">
-                            <p id="labelCnh">Arraste a CNH</p>
+                            <p id="labelCnh">Arraste ou cole (Ctrl+V) a CNH</p>
                             <input type="file" id="motoristaCnhFile" accept="image/*,.pdf" style="display: none;">
                         </div>
                     </div>
                     <div style="flex: 1;">
                         <label style="font-size: 11px; font-weight: bold;">Anexar CRLV (Arraste ou Cole)</label>
                         <div class="drop-zone" id="dropZoneCrlv" onclick="document.getElementById('motoristaCrlvFile').click()" style="height: 42px; padding: 0;">
-                            <p id="labelCrlv">Arraste o CRLV</p>
+                            <p id="labelCrlv">Arraste ou cole (Ctrl+V) o CRLV</p>
                             <input type="file" id="motoristaCrlvFile" accept="image/*,.pdf" style="display: none;">
                         </div>
                     </div>
@@ -304,7 +393,7 @@
                 <table class="modal-table">
                     <thead>
                         <tr>
-                            <th>Nome</th><th>CPF</th><th>Placa</th><th>Situação</th><th style="text-align: center;">Pix / Obs</th><th style="width: 210px;">Documentos</th><th style="text-align: right;">Ações</th>
+                            <th>Nome</th><th>CPF</th><th>Placa</th><th>Fornecedor/Agência</th><th>Situação</th><th style="text-align: center;">Pix / Obs</th><th style="width: 210px;">Documentos</th><th style="text-align: right;">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="motoristasTbody"></tbody>
@@ -312,6 +401,129 @@
             </div>
             
             <div class="modal-actions" style="margin-top: 0.8rem;"><button type="button" class="btn-cancel" onclick="fecharModalMotoristas()">Fechar</button></div>
+        </div>
+    </div>
+
+    <!-- Modal: Gerenciar Fornecedores / Agenciadores -->
+    <div id="fornecedoresModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 1000px; padding: 1.25rem;">
+            <h3 style="margin-bottom: 0.8rem;">Gerenciar Fornecedores / Agenciadores</h3>
+            
+            <div id="fornecedorForm" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem;">
+                <input type="hidden" id="fornecedorId">
+                
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="fornecedorNome" placeholder="Nome do Fornecedor / Agência" style="flex: 2;">
+                    <input type="text" id="fornecedorCnpjCpf" placeholder="CNPJ / CPF" maxlength="18" style="flex: 1.2;">
+                    <input type="text" id="fornecedorContato" placeholder="Nome de Contato" style="flex: 1.2;">
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="fornecedorTelefone" placeholder="Telefone / WhatsApp" style="flex: 1;">
+                    <input type="text" id="fornecedorEmail" placeholder="E-mail" style="flex: 1.2;">
+                    <input type="text" id="fornecedorChavePix" placeholder="Chave PIX" style="flex: 1.2;">
+                    <select id="fornecedorAtivo" style="flex: 0.8;">
+                        <option value="true">Situação: ATIVO</option>
+                        <option value="false">Situação: INATIVO</option>
+                    </select>
+                </div>
+
+                <textarea id="fornecedorObservacoes" rows="2" placeholder="Observações adicionais..."></textarea>
+                
+                <div style="text-align: right;"><button type="button" id="btnSalvarFornecedor" class="btn-submit" onclick="salvarFornecedor()" style="padding: 0.5rem 1rem;">Cadastrar Fornecedor</button></div>
+            </div>
+
+            <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px;">
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th><th>CNPJ/CPF</th><th>Contato</th><th>Telefone</th><th>PIX</th><th>Situação</th><th style="text-align: right;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fornecedoresTbody"></tbody>
+                </table>
+            </div>
+            
+            <div class="modal-actions" style="margin-top: 0.8rem;"><button type="button" class="btn-cancel" onclick="fecharModalFornecedores()">Fechar</button></div>
+        </div>
+    </div>
+
+    <!-- Modal: Gerenciar Clientes -->
+    <div id="clientesModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 1050px; padding: 1.25rem;">
+            <h3 style="margin-bottom: 0.8rem;">Gerenciar Clientes</h3>
+            
+            <div id="clienteForm" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem;">
+                <input type="hidden" id="clienteId">
+                
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="clienteNome" placeholder="Nome Fantasia / Identificação" style="flex: 2;">
+                    <input type="text" id="clienteRazaoSocial" placeholder="Razão Social" style="flex: 2;">
+                    <input type="text" id="clienteCnpjCpf" placeholder="CNPJ / CPF" maxlength="18" style="flex: 1.2;">
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="clienteContato" placeholder="Nome do Contato" style="flex: 1;">
+                    <input type="text" id="clienteTelefone" placeholder="Telefone" style="flex: 1;">
+                    <input type="text" id="clienteEmail" placeholder="E-mail" style="flex: 1.2;">
+                    <select id="clienteAtivo" style="flex: 0.8;">
+                        <option value="true">Situação: ATIVO</option>
+                        <option value="false">Situação: INATIVO</option>
+                    </select>
+                </div>
+
+                <textarea id="clienteObservacoes" rows="2" placeholder="Observações do cliente..."></textarea>
+                
+                <div style="text-align: right;"><button type="button" id="btnSalvarCliente" class="btn-submit" onclick="salvarCliente()" style="padding: 0.5rem 1rem;">Cadastrar Cliente</button></div>
+            </div>
+
+            <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px;">
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th><th>CNPJ/CPF</th><th>Contato</th><th>Telefone</th><th>Situação</th><th style="width: 120px;">Documentos</th><th style="text-align: right;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientesTbody"></tbody>
+                </table>
+            </div>
+            
+            <div class="modal-actions" style="margin-top: 0.8rem;"><button type="button" class="btn-cancel" onclick="fecharModalClientes()">Fechar</button></div>
+        </div>
+    </div>
+
+    <!-- Modal: Documentos do Cliente (CNPJ e Contratos) -->
+    <div id="clienteDocsModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 650px;">
+            <h3>Documentos do Cliente - <span id="modalClienteInfo">Cliente</span></h3>
+            <div id="clienteDocsForm" style="background: var(--table-header-bg); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem;">
+                <input type="hidden" id="modalClienteId">
+                <div class="upload-row">
+                    <div class="input-group" style="flex: 1.2; margin-bottom: 0;">
+                        <label for="clienteDocTipo">Tipo</label>
+                        <select id="clienteDocTipo">
+                            <option value="CNPJ">Cartão CNPJ</option>
+                            <option value="CONTRATO">Contrato de Prestação</option>
+                            <option value="OUTROS">Outro Documento</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="flex: 1.5; margin-bottom: 0;">
+                        <label>Arquivo (Arraste / Cole)</label>
+                        <div class="drop-zone" id="dropZoneClienteDoc" onclick="document.getElementById('fileInputClienteDoc').click()">
+                            <p id="labelClienteDoc">Arraste ou Ctrl+V</p>
+                            <input type="file" id="fileInputClienteDoc" accept="image/*,.pdf" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: right;"><button type="button" class="btn-submit" onclick="enviarDocCliente()" style="height: 38px;">Adicionar à Lista</button></div>
+            </div>
+            <div style="max-height: 220px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 1.2rem;">
+                <table class="modal-table">
+                    <thead><tr><th>Tipo</th><th>Arquivo</th><th style="text-align: right;">Ações</th></tr></thead>
+                    <tbody id="clienteDocsTbody"></tbody>
+                </table>
+            </div>
+            <div class="modal-actions"><button type="button" class="btn-cancel" onclick="fecharModalDocsCliente()">Salvar e Fechar</button></div>
         </div>
     </div>
 
@@ -329,7 +541,7 @@
                     <div class="input-group" style="flex: 1; margin-bottom: 0;">
                         <label>Arquivo (Arraste / Cole)</label>
                         <div class="drop-zone" id="dropZoneMotoristaExtra" onclick="document.getElementById('fileInputMotoristaExtra').click()">
-                            <p id="labelMotoristaExtra">Arraste</p>
+                            <p id="labelMotoristaExtra">Arraste ou Ctrl+V</p>
                             <input type="file" id="fileInputMotoristaExtra" accept="image/*,.pdf" style="display: none;">
                         </div>
                     </div>
@@ -360,7 +572,7 @@
                     <div class="input-group" style="flex: 1; margin-bottom: 0;">
                         <label>Arquivo</label>
                         <div class="drop-zone" id="dropZoneViagem" onclick="document.getElementById('fileInput').click()">
-                            <p id="labelViagem">Arraste</p>
+                            <p id="labelViagem">Arraste ou Ctrl+V</p>
                             <input type="file" id="fileInput" accept="image/*,.pdf" style="display: none;">
                         </div>
                     </div>

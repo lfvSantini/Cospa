@@ -116,11 +116,13 @@ body {
 input[type="text"],
 input[type="password"],
 input[type="number"],
+input[type="email"],
 input[type="datetime-local"],
 select,
 textarea {
     width: 100%;
-    padding: 0.65rem 0.75rem;
+    height: 38px;
+    padding: 0.5rem 0.75rem;
     border: 1px solid var(--input-border);
     border-radius: 0.375rem;
     font-size: 0.95rem;
@@ -130,16 +132,22 @@ textarea {
     transition: border-color 0.2s, background-color 0.3s;
 }
 
+textarea {
+    height: auto;
+    padding: 0.65rem 0.75rem;
+}
+
 input:focus, 
 select:focus,
 textarea:focus {
     border-color: #0056b3;
 }
 
-/* Força estilo escuro no modo dark para qualquer input */
+/* Força estilo escuro no modo dark */
 [data-theme="dark"] input[type="text"],
 [data-theme="dark"] input[type="password"],
 [data-theme="dark"] input[type="number"],
+[data-theme="dark"] input[type="email"],
 [data-theme="dark"] input[type="datetime-local"],
 [data-theme="dark"] select,
 [data-theme="dark"] textarea {
@@ -153,7 +161,6 @@ textarea:focus {
     color: var(--text-secondary) !important;
 }
 
-/* Previne autofill branco no dark mode */
 [data-theme="dark"] input:-webkit-autofill,
 [data-theme="dark"] input:-webkit-autofill:hover, 
 [data-theme="dark"] input:-webkit-autofill:focus, 
@@ -163,24 +170,30 @@ textarea:focus {
     transition: background-color 5000s ease-in-out 0s;
 }
 
-/* Estilização do Campo Pagamento Liberado */
+/* Linha de Pagamento Liberado e Status perfeitamente alinhada */
 .payment-status-row {
     display: flex;
     gap: 10px;
-    margin-bottom: 0.8rem;
-    align-items: flex-end;
+    margin-bottom: 0.75rem;
+    width: 100%;
+}
+
+.payment-status-row .input-group {
+    flex: 1;
+    margin-bottom: 0 !important;
 }
 
 .custom-checkbox-container {
     display: flex;
     align-items: center;
-    height: 42px;
-    padding: 0 0.8rem;
+    height: 38px;
+    padding: 0 0.75rem;
     border: 1px solid var(--input-border);
     border-radius: 0.375rem;
     background-color: var(--input-bg);
     cursor: pointer;
     user-select: none;
+    margin: 0;
     transition: border-color 0.2s, background-color 0.2s;
 }
 
@@ -191,7 +204,7 @@ textarea:focus {
 .custom-checkbox-container input[type="checkbox"] {
     width: 1.1rem !important;
     height: 1.1rem !important;
-    margin-right: 0.6rem;
+    margin: 0 0.6rem 0 0 !important;
     accent-color: #0056b3;
     cursor: pointer;
 }
@@ -200,6 +213,7 @@ textarea:focus {
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--text-color);
+    line-height: 1;
 }
 
 /* Centralização do texto no Drag & Drop */
@@ -212,7 +226,6 @@ textarea:focus {
     color: var(--text-secondary) !important;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    margin-top: 5px;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -239,11 +252,11 @@ textarea:focus {
 }
 
 .upload-row .input-group input[type="text"] {
-    height: 52px;
+    height: 48px;
 }
 
 .upload-row .drop-zone {
-    height: 52px;
+    height: 48px;
     margin-top: 0 !important;
     display: flex;
     align-items: center;
@@ -251,32 +264,41 @@ textarea:focus {
     padding: 0 0.5rem !important;
 }
 
-/* Campos dinâmicos nos Modais (+ e -) */
+/* Campos dinâmicos nos Modais (+ e -) perfeitamente alinhados */
 .dynamic-input-row {
     display: flex;
-    gap: 0.375rem;
-    margin-bottom: 0.3125rem;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.dynamic-input-row > div {
+    display: flex;
+    gap: 6px;
+    align-items: stretch;
     width: 100%;
 }
 
 .dynamic-input-row input {
-    flex: 1;
-    min-width: 0;
+    margin-bottom: 0 !important;
 }
 
 .btn-add, .btn-remove {
-    width: 2.375rem !important;
-    height: 2.375rem !important;
+    width: 38px !important;
+    min-width: 38px !important;
+    height: 38px !important;
     flex-shrink: 0;
-    padding: 0;
+    padding: 0 !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.125rem;
+    font-size: 1.2rem;
     font-weight: bold;
-    border-radius: 0.25rem;
+    border-radius: 0.375rem;
     border: none;
     cursor: pointer;
+    transition: filter 0.2s;
 }
 
 .btn-add {
@@ -468,7 +490,7 @@ button:hover {
 table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* Força larguras fixas idênticas em ambas as tabelas */
+    table-layout: fixed;
 }
 
 th, td {
@@ -487,7 +509,7 @@ th {
     letter-spacing: 0.5px;
 }
 
-/* LARGURAS EXATAS DAS 9 COLUNAS (IGUAIS PARA AS DUAS TABELAS) */
+/* LARGURAS EXATAS DAS 9 COLUNAS */
 table th:nth-child(1), table td:nth-child(1) { width: 85px; text-align: left; }
 table th:nth-child(2), table td:nth-child(2) { width: 13%; text-align: left; }
 table th:nth-child(3), table td:nth-child(3) { width: 18%; text-align: left; word-break: break-word; }
@@ -496,11 +518,45 @@ table th:nth-child(5), table td:nth-child(5) { width: 90px; text-align: left; }
 table th:nth-child(6), table td:nth-child(6) { width: 13%; text-align: left; }
 table th:nth-child(7), table td:nth-child(7) { width: 130px; text-align: center; }
 table th:nth-child(8), table td:nth-child(8) { width: 95px; text-align: center; }
-table th:nth-child(9), table td:nth-child(9) { width: 200px; text-align: center; }
+table th:nth-child(9), table td:nth-child(9) { width: 230px; text-align: center; }
 
+/* CÉLULA E BOTÕES DE AÇÃO RIGIDAMENTE ALINHADOS */
 .actions-cell {
+    width: 230px !important;
     text-align: center !important;
     white-space: nowrap !important;
+}
+
+.actions-cell .btn-group {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-action {
+    width: 68px !important;
+    min-width: 68px !important;
+    max-width: 68px !important;
+    height: 28px !important;
+    padding: 0 4px !important;
+    margin: 0 !important;
+    font-size: 0.72rem !important;
+    font-weight: 600;
+    border: none;
+    border-radius: 0.25rem;
+    color: #ffffff;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    transition: opacity 0.2s;
+}
+
+.btn-action:hover {
+    opacity: 0.85;
 }
 
 .status-badge {
@@ -531,26 +587,6 @@ table th:nth-child(9), table td:nth-child(9) { width: 200px; text-align: center;
 }
 
 .btn-obs:hover { background-color: var(--input-border); }
-
-.btn-action {
-    width: auto !important;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 3.8rem;
-    height: 2rem;
-    padding: 0 0.5rem;
-    margin: 0 2px;
-    font-size: 0.775rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 0.25rem;
-    color: white;
-    background-color: #0056b3;
-    cursor: pointer;
-    white-space: nowrap;
-    vertical-align: middle;
-}
 
 /* Seção retrátil do histórico */
 .section-header {
@@ -612,7 +648,7 @@ table th:nth-child(9), table td:nth-child(9) { width: 200px; text-align: center;
     padding: 1.75rem;
     border-radius: 0.5rem;
     width: 100%;
-    max-width: 31.25rem;
+    max-width: 48rem;
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 0.25rem 0.9375rem rgba(0,0,0,0.3);
@@ -635,22 +671,58 @@ table th:nth-child(9), table td:nth-child(9) { width: 200px; text-align: center;
     margin-top: 1.25rem;
 }
 
+/* Botão Finalizar Viagem no Modal */
+.btn-finalizar {
+    background-color: #28a745;
+    color: #ffffff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.375rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, filter 0.2s;
+}
+
+.btn-finalizar:hover {
+    background-color: #218838;
+}
+
+/* Padronização dos botões do rodapé dos modais */
 .btn-submit {
     background-color: #0056b3;
     color: white;
     border: none;
-    padding: 0.6rem 1rem;
-    border-radius: 0.25rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.375rem;
+    font-size: 0.95rem;
+    font-weight: 600;
     cursor: pointer;
     width: auto;
+    transition: background-color 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: #004085;
 }
 
 .btn-cancel {
     background: #6c757d;
     color: white;
     border: none;
-    padding: 0.6rem 1rem;
-    border-radius: 0.25rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.375rem;
+    font-size: 0.95rem;
+    font-weight: 600;
     cursor: pointer;
     width: auto;
+    transition: background-color 0.2s;
+}
+
+.btn-cancel:hover {
+    background-color: #5a6268;
 }

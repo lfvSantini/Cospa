@@ -3,6 +3,7 @@ const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.ho
     : 'https://cospa-production.up.railway.app/api';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Gerenciamento de Tema
     const themeToggle = document.getElementById('themeToggle');
     const savedTheme = localStorage.getItem('theme') || 'light';
     
@@ -16,22 +17,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Formulário de Login
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
             const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
             const errorMsg = document.getElementById('errorMessage');
             const btnLogin = document.getElementById('btnLogin');
+
+            const showError = (message) => {
+                if (errorMsg) {
+                    errorMsg.textContent = message;
+                    errorMsg.classList.add('ativo');
+                }
+            };
 
             if (errorMsg) {
                 errorMsg.classList.remove('ativo');
                 errorMsg.textContent = '';
             }
 
-            const loginValue = usernameInput.value.trim();
-            const senhaValue = passwordInput.value;
+            const loginValue = usernameInput ? usernameInput.value.trim() : '';
+            const senhaValue = passwordInput ? passwordInput.value : '';
+
+            if (!loginValue || !senhaValue) {
+                showError('Preencha todos os campos.');
+                return;
+            }
 
             const payload = {
                 username: loginValue,
@@ -58,27 +73,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     const data = await response.json();
                     const token = data.token || data.tokenJWT || data.accessToken;
+                    
                     if (token) {
                         localStorage.setItem('token', token);
+                        window.location.href = './pages/dashboard.html';
+                    } else {
+                        showError('Resposta inválida do servidor: token ausente.');
                     }
-                    window.location.href = './pages/dashboard.html';
-                } else if (response.status === 403 || response.status === 401) {
-                    if (errorMsg) {
-                        errorMsg.textContent = 'Usuário ou senha incorretos.';
-                        errorMsg.classList.add('ativo');
-                    }
+                } else if (response.status === 401 || response.status === 403) {
+                    showError('Usuário ou senha incorretos.');
                 } else {
-                    if (errorMsg) {
-                        errorMsg.textContent = 'Erro ao autenticar. Verifique seus dados.';
-                        errorMsg.classList.add('ativo');
-                    }
+                    showError('Erro ao autenticar. Verifique seus dados.');
                 }
             } catch (error) {
                 console.error('Erro de conexão:', error);
-                if (errorMsg) {
-                    errorMsg.textContent = 'Erro ao conectar ao servidor.';
-                    errorMsg.classList.add('ativo');
-                }
+                showError('Erro ao conectar ao servidor.');
             } finally {
                 if (btnLogin) {
                     btnLogin.disabled = false;

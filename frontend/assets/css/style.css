@@ -35,75 +35,112 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* Tela de login */
+/* =========================================================================
+   TELA DE LOGIN
+   ========================================================================= */
 .login-header-switch {
-    position: absolute;
+    position: fixed;
     top: 1.5rem;
     right: 1.5rem;
     z-index: 10000;
 }
 
 .login-wrapper {
-    position: fixed;
-    inset: 0;
+    min-height: 100vh;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 1.25rem;
+    box-sizing: border-box;
     background-color: var(--bg-body);
-    z-index: 9999;
 }
 
 .login-container {
     background: var(--bg-card);
     padding: 2.5rem;
     border-radius: 0.75rem;
-    box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.08);
     width: 100%;
     max-width: 25rem;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
 }
 
 .logo-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
     text-align: center;
-    margin-bottom: 2rem;
 }
 
 .logo-area img {
-    width: 13.75rem;
-    height: 3.75rem;
-    object-fit: cover;
-    object-position: center;
-    margin: 0 auto 0.5rem auto;
+    max-width: 13.75rem;
+    max-height: 4.5rem;
+    object-fit: contain;
+    margin-bottom: 0.75rem;
     display: block;
 }
 
 .logo-area h2 {
     color: var(--text-color);
     font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+#loginForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+#loginForm #btnLogin {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background-color: #0056b3;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+#loginForm #btnLogin:hover {
+    background-color: #004085;
 }
 
 .error-message {
     color: #d9534f;
     background-color: #fdf7f7;
-    border: 1px solid transparent;
+    border: 1px solid #f8b4b4;
     padding: 0.5rem;
     border-radius: 0.375rem;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     text-align: center;
-    min-height: 2.375rem;
-    visibility: hidden;
+    display: none;
+    box-sizing: border-box;
 }
 
 .error-message.ativo {
-    visibility: visible;
-    border-color: #f8b4b4;
+    display: block;
 }
 
-/* Campos de formulário e inputs globais */
+/* =========================================================================
+   CAMPOS DE FORMULÁRIO E INPUTS GLOBAIS
+   ========================================================================= */
 .input-group {
     margin-bottom: 0.75rem;
     display: flex;
     flex-direction: column;
+    text-align: left;
 }
 
 .input-group label {
@@ -129,6 +166,7 @@ textarea {
     outline: none;
     background-color: var(--input-bg);
     color: var(--text-color);
+    box-sizing: border-box;
     transition: border-color 0.2s, background-color 0.3s;
 }
 
@@ -141,6 +179,7 @@ input:focus,
 select:focus,
 textarea:focus {
     border-color: #0056b3;
+    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
 }
 
 /* Força estilo escuro no modo dark */
@@ -170,7 +209,7 @@ textarea:focus {
     transition: background-color 5000s ease-in-out 0s;
 }
 
-/* Linha de Pagamento Liberado e Status perfeitamente alinhada */
+/* Linha de Pagamento Liberado e Status */
 .payment-status-row {
     display: flex;
     gap: 10px;
@@ -264,7 +303,7 @@ textarea:focus {
     padding: 0 0.5rem !important;
 }
 
-/* Campos dinâmicos nos Modais (+ e -) perfeitamente alinhados */
+/* Campos dinâmicos nos Modais (+ e -) */
 .dynamic-input-row {
     display: flex;
     flex-direction: column;
@@ -337,7 +376,9 @@ button:hover {
     background-color: #004085;
 }
 
-/* Painel principal e Navbar */
+/* =========================================================================
+   PAINEL PRINCIPAL & NAVBAR
+   ========================================================================= */
 .dashboard-container {
     width: 98%;
     max-width: 106.25rem;
@@ -457,7 +498,13 @@ button:hover {
 
 .btn-primary:hover { background-color: #218838; }
 
-.btn-secondary { background-color: #34495e; }
+.btn-secondary { 
+    background-color: #34495e; 
+    width: auto;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    border-radius: 0.375rem;
+}
 .btn-secondary:hover { background-color: #2c3e50; }
 
 .btn-logout {
@@ -470,7 +517,9 @@ button:hover {
 
 .btn-logout:hover { background-color: #c82333; }
 
-/* --- TABELAS SINCRONIZADAS E ALINHADAS COM LARGURAS FIXAS --- */
+/* =========================================================================
+   TABELAS SINCRONIZADAS E ALINHADAS COM LARGURAS FIXAS
+   ========================================================================= */
 .table-container {
     background: var(--bg-card);
     padding: 1.8rem 2rem;
@@ -629,7 +678,9 @@ table th:nth-child(9), table td:nth-child(9) { width: 230px; text-align: center;
     pointer-events: none;
 }
 
-/* Modais */
+/* =========================================================================
+   MODAIS
+   ========================================================================= */
 .modal {
     position: fixed;
     inset: 0;

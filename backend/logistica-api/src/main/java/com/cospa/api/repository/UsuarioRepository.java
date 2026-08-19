@@ -10,9 +10,12 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-    // Utilizado por AuthController e AutenticacaoService
-    UserDetails findByUsername(String username);
+    // Retorna Optional para suportar .orElseThrow() no AuthController e AutenticacaoService
+    Optional<Usuario> findByUsername(String username);
 
-    // Utilizado por SecurityFilter e TokenService
-    UserDetails findByLogin(String login);
+    Optional<Usuario> findByLogin(String login);
+
+    // Método direto exigido pelo Spring Security (UserDetailsService)
+    UserDetails findUserDetailsByLogin(String login);
+    UserDetails findUserDetailsByUsername(String username);
 }

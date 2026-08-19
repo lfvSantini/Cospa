@@ -40,7 +40,8 @@ public class SecurityConfig {
                             "/uploads/**",
                             "/error"
                     ).permitAll();
-                    req.requestMatchers(HttpMethod.POST, "/auth/login", "/api/auth/login").permitAll();
+                    // Libera todas as rotas de autenticacao com coringa
+                    req.requestMatchers("/auth/**", "/api/auth/**").permitAll();
                     req.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

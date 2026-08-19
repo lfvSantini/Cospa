@@ -1,57 +1,59 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('loginForm');
-    const errorMessage = document.getElementById('errorMessage');
+const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+    ? 'http://localhost:8080/api'
+    : 'https://cospa-production.up.railway.app/api';
 
-    // Função para exibir erros de forma limpa na tela
-    function mostrarErro(mensagem) {
-        if (errorMessage) {
-            errorMessage.textContent = mensagem;
-            errorMessage.classList.add('ativo');
-        } else {
-            alert(mensagem);
-        }
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('themeToggle');
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+
+    if (themeToggle) {
+        themeToggle.checked = currentTheme === 'dark';
+        themeToggle.addEventListener('change', () => {
+            const newTheme = themeToggle.checked ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
     }
 
-    if (!loginForm) return;
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const errorMsg = document.getElementById('errorMessage');
 
-    // Envio do formulário de login
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+            if (errorMsg) errorMsg.classList.remove('ativo');
 
-        const username = document.getElementById('username')?.value.trim() || '';
-        const senha = document.getElementById('senha')?.value.trim() || '';
+            const payload = {
+                username: usernameInput.value.trim(),
+                senha: passwordInput.value
+            };
 
-        if (errorMessage) {
-            errorMessage.textContent = '';
-            errorMessage.classList.remove('ativo');
-        }
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-        try {
-            // Faz a requisição de autenticação para o Spring Boot
-            const response = await fetch('http://localhost:8080/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, senha })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-
-                if (data.token) {
+                if (response.ok) {
+                    const data = await response.json();
                     localStorage.setItem('token', data.token);
-                    localStorage.setItem('usuario', username);
-                    window.location.href = 'dashboard.html'; // Entra no painel
+                    window.location.href = './pages/dashboard.html';
                 } else {
-                    mostrarErro('Token não retornado pelo servidor.');
+                    if (errorMsg) {
+                        errorMsg.textContent = 'Usuário ou senha incorretos.';
+                        errorMsg.classList.add('ativo');
+                    }
                 }
-            } else if (response.status === 401 || response.status === 403) {
-                mostrarErro('Usuário ou senha inválidos.');
-            } else {
-                mostrarErro('Erro ao realizar login. Tente novamente.');
+            } catch (error) {
+                console.error('Erro de conexão:', error);
+                if (errorMsg) {
+                    errorMsg.textContent = 'Erro ao conectar ao servidor.';
+                    errorMsg.classList.add('ativo');
+                }
             }
-        } catch (error) {
-            console.error('Erro de conexão:', error);
-            mostrarErro('Não foi possível conectar ao servidor.');
-        }
-    });
+        });
+    }
 });

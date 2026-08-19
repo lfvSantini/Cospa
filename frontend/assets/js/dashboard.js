@@ -1,4 +1,7 @@
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+    ? 'http://localhost:8080/api'
+    : 'https://cospa-production.up.railway.app/api';
+
 const token = localStorage.getItem('token');
 
 let listaMotoristas = [];
@@ -11,7 +14,7 @@ let filaComprovantesTemp = [];
 let filaDocsClientesTemp = [];
 
 if (!token) {
-    window.location.href = '../pages/index.html';
+    window.location.href = '../index.html';
 }
 
 /* --- ORDEM PRIORITÁRIA DE STATUS --- */
@@ -168,7 +171,7 @@ function adicionarCampoDuplo(containerId, nomeClass, endClass, placeholderNome, 
     const disabledAttr = disabled ? 'disabled' : '';
     let btnHtml = '';
     if (!disabled) {
-        btnHtml = isFirst 
+        btnHtml = isFirst
             ? `<button type="button" class="btn-add" style="align-self: flex-end;" onclick="adicionarCampoDuplo('${containerId}', '${nomeClass}', '${endClass}', '${placeholderNome}', '${placeholderEnd}')">+</button>`
             : `<button type="button" class="btn-remove" style="align-self: flex-end;" onclick="removerCampo(this)">-</button>`;
     }
@@ -209,9 +212,8 @@ function obterValoresDuplos(nomeClass, endClass) {
     };
 }
 
-/* =========================================================================
-   MÓDULO DE CLIENTES
-   ========================================================================= */
+//MÓDULO DE CLIENTES
+
 async function carregarClientes() {
     try {
         const res = await fetch(`${API_BASE}/clientes`, {
@@ -230,7 +232,7 @@ async function carregarClientes() {
 function preencherSelectClientes() {
     const selNovo = document.getElementById('selectCliente');
     const selEdit = document.getElementById('editSelectCliente');
-    
+
     let optionsHtml = '<option value="">Selecione um Cliente cadastrado...</option>';
     listaClientes.filter(c => c.ativo).forEach(c => {
         optionsHtml += `<option value="${c.nome}">${c.nome}</option>`;
@@ -247,8 +249,8 @@ function renderizarTabelaClientes() {
 
     listaClientes.forEach(c => {
         const tr = document.createElement('tr');
-        const situacaoHtml = c.ativo 
-            ? `<span class="badge-ativo" style="background:#28a745; color:white; padding:2px 6px; border-radius:4px; font-size:11px;">Ativo</span>` 
+        const situacaoHtml = c.ativo
+            ? `<span class="badge-ativo" style="background:#28a745; color:white; padding:2px 6px; border-radius:4px; font-size:11px;">Ativo</span>`
             : `<span class="badge-inativo" style="background:#dc3545; color:white; padding:2px 6px; border-radius:4px; font-size:11px;">Inativo</span>`;
 
         tr.innerHTML = `
@@ -257,12 +259,16 @@ function renderizarTabelaClientes() {
             <td>${c.contato || '-'}</td>
             <td>${c.telefone || '-'}</td>
             <td>${situacaoHtml}</td>
-            <td>
-                <button type="button" class="btn-action" style="background-color: #0056b3; width: 100% !important;" onclick="abrirModalDocsCliente(${c.id}, '${c.nome.replace(/'/g, "\\'")}')">Anexos</button>
+            <td style="text-align: right;">
+                <div class="btn-action-group">
+                    <button type="button" class="btn-action" style="background-color: #0056b3; width: 85px !important;" onclick="abrirModalDocsCliente(${c.id}, '${c.nome.replace(/'/g, "\\'")}')">Anexos</button>
+                </div>
             </td>
             <td style="text-align: right; white-space: nowrap;">
-                <button type="button" class="btn-action" style="background-color: #f39c12;" onclick="editarCliente(${c.id})">Editar</button>
-                <button type="button" class="btn-action" style="background-color: #e74c3c;" onclick="deletarCliente(${c.id})">Excluir</button>
+                <div class="btn-action-group">
+                    <button type="button" class="btn-action" style="background-color: #f39c12;" onclick="editarCliente(${c.id})">Editar</button>
+                    <button type="button" class="btn-action" style="background-color: #e74c3c;" onclick="deletarCliente(${c.id})">Excluir</button>
+                </div>
             </td>
         `;
         tbody.appendChild(tr);
@@ -270,9 +276,9 @@ function renderizarTabelaClientes() {
 }
 
 function abrirModalClientes() { document.getElementById('clientesModal').style.display = 'flex'; }
-function fecharModalClientes() { 
+function fecharModalClientes() {
     limparFormCliente();
-    document.getElementById('clientesModal').style.display = 'none'; 
+    document.getElementById('clientesModal').style.display = 'none';
 }
 
 function limparFormCliente() {
@@ -387,8 +393,8 @@ function enviarDocCliente() {
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
-        <td><strong>${tipo}</strong></td>
-        <td>${file.name} <span style="font-size: 10px; color: #f39c12; font-weight: bold;">(Pronto para salvar)</span></td>
+        <td style="width: 120px;"><strong>${tipo}</strong></td>
+        <td style="word-break: break-word;">${file.name} <span style="font-size: 10px; color: #f39c12; font-weight: bold;">(Pronto para salvar)</span></td>
         <td style="text-align: right;"><span style="font-size: 11px; color: #888;">Pendente</span></td>
     `;
     tbody.appendChild(tr);
@@ -460,11 +466,13 @@ async function carregarDocsCliente(clienteId) {
             lista.forEach(doc => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>${doc.tipo}</strong></td>
-                    <td>${doc.nomeArquivo || 'Arquivo'}</td>
-                    <td style="text-align: right; display: flex; gap: 6px; justify-content: flex-end;">
-                        <button type="button" class="btn-action" style="background-color: #27ae60;" onclick="visualizarFoto('${doc.urlArquivo}')">Ver</button>
-                        <button type="button" class="btn-action" style="background-color: #e74c3c;" onclick="deletarDocCliente(${doc.id}, ${clienteId})">Excluir</button>
+                    <td style="width: 120px;"><strong>${doc.tipo}</strong></td>
+                    <td style="word-break: break-word;">${doc.nomeArquivo || 'Arquivo'}</td>
+                    <td style="text-align: right;">
+                        <div class="btn-action-group">
+                            <button type="button" class="btn-action" style="background-color: #27ae60;" onclick="visualizarFoto('${doc.urlArquivo}')">Ver</button>
+                            <button type="button" class="btn-action" style="background-color: #e74c3c;" onclick="deletarDocCliente(${doc.id}, ${clienteId})">Excluir</button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -488,9 +496,8 @@ async function deletarDocCliente(docId, clienteId) {
     }
 }
 
-/* =========================================================================
-   MÓDULO DE FORNECEDORES
-   ========================================================================= */
+// MÓDULO DE FORNECEDORES
+
 async function carregarFornecedores() {
     try {
         const res = await fetch(`${API_BASE}/fornecedores`, {
@@ -531,8 +538,8 @@ function renderizarTabelaFornecedores() {
 
     listaFornecedores.forEach(f => {
         const tr = document.createElement('tr');
-        const situacaoHtml = f.ativo 
-            ? `<span class="badge-ativo" style="background:#28a745; color:white; padding:2px 6px; border-radius:4px; font-size:11px;">Ativo</span>` 
+        const situacaoHtml = f.ativo
+            ? `<span class="badge-ativo" style="background:#28a745; color:white; padding:2px 6px; border-radius:4px; font-size:11px;">Ativo</span>`
             : `<span class="badge-inativo" style="background:#dc3545; color:white; padding:2px 6px; border-radius:4px; font-size:11px;">Inativo</span>`;
 
         tr.innerHTML = `
@@ -543,8 +550,10 @@ function renderizarTabelaFornecedores() {
             <td>${f.chavePix || '-'}</td>
             <td>${situacaoHtml}</td>
             <td style="text-align: right; white-space: nowrap;">
-                <button type="button" class="btn-action" style="background-color: #f39c12;" onclick="editarFornecedor(${f.id})">Editar</button>
-                <button type="button" class="btn-action" style="background-color: #e74c3c;" onclick="deletarFornecedor(${f.id})">Excluir</button>
+                <div class="btn-action-group">
+                    <button type="button" class="btn-action" style="background-color: #f39c12;" onclick="editarFornecedor(${f.id})">Editar</button>
+                    <button type="button" class="btn-action" style="background-color: #e74c3c;" onclick="deletarFornecedor(${f.id})">Excluir</button>
+                </div>
             </td>
         `;
         tbody.appendChild(tr);
@@ -552,9 +561,9 @@ function renderizarTabelaFornecedores() {
 }
 
 function abrirModalFornecedores() { document.getElementById('fornecedoresModal').style.display = 'flex'; }
-function fecharModalFornecedores() { 
+function fecharModalFornecedores() {
     limparFormFornecedor();
-    document.getElementById('fornecedoresModal').style.display = 'none'; 
+    document.getElementById('fornecedoresModal').style.display = 'none';
 }
 
 function limparFormFornecedor() {
@@ -642,9 +651,8 @@ async function deletarFornecedor(id) {
     }
 }
 
-/* =========================================================================
-   MÓDULO DE MOTORISTAS
-   ========================================================================= */
+// MÓDULO DE MOTORISTAS
+
 async function carregarMotoristas() {
     try {
         const res = await fetch(`${API_BASE}/motoristas`, {
@@ -663,7 +671,7 @@ async function carregarMotoristas() {
 function preencherSelectMotoristas() {
     const selNovo = document.getElementById('selectMotorista');
     const selEdit = document.getElementById('editSelectMotorista');
-    
+
     let optionsHtml = '<option value="">Sem Motorista (A Contratar)</option>';
     listaMotoristas.filter(m => m.ativo).forEach(m => {
         optionsHtml += `<option value="${m.id}" data-placa="${m.placa}" data-fornecedor="${m.fornecedor || ''}">${m.nome} (${m.placa})</option>`;
@@ -680,8 +688,8 @@ function renderizarTabelaMotoristas() {
 
     listaMotoristas.forEach(m => {
         const tr = document.createElement('tr');
-        const situacaoHtml = m.ativo 
-            ? `<span class="badge-ativo" style="background:#28a745; color:white; padding:2px 6px; border-radius:4px; font-size:11px;">Ativo</span>` 
+        const situacaoHtml = m.ativo
+            ? `<span class="badge-ativo" style="background:#28a745; color:white; padding:2px 6px; border-radius:4px; font-size:11px;">Ativo</span>`
             : `<span class="badge-inativo" style="background:#dc3545; color:white; padding:2px 6px; border-radius:4px; font-size:11px;">Inativo</span>`;
 
         const obs = m.observacoes || '-';
@@ -699,14 +707,16 @@ function renderizarTabelaMotoristas() {
             <td>${situacaoHtml}</td>
             <td style="text-align: center;">${obsHtml}</td>
             <td>
-                <div style="display: flex; gap: 4px; width: 100%;">
+                <div class="btn-action-group" style="justify-content: flex-start;">
                     ${btnCnh} ${btnCrlv}
                     <button type="button" class="btn-action" style="background-color: #6c757d; margin-left: auto;" onclick="abrirModalOutrosMotorista(${m.id}, '${m.nome.replace(/'/g, "\\'")}')">Outros</button>
                 </div>
             </td>
             <td style="text-align: right; white-space: nowrap;">
-                <button type="button" class="btn-action" style="background-color: #f39c12;" onclick="editarMotorista(${m.id})">Editar</button>
-                <button type="button" class="btn-action" style="background-color: #e74c3c;" onclick="deletarMotorista(${m.id})">Excluir</button>
+                <div class="btn-action-group">
+                    <button type="button" class="btn-action" style="background-color: #f39c12;" onclick="editarMotorista(${m.id})">Editar</button>
+                    <button type="button" class="btn-action" style="background-color: #e74c3c;" onclick="deletarMotorista(${m.id})">Excluir</button>
+                </div>
             </td>
         `;
         tbody.appendChild(tr);
@@ -714,9 +724,9 @@ function renderizarTabelaMotoristas() {
 }
 
 function abrirModalMotoristas() { document.getElementById('motoristasModal').style.display = 'flex'; }
-function fecharModalMotoristas() { 
+function fecharModalMotoristas() {
     limparFormMotorista();
-    document.getElementById('motoristasModal').style.display = 'none'; 
+    document.getElementById('motoristasModal').style.display = 'none';
 }
 
 function limparFormMotorista() {
@@ -870,7 +880,7 @@ function enviarDocExtraMotorista() {
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
-        <td>${nome} <span style="font-size: 10px; color: #f39c12; font-weight: bold;">(Pronto para salvar)</span></td>
+        <td style="word-break: break-word;">${nome} <span style="font-size: 10px; color: #f39c12; font-weight: bold;">(Pronto para salvar)</span></td>
         <td style="text-align: right;"><span style="font-size: 11px; color: #888;">Pendente</span></td>
     `;
     tbody.appendChild(tr);
@@ -943,10 +953,12 @@ async function carregarDocumentosExtrasMotorista(motoristaId) {
             lista.forEach(doc => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${doc.nome}</td>
-                    <td style="text-align: right; display: flex; gap: 6px; justify-content: flex-end;">
-                        <button type="button" class="btn-action" style="background-color: #27ae60;" onclick="visualizarFoto('${doc.urlArquivo}')">Ver</button>
-                        <button type="button" class="btn-action" style="background-color: #e74c3c;" onclick="deletarDocumentoExtraMotorista(${doc.id}, ${motoristaId})">Excluir</button>
+                    <td style="word-break: break-word;">${doc.nome}</td>
+                    <td style="text-align: right;">
+                        <div class="btn-action-group">
+                            <button type="button" class="btn-action" style="background-color: #27ae60;" onclick="visualizarFoto('${doc.urlArquivo}')">Ver</button>
+                            <button type="button" class="btn-action" style="background-color: #e74c3c;" onclick="deletarDocumentoExtraMotorista(${doc.id}, ${motoristaId})">Excluir</button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -964,15 +976,14 @@ async function deletarDocumentoExtraMotorista(docId, motoristaId) {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (res.ok) await carregarDocumentosExtrasMotorista(motoristaId);
+        if (res.ok) await carregarDocsCliente(clienteId);
     } catch (e) {
         console.error('Erro ao deletar documento:', e);
     }
 }
 
-/* =========================================================================
-   MÓDULO DE VIAGENS
-   ========================================================================= */
+// MÓDULO DE VIAGENS
+
 async function carregarViagens() {
     try {
         const response = await fetch(`${API_BASE}/viagens`, {
@@ -987,15 +998,11 @@ async function carregarViagens() {
 
         listaViagensCache = await response.json();
 
-        // 1. Em Andamento (ordenadas por Status operacional)[cite: 7]
         const ativas = listaViagensCache
             .filter(v => !v.status || v.status.toUpperCase() !== 'FINALIZADO')
             .sort((a, b) => (ORDEM_STATUS[a.status] || 99) - (ORDEM_STATUS[b.status] || 99));
-        
-        // 2. A Pagar[cite: 7]
+
         const aPagar = listaViagensCache.filter(v => v.status && v.status.toUpperCase() === 'FINALIZADO' && v.pagamentoRealizadoStatus !== 'SALDO_PAGO');
-        
-        // 3. Histórico de Finalizadas[cite: 7]
         const finalizadas = listaViagensCache.filter(v => v.status && v.status.toUpperCase() === 'FINALIZADO' && v.pagamentoRealizadoStatus === 'SALDO_PAGO');
 
         renderizarTabelaAtivas(ativas);
@@ -1173,7 +1180,7 @@ function enviarComprovanteViagem() {
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
-        <td>${nome} <span style="font-size: 10px; color: #f39c12; font-weight: bold;">(Pronto para salvar)</span></td>
+        <td style="word-break: break-word;">${nome} <span style="font-size: 10px; color: #f39c12; font-weight: bold;">(Pronto para salvar)</span></td>
         <td style="text-align: right;"><span style="font-size: 11px; color: #888;">Pendente</span></td>
     `;
     tbody.appendChild(tr);
@@ -1246,10 +1253,12 @@ async function carregarComprovantesViagem(viagemId) {
             lista.forEach(c => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${c.nome || c.descricao || 'Comprovante'}</td>
-                    <td style="text-align: right; display: flex; gap: 6px; justify-content: flex-end;">
-                        <button type="button" class="btn-action" style="background-color: #27ae60;" onclick="visualizarFoto('${c.urlArquivo || c.url}')">Ver</button>
-                        <button type="button" class="btn-action" style="background-color: #e74c3c;" onclick="deletarComprovante(${c.id}, ${viagemId})">Excluir</button>
+                    <td style="word-break: break-word;">${c.nome || c.descricao || 'Comprovante'}</td>
+                    <td style="text-align: right;">
+                        <div class="btn-action-group">
+                            <button type="button" class="btn-action" style="background-color: #27ae60;" onclick="visualizarFoto('${c.urlArquivo || c.url}')">Ver</button>
+                            <button type="button" class="btn-action" style="background-color: #e74c3c;" onclick="deletarComprovante(${c.id}, ${viagemId})">Excluir</button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -1274,7 +1283,7 @@ async function deletarComprovante(comprovanteId, viagemId) {
 }
 
 /* --- CADASTRO E EDIÇÃO DE VIAGEM --- */
-function abrirModalNovaViagem() { 
+function abrirModalNovaViagem() {
     document.getElementById('viagemId').value = '';
     document.getElementById('selectCliente').value = '';
     document.getElementById('clienteManual').value = '';
@@ -1306,7 +1315,7 @@ function abrirModalNovaViagem() {
         adicionarCampoDuplo('containerDestinos', 'destino-nome', 'destino-end', 'Ponto de Destino', 'Rua da Entrega');
     }
 
-    document.getElementById('novaViagemModal').style.display = 'flex'; 
+    document.getElementById('novaViagemModal').style.display = 'flex';
 }
 
 function fecharModalNovaViagem() { document.getElementById('novaViagemModal').style.display = 'none'; }
@@ -1435,7 +1444,6 @@ function abrirModalEditar(id) {
 
     document.getElementById('editObservacao').value = v.observacao || '';
 
-    // Configuração dos dois passos do botão "Finalizar Viagem"[cite: 7]
     const btnFin = document.getElementById('btnFinalizarViagemModal');
     if (btnFin) {
         const isEmAndamento = !v.status || v.status.toUpperCase() !== 'FINALIZADO';
@@ -1450,7 +1458,6 @@ function abrirModalEditar(id) {
             btnFin.textContent = 'Finalizar Viagem';
             btnFin.onclick = () => finalizarPagamentoPeloModal();
         } else {
-            // Histórico de Finalizadas: oculta o botão verde
             btnFin.style.display = 'none';
         }
     }
@@ -1529,7 +1536,7 @@ async function salvarEdicaoViagem() {
     }
 }
 
-/* --- PASSO 1: MOVE DE "EM ANDAMENTO" PARA "VIAGENS A PAGAR"[cite: 7] --- */
+/* --- PASSO 1: MOVE DE "EM ANDAMENTO" PARA "VIAGENS A PAGAR" --- */
 async function finalizarOperacaoPeloModal() {
     const id = document.getElementById('editViagemId').value;
     if (!confirm(`Deseja finalizar a operação da viagem #${id}? Ela será movida para "Viagens a Pagar".`)) return;
@@ -1538,7 +1545,7 @@ async function finalizarOperacaoPeloModal() {
     await salvarEdicaoViagem();
 }
 
-/* --- PASSO 2: MOVE DE "VIAGENS A PAGAR" PARA "HISTÓRICO DE FINALIZADAS"[cite: 7] --- */
+/* --- PASSO 2: MOVE DE "VIAGENS A PAGAR" PARA "HISTÓRICO DE FINALIZADAS" --- */
 async function finalizarPagamentoPeloModal() {
     const id = document.getElementById('editViagemId').value;
     if (!confirm(`Deseja confirmar a quitação da viagem #${id}? Ela será movida para o "Histórico de Viagens Finalizadas".`)) return;
@@ -1576,7 +1583,11 @@ async function deletarViagem(id) {
 
 function visualizarFoto(url) {
     if (!url) return alert('Arquivo não encontrado.');
-    const urlCompleta = url.startsWith('http') ? url : `http://localhost:8080${url.startsWith('/') ? '' : '/'}${url}`;
+    const hostBackend = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+        ? 'http://localhost:8080'
+        : 'https://cospa-production.up.railway.app';
+
+    const urlCompleta = url.startsWith('http') ? url : `${hostBackend}${url.startsWith('/') ? '' : '/'}${url}`;
     window.open(urlCompleta, '_blank');
 }
 

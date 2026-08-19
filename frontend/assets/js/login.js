@@ -1,13 +1,15 @@
 const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-    ? 'http://localhost:8080/api'
-    : 'https://cospa-production.up.railway.app/api';
+    ? 'http://localhost:8080'
+    : 'https://cospa-production.up.railway.app';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Aplicação e persistência do tema
     const themeToggle = document.getElementById('themeToggle');
-    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    
+    document.documentElement.setAttribute('data-theme', savedTheme);
     if (themeToggle) {
-        themeToggle.checked = currentTheme === 'dark';
+        themeToggle.checked = savedTheme === 'dark';
         themeToggle.addEventListener('change', () => {
             const newTheme = themeToggle.checked ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', newTheme);
@@ -15,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 2. Manipulação do formulário de login
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -22,28 +25,69 @@ document.addEventListener('DOMContentLoaded', () => {
             const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
             const errorMsg = document.getElementById('errorMessage');
+            const btnLogin = document.getElementById('btnLogin');
 
-            if (errorMsg) errorMsg.classList.remove('ativo');
+            if (errorMsg) {
+                errorMsg.classList.remove('ativo');
+                errorMsg.textContent = '';
+            }
+
+            // Payload compatível com login/username e senha/password do DTO
+            const loginValue = usernameInput.value.trim();
+            const senhaValue = passwordInput.value;
 
             const payload = {
-                username: usernameInput.value.trim(),
-                senha: passwordInput.value
+                username: loginValue,
+                login: loginValue,
+                senha: senhaValue,
+                password: senhaValue
             };
 
             try {
-                const response = await fetch(`${API_BASE}/auth/login`, {
+                if (btnLogin) {
+                    btnLogin.disabled = true;
+                    btnLogin.textContent = 'Entrando...';
+                }
+
+                // Tenta /auth/login e faz fallback para /api/auth/login se necessário
+                let response = await fetch(`${API_BASE}/auth/login`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify(payload)
                 });
 
+                if (response.status === 404) {
+                    response = await fetch(`${API_BASE}/api/auth/login`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                }
+
                 if (response.ok) {
                     const data = await response.json();
-                    localStorage.setItem('token', data.token);
+                    
+                    // Salva token JWT (compatível com chave token ou tokenJWT)
+                    const token = data.token || data.tokenJWT || data.accessToken;
+                    if (token) {
+                        localStorage.setItem('token', token);
+                    }
+                    
                     window.location.href = './pages/dashboard.html';
-                } else {
+                } else if (response.status === 403 || response.status === 401) {
                     if (errorMsg) {
                         errorMsg.textContent = 'Usuário ou senha incorretos.';
+                        errorMsg.classList.add('ativo');
+                    }
+                } else {
+                    if (errorMsg) {
+                        errorMsg.textContent = 'Erro ao processar login no servidor.';
                         errorMsg.classList.add('ativo');
                     }
                 }
@@ -52,6 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (errorMsg) {
                     errorMsg.textContent = 'Erro ao conectar ao servidor.';
                     errorMsg.classList.add('ativo');
+                }
+            } finally {
+                if (btnLogin) {
+                    btnLogin.disabled = false;
+                    btnLogin.textContent = 'Entrar';
                 }
             }
         });

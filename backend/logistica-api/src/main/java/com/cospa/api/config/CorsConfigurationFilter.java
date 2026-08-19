@@ -19,7 +19,7 @@ public class CorsConfigurationFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
 
         String origin = request.getHeader("Origin");
-        if (origin != null) {
+        if (origin != null && !origin.isBlank()) {
             response.setHeader("Access-Control-Allow-Origin", origin);
         } else {
             response.setHeader("Access-Control-Allow-Origin", "*");
@@ -28,12 +28,12 @@ public class CorsConfigurationFilter implements Filter {
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE, PATCH");
         response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization, X-Requested-With, Access-Control-Request-Method, Access-Control-Request-Headers");
-        response.setHeader("Access-Control-Expose-Headers", "Authorization");
+        response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Access-Control-Expose-Headers", "*");
 
-        // Se for requisição de pré-checagem (preflight), encerra com 200 OK imediatamente
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().flush();
             return;
         }
 

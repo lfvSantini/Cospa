@@ -1,9 +1,8 @@
 const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-    ? 'http://localhost:8080'
-    : 'https://cospa-production.up.railway.app';
+    ? 'http://localhost:8080/api'
+    : 'https://cospa-production.up.railway.app/api';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Aplicação e persistência do tema
     const themeToggle = document.getElementById('themeToggle');
     const savedTheme = localStorage.getItem('theme') || 'light';
     
@@ -17,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. Manipulação do formulário de login
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -32,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 errorMsg.textContent = '';
             }
 
-            // Payload compatível com login/username e senha/password do DTO
             const loginValue = usernameInput.value.trim();
             const senhaValue = passwordInput.value;
 
@@ -49,8 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     btnLogin.textContent = 'Entrando...';
                 }
 
-                // Tenta /auth/login e faz fallback para /api/auth/login se necessário
-                let response = await fetch(`${API_BASE}/auth/login`, {
+                const response = await fetch(`${API_BASE}/auth/login`, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
@@ -59,26 +55,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(payload)
                 });
 
-                if (response.status === 404) {
-                    response = await fetch(`${API_BASE}/api/auth/login`, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-                }
-
                 if (response.ok) {
                     const data = await response.json();
-                    
-                    // Salva token JWT (compatível com chave token ou tokenJWT)
                     const token = data.token || data.tokenJWT || data.accessToken;
                     if (token) {
                         localStorage.setItem('token', token);
                     }
-                    
                     window.location.href = './pages/dashboard.html';
                 } else if (response.status === 403 || response.status === 401) {
                     if (errorMsg) {
@@ -87,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } else {
                     if (errorMsg) {
-                        errorMsg.textContent = 'Erro ao processar login no servidor.';
+                        errorMsg.textContent = 'Erro ao autenticar. Verifique seus dados.';
                         errorMsg.classList.add('ativo');
                     }
                 }

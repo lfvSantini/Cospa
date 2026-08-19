@@ -78,10 +78,12 @@ body {
 }
 
 .logo-area img {
-    max-width: 13.75rem;
-    max-height: 4.5rem;
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+    max-height: 110px;
     object-fit: contain;
-    margin-bottom: 0.75rem;
+    margin: 0 auto 1.25rem auto;
     display: block;
 }
 
@@ -182,7 +184,6 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
 }
 
-/* Força estilo escuro no modo dark */
 [data-theme="dark"] input[type="text"],
 [data-theme="dark"] input[type="password"],
 [data-theme="dark"] input[type="number"],
@@ -722,7 +723,6 @@ table th:nth-child(9), table td:nth-child(9) { width: 230px; text-align: center;
     margin-top: 1.25rem;
 }
 
-/* Botão Finalizar Viagem no Modal */
 .btn-finalizar {
     background-color: #28a745;
     color: #ffffff;
@@ -743,7 +743,6 @@ table th:nth-child(9), table td:nth-child(9) { width: 230px; text-align: center;
     background-color: #218838;
 }
 
-/* Padronização dos botões do rodapé dos modais */
 .btn-submit {
     background-color: #0056b3;
     color: white;

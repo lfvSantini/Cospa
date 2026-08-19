@@ -1,75 +1,95 @@
 package com.cospa.api.config;
 
-import com.cospa.api.repository.UsuarioRepository;
-import com.cospa.api.service.TokenService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
-import java.io.IOException;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
-@Component
-public class SecurityFilter extends OncePerRequestFilter {
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
 
     @Autowired
-    private TokenService tokenService;
+    private SecurityFilter securityFilter;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(csrf -> csrf.disable())
+                // Insere o CorsFilter nativo como o PRIMEIRO filtro de todos
+                .addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(req -> {
+                    // Libera OPTIONS explicitamente para qualquer rota
+                    req.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+                    // Rotas de documentação Swagger e arquivos estáticos
+                    req.requestMatchers(
+                            "/v3/api-docs/**",
+                            "/swagger-ui/**",
+                            "/swagger-ui.html",
+                            "/uploads/**",
+                            "/error"
+                    ).permitAll();
 
-        // Libera imediatamente requisições OPTIONS de preflight para evitar bloqueio de CORS
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+                    // Rotas de autenticação abertas
+                    req.requestMatchers(HttpMethod.POST, "/auth/login").permitAll();
+                    req.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
 
-        var token = recuperarToken(request);
-        if (token != null) {
-            var login = tokenService.validarToken(token);
-
-            if (login != null) {
-                var usuarioOptional = usuarioRepository.findByUsername(login);
-                if (usuarioOptional.isEmpty()) {
-                    usuarioOptional = usuarioRepository.findByLogin(login);
-                }
-
-                if (usuarioOptional.isPresent()) {
-                    var usuario = usuarioOptional.get();
-
-                    // Se a entidade Usuario implementar UserDetails, usa as authorities dela;
-                    // caso contrário, define ROLE_USER por padrão.
-                    var authorities = (usuario instanceof UserDetails userDetails)
-                            ? userDetails.getAuthorities()
-                            : List.of(new SimpleGrantedAuthority("ROLE_USER"));
-
-                    var authentication = new UsernamePasswordAuthenticationToken(usuario, null, authorities);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
-            }
-        }
-
-        filterChain.doFilter(request, response);
+                    // Qualquer outra requisição precisa do token JWT
+                    req.anyRequest().authenticated();
+                })
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
-    private String recuperarToken(HttpServletRequest request) {
-        var authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            return authorizationHeader.replace("Bearer ", "").trim();
-        }
-        return null;
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+
+        // Origens liberadas
+        config.setAllowedOriginPatterns(Arrays.asList(
+                "https://*.pages.dev",
+                "https://cospa-de9.pages.dev",
+                "http://localhost:*",
+                "http://127.0.0.1:*"
+        ));
+
+        config.setAllowedHeaders(Arrays.asList(
+                "Origin",
+                "Content-Type",
+                "Accept",
+                "Authorization",
+                "X-Requested-With",
+                "Access-Control-Request-Method",
+                "Access-Control-Request-Headers"
+        ));
+
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setExposedHeaders(List.of("Authorization"));
+        config.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

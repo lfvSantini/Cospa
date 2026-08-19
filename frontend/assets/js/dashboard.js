@@ -14,7 +14,7 @@ let filaComprovantesTemp = [];
 let filaDocsClientesTemp = [];
 
 if (!token) {
-    window.location.href = '../index.html';
+    window.location.href = '/index.html';
 }
 
 /* --- ORDEM PRIORITÁRIA DE STATUS --- */
@@ -75,7 +75,7 @@ const btnLogout = document.getElementById('btnLogout');
 if (btnLogout) {
     btnLogout.addEventListener('click', () => {
         localStorage.removeItem('token');
-        window.location.href = '../pages/index.html';
+        window.location.href = '/index.html';
     });
 }
 
@@ -212,8 +212,7 @@ function obterValoresDuplos(nomeClass, endClass) {
     };
 }
 
-//MÓDULO DE CLIENTES
-
+// MÓDULO DE CLIENTES
 async function carregarClientes() {
     try {
         const res = await fetch(`${API_BASE}/clientes`, {
@@ -497,7 +496,6 @@ async function deletarDocCliente(docId, clienteId) {
 }
 
 // MÓDULO DE FORNECEDORES
-
 async function carregarFornecedores() {
     try {
         const res = await fetch(`${API_BASE}/fornecedores`, {
@@ -652,7 +650,6 @@ async function deletarFornecedor(id) {
 }
 
 // MÓDULO DE MOTORISTAS
-
 async function carregarMotoristas() {
     try {
         const res = await fetch(`${API_BASE}/motoristas`, {
@@ -976,14 +973,13 @@ async function deletarDocumentoExtraMotorista(docId, motoristaId) {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (res.ok) await carregarDocsCliente(clienteId);
+        if (res.ok) await carregarMotoristas();
     } catch (e) {
         console.error('Erro ao deletar documento:', e);
     }
 }
 
 // MÓDULO DE VIAGENS
-
 async function carregarViagens() {
     try {
         const response = await fetch(`${API_BASE}/viagens`, {
@@ -991,8 +987,7 @@ async function carregarViagens() {
         });
 
         if (response.status === 401 || response.status === 403) {
-            localStorage.removeItem('token');
-            window.location.href = '../pages/index.html';
+            console.error('Erro de permissão ou token expirado ao carregar viagens:', response.status);
             return;
         }
 

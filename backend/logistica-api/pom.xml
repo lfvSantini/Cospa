@@ -18,6 +18,9 @@
 
     <properties>
         <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <resource.delimiter>@</resource.delimiter>
     </properties>
 
     <dependencies>
@@ -64,20 +67,20 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Validação de DTOs -->
+        <!-- Validacao de DTOs -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- Documentação Swagger / OpenAPI -->
+        <!-- Documentacao Swagger / OpenAPI -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.6.0</version>
         </dependency>
 
-        <!-- Utilitários -->
+        <!-- Utilitarios -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -91,7 +94,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Migração de Banco com Flyway -->
+        <!-- Migracao de Banco com Flyway -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
@@ -111,6 +114,17 @@
 
     <build>
         <plugins>
+            <!-- Plugin de Resources com Encoding UTF-8 explicito -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin do Spring Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

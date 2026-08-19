@@ -36,9 +36,15 @@ public class SecurityFilter extends OncePerRequestFilter {
         var token = recuperarToken(request);
         if (token != null) {
             var login = tokenService.validarToken(token);
-            var usuario = usuarioRepository.findByLogin(login);
 
-            if (usuario != null) {
+            // Busca por username ou login tratando o retorno Optional
+            var usuarioOptional = usuarioRepository.findByUsername(login);
+            if (usuarioOptional.isEmpty()) {
+                usuarioOptional = usuarioRepository.findByLogin(login);
+            }
+
+            if (usuarioOptional.isPresent()) {
+                var usuario = usuarioOptional.get();
                 var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

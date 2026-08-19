@@ -2,6 +2,7 @@ package com.cospa.api.controller;
 
 import com.cospa.api.dto.LoginRequestDTO;
 import com.cospa.api.dto.TokenResponseDTO;
+import com.cospa.api.dto.UsuarioRequestDTO;
 import com.cospa.api.model.PerfilUsuario;
 import com.cospa.api.model.Usuario;
 import com.cospa.api.repository.UsuarioRepository;
@@ -47,19 +48,21 @@ public class AuthController {
         return ResponseEntity.ok(new TokenResponseDTO(token));
     }
 
-    // Endpoint aberto para criar/atualizar seu usuário com o hash real do encoder
-    @PostMapping("/cadastrar-admin")
-    public ResponseEntity<?> cadastrarAdmin() {
-        Usuario usuario = usuarioRepository.findByUsername("lfvsantini")
-                .orElse(new Usuario());
+    // Endpoint genérico para registrar qualquer usuário
+    @PostMapping("/registrar")
+    public ResponseEntity<?> registrar(@RequestBody @Valid UsuarioRequestDTO dto) {
+        if (usuarioRepository.findByUsername(dto.username()).isPresent()) {
+            return ResponseEntity.badRequest().body("Username já em uso.");
+        }
 
-        usuario.setNome("Luis Felipe");
-        usuario.setUsername("lfvsantini");
-        usuario.setLogin("lfvsantini");
-        usuario.setSenha(passwordEncoder.encode("3031"));
-        usuario.setPerfil(PerfilUsuario.ADMIN);
+        Usuario usuario = new Usuario();
+        usuario.setNome(dto.nome());
+        usuario.setUsername(dto.username());
+        usuario.setLogin(dto.username());
+        usuario.setSenha(passwordEncoder.encode(dto.senha()));
+        usuario.setPerfil(dto.perfil() != null ? dto.perfil() : PerfilUsuario.ADMIN);
 
         usuarioRepository.save(usuario);
-        return ResponseEntity.ok("Usuário lfvsantini criado/atualizado com senha 3031!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Usuário " + dto.username() + " cadastrado com sucesso!");
     }
 }

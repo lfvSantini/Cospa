@@ -2,6 +2,7 @@ package com.cospa.api.controller;
 
 import com.cospa.api.dto.LoginRequestDTO;
 import com.cospa.api.dto.TokenResponseDTO;
+import com.cospa.api.model.PerfilUsuario;
 import com.cospa.api.model.Usuario;
 import com.cospa.api.repository.UsuarioRepository;
 import com.cospa.api.service.TokenService;
@@ -44,5 +45,21 @@ public class AuthController {
 
         String token = tokenService.gerarToken(usuario);
         return ResponseEntity.ok(new TokenResponseDTO(token));
+    }
+
+    // Endpoint aberto para criar/atualizar seu usuário com o hash real do encoder
+    @PostMapping("/cadastrar-admin")
+    public ResponseEntity<?> cadastrarAdmin() {
+        Usuario usuario = usuarioRepository.findByUsername("lfvsantini")
+                .orElse(new Usuario());
+
+        usuario.setNome("Luis Felipe");
+        usuario.setUsername("lfvsantini");
+        usuario.setLogin("lfvsantini");
+        usuario.setSenha(passwordEncoder.encode("3031"));
+        usuario.setPerfil(PerfilUsuario.ADMIN);
+
+        usuarioRepository.save(usuario);
+        return ResponseEntity.ok("Usuário lfvsantini criado/atualizado com senha 3031!");
     }
 }

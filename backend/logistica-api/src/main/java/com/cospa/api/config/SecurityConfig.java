@@ -29,7 +29,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                // Garante que o CorsFilter processe o preflight antes do Spring Security
                 .addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {

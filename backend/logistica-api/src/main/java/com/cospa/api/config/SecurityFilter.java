@@ -30,32 +30,42 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Libera imediatamente requisições OPTIONS de preflight para evitar bloqueio de CORS
+        // Libera imediatamente requisições OPTIONS de preflight para evitar quebra de CORS
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        var uri = request.getRequestURI();
+        // Não valida token em rotas públicas
+        if (uri.contains("/auth/login") || uri.contains("/swagger-ui") || uri.contains("/v3/api-docs")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         var token = recuperarToken(request);
         if (token != null) {
-            var login = tokenService.validarToken(token);
+            try {
+                var login = tokenService.validarToken(token);
+                if (login != null && !login.isBlank()) {
+                    var usuarioOptional = usuarioRepository.findByUsername(login);
+                    if (usuarioOptional.isEmpty()) {
+                        usuarioOptional = usuarioRepository.findByLogin(login);
+                    }
 
-            if (login != null) {
-                var usuarioOptional = usuarioRepository.findByUsername(login);
-                if (usuarioOptional.isEmpty()) {
-                    usuarioOptional = usuarioRepository.findByLogin(login);
+                    if (usuarioOptional.isPresent()) {
+                        var usuario = usuarioOptional.get();
+                        var authorities = (usuario instanceof UserDetails userDetails)
+                                ? userDetails.getAuthorities()
+                                : List.of(new SimpleGrantedAuthority("ROLE_USER"));
+
+                        var authentication = new UsernamePasswordAuthenticationToken(usuario, null, authorities);
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
                 }
-
-                if (usuarioOptional.isPresent()) {
-                    var usuario = usuarioOptional.get();
-
-                    var authorities = (usuario instanceof UserDetails userDetails)
-                            ? userDetails.getAuthorities()
-                            : List.of(new SimpleGrantedAuthority("ROLE_USER"));
-
-                    var authentication = new UsernamePasswordAuthenticationToken(usuario, null, authorities);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+            } catch (Exception e) {
+                // Token inválido ou expirado: apenas não autentica o contexto
+                SecurityContextHolder.clearContext();
             }
         }
 

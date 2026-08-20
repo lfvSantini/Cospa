@@ -35,9 +35,8 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* =========================================================================
-   TELA DE LOGIN
-   ========================================================================= */
+/* TELA DE LOGIN */
+
 .login-header-switch {
     position: fixed;
     top: 1.5rem;
@@ -134,9 +133,7 @@ body {
     display: block;
 }
 
-/* =========================================================================
-   CAMPOS DE FORMULÁRIO E INPUTS GLOBAIS
-   ========================================================================= */
+/* CAMPOS DE FORMULÁRIO E INPUTS GLOBAIS */
 .input-group {
     margin-bottom: 0.75rem;
     display: flex;
@@ -376,9 +373,7 @@ button:hover {
     background-color: #004085;
 }
 
-/* =========================================================================
-   PAINEL PRINCIPAL & NAVBAR
-   ========================================================================= */
+/* PAINEL PRINCIPAL & NAVBAR */
 .dashboard-container {
     width: 98%;
     max-width: 106.25rem;
@@ -517,9 +512,7 @@ button:hover {
 
 .btn-logout:hover { background-color: #c82333; }
 
-/* =========================================================================
-   TABELAS SINCRONIZADAS E ALINHADAS COM LARGURAS FIXAS
-   ========================================================================= */
+/* TABELAS SINCRONIZADAS E ALINHADAS COM LARGURAS FIXAS */
 .table-container {
     background: var(--bg-card);
     padding: 1.8rem 2rem;
@@ -678,9 +671,7 @@ table th:nth-child(9), table td:nth-child(9) { width: 230px; text-align: center;
     pointer-events: none;
 }
 
-/* =========================================================================
-   MODAIS
-   ========================================================================= */
+/* MODAIS */
 .modal {
     position: fixed;
     inset: 0;

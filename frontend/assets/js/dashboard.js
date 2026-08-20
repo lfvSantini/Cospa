@@ -973,7 +973,7 @@ async function deletarDocumentoExtraMotorista(docId, motoristaId) {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (res.ok) await carregarMotoristas();
+        if (res.ok) await carregarDocumentosExtrasMotorista(motoristaId);
     } catch (e) {
         console.error('Erro ao deletar documento:', e);
     }
@@ -1577,13 +1577,22 @@ async function deletarViagem(id) {
 }
 
 function visualizarFoto(url) {
-    if (!url) return alert('Arquivo não encontrado.');
+    if (!url || url === 'null' || url === '-' || url.trim() === '') {
+        return alert('Arquivo não anexado ou inexistente.');
+    }
+
     const hostBackend = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
         ? 'http://localhost:8080'
         : 'https://cospa-production.up.railway.app';
 
-    const urlCompleta = url.startsWith('http') ? url : `${hostBackend}${url.startsWith('/') ? '' : '/'}${url}`;
-    window.open(urlCompleta, '_blank');
+    let urlFinal = url.trim();
+
+    if (!urlFinal.startsWith('http://') && !urlFinal.startsWith('https://')) {
+        const caminhoLimpo = urlFinal.startsWith('/') ? urlFinal : `/${urlFinal}`;
+        urlFinal = `${hostBackend}${caminhoLimpo}`;
+    }
+
+    window.open(urlFinal, '_blank');
 }
 
 function abrirModalObs(texto) {

@@ -370,7 +370,7 @@ async function abrirModalDocsCliente(id, nomeCliente) {
     document.getElementById('modalClienteId').value = id;
     document.getElementById('modalClienteInfo').textContent = nomeCliente;
     document.getElementById('fileInputClienteDoc').value = '';
-    document.getElementById('labelClienteDoc').textContent = 'Arraste ou Ctrl+V';
+    document.getElementById('labelClienteDoc').textContent = 'Arraste o Arquivo';
 
     filaDocsClientesTemp = [];
     await carregarDocsCliente(id);
@@ -399,7 +399,7 @@ function enviarDocCliente() {
     tbody.appendChild(tr);
 
     fileInput.value = '';
-    document.getElementById('labelClienteDoc').textContent = 'Arraste ou Ctrl+V';
+    document.getElementById('labelClienteDoc').textContent = 'Arraste o Arquivo';
 }
 
 async function fecharModalDocsCliente() {
@@ -736,8 +736,8 @@ function limparFormMotorista() {
     document.getElementById('motoristaObservacoes').value = '';
     document.getElementById('motoristaCnhFile').value = '';
     document.getElementById('motoristaCrlvFile').value = '';
-    document.getElementById('labelCnh').textContent = 'Arraste ou cole (Ctrl+V) a CNH';
-    document.getElementById('labelCrlv').textContent = 'Arraste ou cole (Ctrl+V) o CRLV';
+    document.getElementById('labelCnh').textContent = 'Arraste a CNH';
+    document.getElementById('labelCrlv').textContent = 'Arraste o CRLV';
     document.getElementById('btnSalvarMotorista').textContent = 'Cadastrar Motorista';
 }
 
@@ -853,7 +853,7 @@ async function abrirModalOutrosMotorista(id, nomeMotorista) {
     document.getElementById('modalMotoristaInfo').textContent = nomeMotorista;
     document.getElementById('docExtraNome').value = '';
     document.getElementById('fileInputMotoristaExtra').value = '';
-    document.getElementById('labelMotoristaExtra').textContent = 'Arraste ou Ctrl+V';
+    document.getElementById('labelMotoristaExtra').textContent = 'Arraste o Arquivo';
 
     filaDocsExtrasTemp = [];
     await carregarDocumentosExtrasMotorista(id);
@@ -884,7 +884,7 @@ function enviarDocExtraMotorista() {
 
     nomeInput.value = '';
     fileInput.value = '';
-    document.getElementById('labelMotoristaExtra').textContent = 'Arraste ou Ctrl+V';
+    document.getElementById('labelMotoristaExtra').textContent = 'Arraste o Arquivo';
 }
 
 async function fecharModalOutrosMotorista() {
@@ -1151,7 +1151,7 @@ async function abrirModalUpload(id) {
 
     document.getElementById('comprovanteNome').value = '';
     document.getElementById('fileInput').value = '';
-    document.getElementById('labelViagem').textContent = 'Arraste ou Ctrl+V';
+    document.getElementById('labelViagem').textContent = 'Arraste o Arquivo';
 
     filaComprovantesTemp = [];
     await carregarComprovantesViagem(id);
@@ -1182,7 +1182,7 @@ function enviarComprovanteViagem() {
 
     nomeInput.value = '';
     fileInput.value = '';
-    document.getElementById('labelViagem').textContent = 'Arraste ou Ctrl+V';
+    document.getElementById('labelViagem').textContent = 'Arraste o Arquivo';
 }
 
 async function fecharModal() {

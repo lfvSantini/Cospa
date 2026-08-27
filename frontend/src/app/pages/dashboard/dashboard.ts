@@ -97,7 +97,7 @@ export class DashboardComponent implements OnInit {
   private fornecedorService = inject(FornecedorService);
   private cdr = inject(ChangeDetectorRef);
 
-  uploadsUrl = environment.uploadsUrl;
+  uploadsUrl = environment.uploadsUrl || environment.apiUrl;
   isLoading: boolean = false;
 
   isDarkMode: boolean = true;
@@ -250,6 +250,16 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Sanitização de URLs de arquivos para evitar duplicação /uploads/uploads/
+  public sanitizarUrlArquivo(url: string | null | undefined): string {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    
+    const baseUrl = (this.uploadsUrl || environment.apiUrl).replace(/\/+$/, '');
+    const cleanPath = url.replace(/^\/?(uploads\/)+/, 'uploads/');
+    return `${baseUrl}/${cleanPath}`;
+  }
+
   carregarViagens(): void {
     this.isLoading = true;
     this.viagemService.listarTodas().subscribe({
@@ -289,7 +299,7 @@ export class DashboardComponent implements OnInit {
     const fotos: ComprovanteItem[] = (v.comprovantes || []).map((c: any) => ({
       id: c.id || 0,
       descricao: c.nome || c.descricao || 'Comprovante',
-      url: (c.urlArquivo || c.url || '').startsWith('http') ? (c.urlArquivo || c.url) : `${this.uploadsUrl}${c.urlArquivo || c.url}`,
+      url: this.sanitizarUrlArquivo(c.urlArquivo || c.url),
       nomeArquivo: c.nome || c.nomeArquivo || 'Arquivo',
       dataEnvio: c.dataEnvio || ''
     }));
@@ -383,9 +393,20 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  abrirPreviewFoto(url: string): void { this.previewImageUrl = url; this.cdr.detectChanges(); }
-  abrirImagemNovaAba(event: Event, url: string): void { event.stopPropagation(); window.open(url, '_blank'); }
-  fecharPreviewFoto(): void { this.previewImageUrl = null; this.cdr.detectChanges(); }
+  abrirPreviewFoto(url: string): void { 
+    this.previewImageUrl = this.sanitizarUrlArquivo(url); 
+    this.cdr.detectChanges(); 
+  }
+
+  abrirImagemNovaAba(event: Event, url: string): void { 
+    event.stopPropagation(); 
+    window.open(this.sanitizarUrlArquivo(url), '_blank'); 
+  }
+
+  fecharPreviewFoto(): void { 
+    this.previewImageUrl = null; 
+    this.cdr.detectChanges(); 
+  }
 
   carregarMotoristas(): void {
     this.motoristaService.listar().subscribe({
@@ -401,7 +422,7 @@ export class DashboardComponent implements OnInit {
           documentos: (m.documentos || []).map((d: any) => ({
             id: d.id || 0,
             descricao: d.descricao || d.nome || '',
-            url: (d.url || d.urlArquivo || '').startsWith('http') ? (d.url || d.urlArquivo || '') : `${this.uploadsUrl}${d.url || d.urlArquivo}`,
+            url: this.sanitizarUrlArquivo(d.url || d.urlArquivo),
             nomeArquivo: d.nomeArquivo || '',
             dataEnvio: d.dataEnvio || ''
           }))

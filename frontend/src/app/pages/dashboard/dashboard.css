@@ -423,14 +423,17 @@
 /* Modais */
 .cospa-modal-overlay {
   position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(5px);
-  z-index: 10000;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 1.5rem;
+  z-index: 1000;
   animation: fadeIn 0.2s ease;
 }
 
@@ -444,12 +447,8 @@
   animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
   box-sizing: border-box;
-}
-
-.cospa-modal-box.modal-fixed-frame {
-  width: 860px;
-  max-width: 95vw;
-  height: 580px;
+  position: relative;
+  z-index: 1010;
 }
 
 .cospa-modal-box.modal-photo-frame {
@@ -457,6 +456,20 @@
   max-width: 95vw;
   min-height: 380px;
   max-height: 85vh;
+}
+
+.cospa-modal-overlay.fullscreen-preview,
+.cospa-fullscreen-overlay {
+  z-index: 1100 !important;
+  background-color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.cospa-fullscreen-overlay img {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
 }
 
 .cospa-modal-box.modal-trip-form {

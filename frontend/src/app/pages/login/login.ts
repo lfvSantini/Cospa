@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
+import { Title } from '@angular/platform-browser';
 
+this.titleService.setTitle('Cospa LOG');
 @Component({
   selector: 'app-login',
   standalone: true,

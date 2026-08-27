@@ -1,6 +1,7 @@
 package com.cospa.api.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -19,31 +20,34 @@ import java.nio.file.Paths;
 @RequestMapping("/uploads")
 public class UploadController {
 
-    private final Path diretorioBase = Paths.get("uploads").toAbsolutePath().normalize();
+    @Value("${app.upload.dir:/app/uploads}")
+    private String uploadDirConfig;
 
     @GetMapping("/**")
     public ResponseEntity<Resource> servirArquivo(HttpServletRequest request) {
         try {
-            // Extrai todo o caminho relativo após "/uploads/"
             String uriCompleta = request.getRequestURI();
-            String caminhoRelativo = uriCompleta.substring(uriCompleta.indexOf("/uploads/") + 9);
 
-            // Resolve o arquivo de forma segura dentro da pasta base uploads
-            Path caminhoArquivo = this.diretorioBase.resolve(caminhoRelativo).normalize();
+            // Extrai apenas o nome final do arquivo removendo qualquer repeticao de /uploads
+            String nomeArquivo = uriCompleta.substring(uriCompleta.lastIndexOf('/') + 1);
 
-            // Proteção contra path traversal
-            if (!caminhoArquivo.startsWith(this.diretorioBase)) {
-                return ResponseEntity.badRequest().build();
+            Path pastaPrincipal = Paths.get(uploadDirConfig).toAbsolutePath().normalize();
+            Path arquivo = pastaPrincipal.resolve(nomeArquivo).normalize();
+
+            // Fallback para ./uploads local
+            if (!Files.exists(arquivo)) {
+                Path fallback = Paths.get("uploads").toAbsolutePath().normalize().resolve(nomeArquivo).normalize();
+                if (Files.exists(fallback)) {
+                    arquivo = fallback;
+                }
             }
 
-            Resource resource = new UrlResource(caminhoArquivo.toUri());
-
-            if (!resource.exists() || !resource.isReadable()) {
+            if (!Files.exists(arquivo) || !Files.isReadable(arquivo)) {
                 return ResponseEntity.notFound().build();
             }
 
-            // Identifica o Content-Type real (image/png, image/jpeg, application/pdf, etc.)
-            String contentType = Files.probeContentType(caminhoArquivo);
+            Resource resource = new UrlResource(arquivo.toUri());
+            String contentType = Files.probeContentType(arquivo);
             if (contentType == null) {
                 contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
             }

@@ -43,7 +43,8 @@ public class SecurityConfig {
                             "/swagger-ui/**",
                             "/swagger-ui.html",
                             "/uploads/**",
-                            "/error"
+                            "/error",
+                            "/api/admin/backup/**"
                     ).permitAll();
                     req.requestMatchers("/auth/**", "/api/auth/**").permitAll();
                     req.anyRequest().authenticated();

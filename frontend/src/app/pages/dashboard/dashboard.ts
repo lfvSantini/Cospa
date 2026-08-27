@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth';
 import { ViagemService } from '../../core/services/viagem';
 import { MotoristaService } from '../../core/services/motorista';
@@ -91,6 +92,7 @@ export interface MotoristaModel {
 export class DashboardComponent implements OnInit {
   private router = inject(Router);
   public authService = inject(AuthService);
+  private http = inject(HttpClient);
   private viagemService = inject(ViagemService);
   private motoristaService = inject(MotoristaService);
   private clienteService = inject(ClienteService);
@@ -260,6 +262,45 @@ export class DashboardComponent implements OnInit {
     }
     this.activeManageTab = tab;
     this.cdr.detectChanges();
+  }
+
+  baixarBackupZip(): void {
+    const urlBackup = `${environment.apiUrl}/admin/backup/uploads-zip`;
+    window.open(urlBackup, '_blank');
+    this.isManageOpen = false;
+  }
+
+  onRestaurarBackupSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0) return;
+
+    const file = target.files[0];
+    if (!file.name.endsWith('.zip')) {
+      alert('Por favor, selecione um arquivo no formato .zip');
+      return;
+    }
+
+    if (!confirm('Deseja restaurar este arquivo de backup? O banco de dados e as fotos existentes serão atualizados.')) {
+      target.value = '';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.http.post(`${environment.apiUrl}/admin/backup/restaurar-zip`, formData, { responseType: 'text' })
+      .subscribe({
+        next: (res) => {
+          alert(res);
+          this.carregarTodosDados();
+          target.value = '';
+          this.isManageOpen = false;
+        },
+        error: (err) => {
+          alert('Erro ao restaurar backup: ' + (err.error || err.message));
+          target.value = '';
+        }
+      });
   }
 
   public sanitizarUrlArquivo(url: string | null | undefined): string {
@@ -890,7 +931,6 @@ export class DashboardComponent implements OnInit {
       cpfFinal = motSelected ? motSelected.cpf : '';
     }
 
-    // Identificador manual caso seja preenchido
     let idFinal: number | undefined = undefined;
     if (this.isEditing && this.selectedViagem) {
       idFinal = this.selectedViagem.rawId;

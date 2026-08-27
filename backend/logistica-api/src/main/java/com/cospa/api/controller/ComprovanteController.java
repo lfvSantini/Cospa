@@ -4,6 +4,7 @@ import com.cospa.api.model.Comprovante;
 import com.cospa.api.repository.ComprovanteRepository;
 import com.cospa.api.repository.ViagemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,22 +28,25 @@ public class ComprovanteController {
     @Autowired
     private ComprovanteRepository comprovanteRepository;
 
-    private final Path uploadDir = Paths.get("uploads");
+    @Value("${app.upload.dir:/app/uploads}")
+    private String uploadDirConfig;
 
-    public ComprovanteController() {
-        try {
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
+    private Path getUploadPath() {
+        Path path = Paths.get(uploadDirConfig).toAbsolutePath().normalize();
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (IOException ignored) {
+                path = Paths.get("uploads").toAbsolutePath().normalize();
+                try { Files.createDirectories(path); } catch (IOException ignored2) {}
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        return path;
     }
 
     @GetMapping("/{viagemId}/comprovantes")
     public ResponseEntity<List<Comprovante>> listarComprovantes(@PathVariable Long viagemId) {
-        List<Comprovante> comprovantes = comprovanteRepository.findByViagemId(viagemId);
-        return ResponseEntity.ok(comprovantes);
+        return ResponseEntity.ok(comprovanteRepository.findByViagemId(viagemId));
     }
 
     @PostMapping("/{viagemId}/comprovantes")
@@ -64,11 +68,10 @@ public class ComprovanteController {
                 }
 
                 String nomeArquivo = "viagem_" + viagemId + "_" + UUID.randomUUID().toString().substring(0, 8) + extensao;
-                Path destino = uploadDir.resolve(nomeArquivo);
+                Path destino = getUploadPath().resolve(nomeArquivo);
                 Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
 
                 String urlRelativa = "/uploads/" + nomeArquivo;
-
                 Comprovante comprovante = new Comprovante(nome, urlRelativa, viagem);
                 comprovanteRepository.save(comprovante);
 
@@ -81,10 +84,13 @@ public class ComprovanteController {
 
     @DeleteMapping("/{viagemId}/comprovantes/{comprovanteId}")
     public ResponseEntity<Void> deletarComprovante(@PathVariable Long viagemId, @PathVariable Long comprovanteId) {
-        if (comprovanteRepository.existsById(comprovanteId)) {
-            comprovanteRepository.deleteById(comprovanteId);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        return comprovanteRepository.findById(comprovanteId).map(c -> {
+            try {
+                String nomeArquivo = c.getUrlArquivo().substring(c.getUrlArquivo().lastIndexOf('/') + 1);
+                Files.deleteIfExists(getUploadPath().resolve(nomeArquivo));
+            } catch (Exception ignored) {}
+            comprovanteRepository.delete(c);
+            return ResponseEntity.noContent().<Void>build();
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

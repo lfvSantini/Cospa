@@ -250,14 +250,19 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // Sanitização de URLs de arquivos para evitar duplicação /uploads/uploads/
+  // Sanitização que remove /api, /uploads repetidos e garante URL correta
   public sanitizarUrlArquivo(url: string | null | undefined): string {
     if (!url) return '';
-    if (url.startsWith('http://') || url.startsWith('https://')) return url;
     
-    const baseUrl = (this.uploadsUrl || environment.apiUrl).replace(/\/+$/, '');
-    const cleanPath = url.replace(/^\/?(uploads\/)+/, 'uploads/');
-    return `${baseUrl}/${cleanPath}`;
+    let fullUrl = url;
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      const rawBase = environment.apiUrl || this.uploadsUrl || '';
+      const baseDomain = rawBase.replace(/\/api\/?$/, '').replace(/\/uploads\/?$/, '').replace(/\/+$/, '');
+      const cleanPath = url.replace(/^\/+/, '');
+      fullUrl = `${baseDomain}/${cleanPath}`;
+    }
+
+    return fullUrl.replace(/\/uploads\/+uploads\//g, '/uploads/');
   }
 
   carregarViagens(): void {

@@ -1,3 +1,4 @@
+// backend/src/main/java/com/cospa/api/controller/UploadController.java
 package com.cospa.api.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,9 +8,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,6 +17,7 @@ import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/uploads")
+@CrossOrigin(origins = "*")
 public class UploadController {
 
     @Value("${app.upload.dir:/app/uploads}")
@@ -27,18 +27,18 @@ public class UploadController {
     public ResponseEntity<Resource> servirArquivo(HttpServletRequest request) {
         try {
             String uriCompleta = request.getRequestURI();
-
-            // Extrai apenas o nome final do arquivo removendo qualquer repeticao de /uploads
             String nomeArquivo = uriCompleta.substring(uriCompleta.lastIndexOf('/') + 1);
 
-            Path pastaPrincipal = Paths.get(uploadDirConfig).toAbsolutePath().normalize();
-            Path arquivo = pastaPrincipal.resolve(nomeArquivo).normalize();
+            // 1. Tenta no caminho configurado do volume (/app/uploads)
+            Path pastaVolume = Paths.get(uploadDirConfig).toAbsolutePath().normalize();
+            Path arquivo = pastaVolume.resolve(nomeArquivo).normalize();
 
-            // Fallback para ./uploads local
-            if (!Files.exists(arquivo)) {
-                Path fallback = Paths.get("uploads").toAbsolutePath().normalize().resolve(nomeArquivo).normalize();
-                if (Files.exists(fallback)) {
-                    arquivo = fallback;
+            // 2. Fallback para ./uploads local
+            if (!Files.exists(arquivo) || !Files.isReadable(arquivo)) {
+                Path pastaLocal = Paths.get("uploads").toAbsolutePath().normalize();
+                Path arquivoLocal = pastaLocal.resolve(nomeArquivo).normalize();
+                if (Files.exists(arquivoLocal) && Files.isReadable(arquivoLocal)) {
+                    arquivo = arquivoLocal;
                 }
             }
 

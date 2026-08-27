@@ -10,9 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,11 +75,11 @@ public class ViagemController {
         v.setPlaca(dto.getPlaca());
         v.setFornecedorAgencia(dto.getFornecedorAgencia());
 
-        // Conversão com tratamento de nulos e formatos de data
-        v.setDataColetaPrevista(parseData(dto.getDataColetaPrevista()));
-        v.setDataColetaReal(parseData(dto.getDataColetaReal()));
-        v.setDataEntregaPrevista(parseData(dto.getDataEntregaPrevista()));
-        v.setDataEntregaReal(parseData(dto.getDataEntregaReal()));
+        // Atribuição direta de datas em formato texto flexível
+        v.setDataColetaPrevista(dto.getDataColetaPrevista());
+        v.setDataColetaReal(dto.getDataColetaReal());
+        v.setDataEntregaPrevista(dto.getDataEntregaPrevista());
+        v.setDataEntregaReal(dto.getDataEntregaReal());
 
         v.setValorAReceber(dto.getValorAReceber());
         v.setValorAPagar(dto.getValorAPagar());
@@ -99,37 +96,5 @@ public class ViagemController {
         } else {
             v.setStatus(StatusViagem.PROGRAMADO);
         }
-    }
-
-    private LocalDateTime parseData(String dataStr) {
-        if (dataStr == null || dataStr.isBlank() || dataStr.equalsIgnoreCase("A confirmar") || dataStr.equals("-")) {
-            return null;
-        }
-
-        dataStr = dataStr.trim();
-
-        // 1. Formato ISO padrão: "2026-08-26T14:30:00" ou "2026-08-26T14:30"
-        try {
-            return LocalDateTime.parse(dataStr);
-        } catch (Exception ignored) {}
-
-        // 2. Formato Brasileiro com hora: "26/08/2026 14:30" ou "26/08/2026 14:30:00"
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm[:ss]");
-            return LocalDateTime.parse(dataStr, formatter);
-        } catch (Exception ignored) {}
-
-        // 3. Formato Brasileiro apenas data: "26/08/2026" (define 00:00 como hora)
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            return LocalDate.parse(dataStr, formatter).atStartOfDay();
-        } catch (Exception ignored) {}
-
-        // 4. Formato ISO apenas data: "2026-08-26"
-        try {
-            return LocalDate.parse(dataStr).atStartOfDay();
-        } catch (Exception ignored) {}
-
-        return null;
     }
 }

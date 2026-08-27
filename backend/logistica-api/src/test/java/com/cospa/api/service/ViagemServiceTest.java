@@ -1,7 +1,5 @@
 package com.cospa.api.service;
 
-import com.cospa.api.dto.ViagemRequestDTO;
-import com.cospa.api.dto.ViagemResponseDTO;
 import com.cospa.api.model.StatusViagem;
 import com.cospa.api.model.Viagem;
 import com.cospa.api.repository.ViagemRepository;
@@ -13,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -65,7 +62,7 @@ class ViagemServiceTest {
         when(repository.findById(101L)).thenReturn(Optional.of(viagem));
         when(repository.save(any(Viagem.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        LocalDateTime agora = LocalDateTime.of(2026, 8, 18, 14, 30);
+        String agora = "2026-08-18T14:30:00";
         viagem.setStatus(StatusViagem.CARREGAMENTO);
         viagem.setDataColetaReal(agora);
         Viagem atualizada = repository.save(viagem);

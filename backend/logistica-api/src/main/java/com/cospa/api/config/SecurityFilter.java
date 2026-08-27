@@ -38,7 +38,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         var uri = request.getRequestURI();
         // Não valida token em rotas públicas
-        if (uri.contains("/auth/") || uri.contains("/uploads/") || uri.contains("/swagger-ui") || uri.contains("/v3/api-docs")) {
+        if (uri.contains("/auth") || uri.contains("/uploads/") || uri.contains("/swagger-ui") || uri.contains("/v3/api-docs") || uri.equals("/") || uri.equals("/health")) {
             filterChain.doFilter(request, response);
             return;
         }

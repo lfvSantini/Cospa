@@ -1,7 +1,17 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, CanActivateFn } from '@angular/router';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
+
+export interface LoginDTO {
+  username: string;
+  senha: string;
+}
+
+export interface TokenResponse {
+  token: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -9,13 +19,16 @@ import { Observable, tap } from 'rxjs';
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private baseUrl = `${environment.apiUrl}/auth`;
 
-  login(credentials: { login: string; senha: string }): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
+  isLoggedIn = signal<boolean>(!!localStorage.getItem('cospa_token'));
+
+  login(credentials: LoginDTO): Observable<TokenResponse> {
+    return this.http.post<TokenResponse>(`${this.baseUrl}/login`, credentials).pipe(
       tap(res => {
-        if (res.token) {
+        if (res?.token) {
           localStorage.setItem('cospa_token', res.token);
+          this.isLoggedIn.set(true);
         }
       })
     );
@@ -23,11 +36,16 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('cospa_token');
+    this.isLoggedIn.set(false);
     this.router.navigate(['/login']);
   }
 
   isAuthenticated(): boolean {
     return !!localStorage.getItem('cospa_token');
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('cospa_token');
   }
 }
 

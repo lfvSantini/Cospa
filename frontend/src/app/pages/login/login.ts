@@ -22,8 +22,6 @@ export class LoginComponent {
   errorMessage: string = '';
 
   onSubmit(): void {
-    console.log('Tentando login com:', this.usuario);
-
     if (!this.usuario.trim() || !this.senha.trim()) {
       this.errorMessage = 'Preencha usuário e senha.';
       this.cdr.detectChanges();
@@ -36,7 +34,6 @@ export class LoginComponent {
 
     this.authService.login({ username: this.usuario.trim(), senha: this.senha }).subscribe({
       next: (res) => {
-        console.log('Login efetuado com sucesso!', res);
         this.isLoading = false;
         this.cdr.detectChanges();
         this.router.navigate(['/modules']);
@@ -48,7 +45,7 @@ export class LoginComponent {
         if (err.status === 401 || err.status === 403) {
           this.errorMessage = 'Usuário ou senha incorretos.';
         } else if (err.status === 0) {
-          this.errorMessage = 'Backend indisponível (verifique a porta 8080).';
+          this.errorMessage = 'Não foi possível conectar ao servidor (verifique sua conexão ou CORS).';
         } else {
           this.errorMessage = err.error?.mensagem || err.error?.message || 'Erro ao realizar login.';
         }

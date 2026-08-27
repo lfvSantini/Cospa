@@ -49,7 +49,7 @@
       <button type="button" class="theme-toggle" (click)="toggleTheme()" aria-label="Tema">
         <div class="toggle-track" [class.dark]="isDarkMode">
           <div class="toggle-thumb">
-            <svg *ngIf="!isDarkMode" class="theme-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg *ngIf="!isDarkMode" class="theme-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
             <svg *ngIf="isDarkMode" class="theme-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
           </div>
         </div>
@@ -346,10 +346,17 @@
             </div>
 
             <div class="f-group file-group">
-              <label>Arquivo</label>
-              <div class="comprovante-dropzone" (click)="fileInputComp.click()">
+              <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
+              <div 
+                class="comprovante-dropzone" 
+                [class.drag-over]="isDraggingComprovante"
+                (click)="fileInputComp.click()"
+                (dragover)="onComprovanteDragOver($event)"
+                (dragleave)="onComprovanteDragLeave($event)"
+                (drop)="onComprovanteDrop($event)">
                 <input #fileInputComp type="file" (change)="onComprovanteFileSelected($event)" style="display: none;" accept="image/*,.pdf" />
-                <span>{{ novoComprovante.nomeArquivo || 'Arraste o Arquivo' }}</span>
+                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>{{ novoComprovante.nomeArquivo || 'Clique, arraste ou use Ctrl+V' }}</span>
               </div>
             </div>
           </div>
@@ -426,10 +433,17 @@
           </div>
 
           <div class="f-group">
-            <label>Arquivo</label>
-            <div class="comprovante-dropzone" (click)="fileInputMotorista.click()">
+            <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
+            <div 
+              class="comprovante-dropzone"
+              [class.drag-over]="isDraggingMotoristaDoc"
+              (click)="fileInputMotorista.click()"
+              (dragover)="onMotoristaDocDragOver($event)"
+              (dragleave)="onMotoristaDocDragLeave($event)"
+              (drop)="onMotoristaDocDrop($event)">
               <input #fileInputMotorista type="file" (change)="onMotoristaDocSelected($event)" style="display: none;" accept="image/*,.pdf" />
-              <span>{{ novoDocMotorista.nomeArquivo || 'Clique ou arraste o arquivo (CNH, CRLV, etc.)' }}</span>
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span>{{ novoDocMotorista.nomeArquivo || 'Clique, arraste ou use Ctrl+V' }}</span>
             </div>
           </div>
 
@@ -837,16 +851,28 @@
           <textarea rows="3" [(ngModel)]="motoristaForm.informacoesAdicionais" name="info" placeholder="Informações Adicionais..."></textarea>
 
           <div class="upload-dropzone-row">
-            <div class="dropzone-box" (click)="cnhInput.click()">
+            <div 
+              class="dropzone-box" 
+              [class.drag-over]="isDraggingCnh"
+              (click)="cnhInput.click()"
+              (dragover)="$event.preventDefault(); isDraggingCnh = true;"
+              (dragleave)="$event.preventDefault(); isDraggingCnh = false;"
+              (drop)="onCnhDrop($event)">
               <input #cnhInput type="file" (change)="onFileSelected($event, 'CNH')" style="display: none;" accept="image/*,.pdf" />
-              <span class="dropzone-label">Anexar CNH (Arraste ou Cole)</span>
-              <p class="dropzone-text">{{ motoristaForm.cnhPreviewName || 'Arraste a CNH' }}</p>
+              <span class="dropzone-label">Anexar CNH (Arraste, Clique ou Cole)</span>
+              <p class="dropzone-text">{{ motoristaForm.cnhPreviewName || 'Arraste a CNH ou use Ctrl+V' }}</p>
             </div>
 
-            <div class="dropzone-box" (click)="crlvInput.click()">
+            <div 
+              class="dropzone-box" 
+              [class.drag-over]="isDraggingCrlv"
+              (click)="crlvInput.click()"
+              (dragover)="$event.preventDefault(); isDraggingCrlv = true;"
+              (dragleave)="$event.preventDefault(); isDraggingCrlv = false;"
+              (drop)="onCrlvDrop($event)">
               <input #crlvInput type="file" (change)="onFileSelected($event, 'CRLV')" style="display: none;" accept="image/*,.pdf" />
-              <span class="dropzone-label">Anexar CRLV (Arraste ou Cole)</span>
-              <p class="dropzone-text">{{ motoristaForm.crlvPreviewName || 'Arraste o CRLV' }}</p>
+              <span class="dropzone-label">Anexar CRLV (Arraste, Clique ou Cole)</span>
+              <p class="dropzone-text">{{ motoristaForm.crlvPreviewName || 'Arraste o CRLV ou use Ctrl+V' }}</p>
             </div>
           </div>
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, HostListener, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -121,6 +121,11 @@ export class DashboardComponent implements OnInit {
   activeMotoristaPhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
   previewImageUrl: string | null = null;
 
+  isDraggingComprovante: boolean = false;
+  isDraggingMotoristaDoc: boolean = false;
+  isDraggingCnh: boolean = false;
+  isDraggingCrlv: boolean = false;
+
   novoComprovante = {
     descricao: '',
     arquivo: null as File | null,
@@ -184,6 +189,58 @@ export class DashboardComponent implements OnInit {
     const savedTheme = localStorage.getItem('cospa_theme');
     this.isDarkMode = savedTheme !== 'light';
     this.carregarTodosDados();
+  }
+
+  // ==================== LISTENER GLOBAL PARA CTRL + V ====================
+  @HostListener('window:paste', ['$event'])
+  handlePaste(event: ClipboardEvent): void {
+    const clipboardData = event.clipboardData;
+    if (!clipboardData || !clipboardData.items) return;
+
+    for (let i = 0; i < clipboardData.items.length; i++) {
+      const item = clipboardData.items[i];
+      if (item.type.indexOf('image') !== -1) {
+        const file = item.getAsFile();
+        if (file) {
+          const timestamp = new Date().getTime();
+          const ext = file.type.split('/')[1] || 'png';
+          const pastedFile = new File([file], `print_${timestamp}.${ext}`, { type: file.type });
+
+          if (this.modalType === 'PHOTO') {
+            this.novoComprovante.arquivo = pastedFile;
+            this.novoComprovante.nomeArquivo = pastedFile.name;
+            if (!this.novoComprovante.descricao.trim()) {
+              this.novoComprovante.descricao = 'Comprovante Colado';
+            }
+            this.activePhotoTab = 'ADICIONAR';
+            this.cdr.detectChanges();
+            event.preventDefault();
+            break;
+          } else if (this.modalType === 'MOTORISTA_PHOTO') {
+            this.novoDocMotorista.arquivo = pastedFile;
+            this.novoDocMotorista.nomeArquivo = pastedFile.name;
+            if (!this.novoDocMotorista.descricao.trim()) {
+              this.novoDocMotorista.descricao = 'Documento Colado';
+            }
+            this.activeMotoristaPhotoTab = 'ADICIONAR';
+            this.cdr.detectChanges();
+            event.preventDefault();
+            break;
+          } else if (this.modalType === 'MOTORISTA') {
+            if (!this.motoristaForm.cnhFile) {
+              this.motoristaForm.cnhFile = pastedFile;
+              this.motoristaForm.cnhPreviewName = pastedFile.name;
+            } else {
+              this.motoristaForm.crlvFile = pastedFile;
+              this.motoristaForm.crlvPreviewName = pastedFile.name;
+            }
+            this.cdr.detectChanges();
+            event.preventDefault();
+            break;
+          }
+        }
+      }
+    }
   }
 
   carregarTodosDados(): void {
@@ -252,6 +309,10 @@ export class DashboardComponent implements OnInit {
     this.activeMotoristaPhotoTab = 'ADICIONAR';
     this.manageSearchTerm = '';
     this.previewImageUrl = null;
+    this.isDraggingComprovante = false;
+    this.isDraggingMotoristaDoc = false;
+    this.isDraggingCnh = false;
+    this.isDraggingCrlv = false;
     this.cdr.detectChanges();
   }
 
@@ -431,9 +492,38 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  // Drag and Drop: Comprovante
+  onComprovanteDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingComprovante = true;
+  }
+
+  onComprovanteDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingComprovante = false;
+  }
+
+  onComprovanteDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingComprovante = false;
+
+    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      this.novoComprovante.arquivo = file;
+      this.novoComprovante.nomeArquivo = file.name;
+      if (!this.novoComprovante.descricao.trim()) {
+        this.novoComprovante.descricao = file.name.replace(/\.[^/.]+$/, '');
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
   adicionarComprovante(): void {
     if (!this.selectedViagem || !this.novoComprovante.arquivo || !this.novoComprovante.descricao.trim()) {
-      alert('Selecione um arquivo e informe uma descrição.');
+      alert('Selecione um arquivo (ou cole com Ctrl+V) e informe uma descrição.');
       return;
     }
 
@@ -554,6 +644,35 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  // Drag and Drop: Documento do Motorista
+  onMotoristaDocDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingMotoristaDoc = true;
+  }
+
+  onMotoristaDocDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingMotoristaDoc = false;
+  }
+
+  onMotoristaDocDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingMotoristaDoc = false;
+
+    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      this.novoDocMotorista.arquivo = file;
+      this.novoDocMotorista.nomeArquivo = file.name;
+      if (!this.novoDocMotorista.descricao.trim()) {
+        this.novoDocMotorista.descricao = file.name.replace(/\.[^/.]+$/, '');
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
   adicionarDocMotorista(): void {
     if (!this.selectedMotorista || !this.novoDocMotorista.arquivo) return;
 
@@ -653,6 +772,31 @@ export class DashboardComponent implements OnInit {
     this.motoristaForm = this.getEmptyMotorista();
     this.isEditingMotorista = false;
     this.cdr.detectChanges();
+  }
+
+  // Drag and Drop: Form CNH / CRLV
+  onCnhDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingCnh = false;
+    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      this.motoristaForm.cnhFile = file;
+      this.motoristaForm.cnhPreviewName = file.name;
+      this.cdr.detectChanges();
+    }
+  }
+
+  onCrlvDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingCrlv = false;
+    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      this.motoristaForm.crlvFile = file;
+      this.motoristaForm.crlvPreviewName = file.name;
+      this.cdr.detectChanges();
+    }
   }
 
   carregarClientes(): void {
@@ -857,7 +1001,6 @@ export class DashboardComponent implements OnInit {
 
     const raw: any = item.rawViagem;
     
-    // Mapeamento correto de endereços múltiplos divididos por ';'
     const rawColetaArr = (raw?.localColeta || raw?.local_coleta || '').split(';').map((s: string) => s.trim());
     const origensMapeadas: PontoRota[] = item.origem.map((o, idx) => ({
       local: o === '-' ? '' : o,

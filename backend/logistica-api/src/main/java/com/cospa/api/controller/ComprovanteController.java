@@ -6,9 +6,11 @@ import com.cospa.api.repository.ViagemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping({"/api/viagens", "/api/comprovantes"})
+@RequestMapping("/api/viagens")
 @CrossOrigin(origins = "*")
 public class ComprovanteController {
 
@@ -82,27 +84,24 @@ public class ComprovanteController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // Rota 1: /api/viagens/{viagemId}/comprovantes/{comprovanteId}
     @DeleteMapping("/{viagemId}/comprovantes/{comprovanteId}")
-    public ResponseEntity<Void> deletarComprovanteComViagem(@PathVariable Long viagemId, @PathVariable Long comprovanteId) {
-        return removerComprovante(comprovanteId);
-    }
+    @Transactional
+    public ResponseEntity<Void> deletarComprovante(
+            @PathVariable Long viagemId,
+            @PathVariable Long comprovanteId) {
 
-    // Rota 2: /api/comprovantes/{id}
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarComprovanteDireto(@PathVariable Long id) {
-        return removerComprovante(id);
-    }
-
-    private ResponseEntity<Void> removerComprovante(Long id) {
-        return comprovanteRepository.findById(id).map(c -> {
+        return comprovanteRepository.findById(comprovanteId).map(comprovante -> {
+            // Remove o arquivo físico se existir
             try {
-                if (c.getUrlArquivo() != null) {
-                    String nomeArquivo = c.getUrlArquivo().substring(c.getUrlArquivo().lastIndexOf('/') + 1);
-                    Files.deleteIfExists(getUploadPath().resolve(nomeArquivo));
+                if (comprovante.getUrlArquivo() != null) {
+                    String nomeArquivo = comprovante.getUrlArquivo().substring(comprovante.getUrlArquivo().lastIndexOf('/') + 1);
+                    Path arquivoFisico = getUploadPath().resolve(nomeArquivo);
+                    Files.deleteIfExists(arquivoFisico);
                 }
             } catch (Exception ignored) {}
-            comprovanteRepository.delete(c);
+
+            // Remove o registro do banco de dados
+            comprovanteRepository.delete(comprovante);
             return ResponseEntity.noContent().<Void>build();
         }).orElse(ResponseEntity.notFound().build());
     }

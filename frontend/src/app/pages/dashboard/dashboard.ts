@@ -110,6 +110,8 @@ export class DashboardComponent implements OnInit {
   showFinalizadas: boolean = false;
 
   modalType: 'TRIP_FORM' | 'PHOTO' | 'OBS' | 'DELETE' | 'FORNECEDOR' | 'CLIENTE' | 'MOTORISTA' | 'MOTORISTA_PHOTO' | null = null;
+  private previousModalType: 'PHOTO' | 'MOTORISTA_PHOTO' | null = null;
+
   activeManageTab: 'CADASTRAR' | 'LISTAR' = 'CADASTRAR';
   manageSearchTerm: string = '';
 
@@ -240,6 +242,7 @@ export class DashboardComponent implements OnInit {
 
   closeModal(): void {
     this.modalType = null;
+    this.previousModalType = null;
     this.selectedViagem = null;
     this.selectedMotorista = null;
     this.activeManageTab = 'CADASTRAR';
@@ -250,10 +253,8 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // Sanitização que remove /api, /uploads repetidos e garante URL correta
   public sanitizarUrlArquivo(url: string | null | undefined): string {
     if (!url) return '';
-    
     let fullUrl = url;
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       const rawBase = environment.apiUrl || this.uploadsUrl || '';
@@ -261,7 +262,6 @@ export class DashboardComponent implements OnInit {
       const cleanPath = url.replace(/^\/+/, '');
       fullUrl = `${baseDomain}/${cleanPath}`;
     }
-
     return fullUrl.replace(/\/uploads\/+uploads\//g, '/uploads/');
   }
 
@@ -399,6 +399,8 @@ export class DashboardComponent implements OnInit {
   }
 
   abrirPreviewFoto(url: string): void { 
+    this.previousModalType = this.modalType as any;
+    this.modalType = null; 
     this.previewImageUrl = this.sanitizarUrlArquivo(url); 
     this.cdr.detectChanges(); 
   }
@@ -409,7 +411,11 @@ export class DashboardComponent implements OnInit {
   }
 
   fecharPreviewFoto(): void { 
-    this.previewImageUrl = null; 
+    this.previewImageUrl = null;
+    if (this.previousModalType) {
+      this.modalType = this.previousModalType;
+      this.previousModalType = null;
+    }
     this.cdr.detectChanges(); 
   }
 

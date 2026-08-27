@@ -216,7 +216,7 @@
 .btn-logout-nav { display: flex; align-items: center; gap: 0.4rem; background-color: var(--btn-logout-bg); border: 1px solid var(--btn-logout-border); color: var(--btn-logout-text); padding: 0.55rem 0.85rem; border-radius: 8px; font-size: 0.88rem; cursor: pointer; }
 .btn-logout-nav svg { width: 15px; height: 15px; }
 
-/* Dashboard Content & Stacking Context Corrigido */
+/* Dashboard Content */
 .dashboard-content {
   flex: 1;
   padding: 2.5rem 2.5rem 6rem 2.5rem;
@@ -420,7 +420,7 @@
 .row-menu-item.item-excluir svg { stroke: #f87171; }
 .row-menu-divider { height: 1px; background-color: var(--border-nav); margin: 3px 0; }
 
-/* Modais */
+/* Modais Padronizados */
 .cospa-modal-overlay {
   position: fixed;
   top: 0;
@@ -451,25 +451,17 @@
   z-index: 1010;
 }
 
+.cospa-modal-box.modal-fixed-frame {
+  width: 860px;
+  max-width: 95vw;
+  height: 580px;
+}
+
 .cospa-modal-box.modal-photo-frame {
   width: 680px;
   max-width: 95vw;
   min-height: 380px;
   max-height: 85vh;
-}
-
-.cospa-modal-overlay.fullscreen-preview,
-.cospa-fullscreen-overlay {
-  z-index: 1100 !important;
-  background-color: rgba(0, 0, 0, 0.88) !important;
-}
-
-.cospa-fullscreen-overlay img {
-  max-width: 90vw;
-  max-height: 85vh;
-  object-fit: contain;
-  border-radius: 8px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
 }
 
 .cospa-modal-box.modal-trip-form {
@@ -491,6 +483,11 @@
 @keyframes modalPop {
   from { opacity: 0; transform: scale(0.96) translateY(8px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal-head {
@@ -778,47 +775,67 @@
   color: var(--text-muted);
 }
 
-/* Lightbox */
+/* Lightbox Isolado Sem Sobreposição */
 .lightbox-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.88);
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.94) !important;
   backdrop-filter: blur(8px);
-  z-index: 20000;
+  z-index: 99999 !important;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
-  animation: fadeIn 0.2s ease;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  animation: fadeIn 0.15s ease-out;
 }
 
 .lightbox-content {
   position: relative;
-  max-width: 90vw;
+  max-width: 92vw;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  z-index: 100000 !important;
 }
 
 .lightbox-content img {
-  max-width: 100%;
-  max-height: 80vh;
-  border-radius: 10px;
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.7);
+  max-width: 90vw;
+  max-height: 78vh;
   object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
 }
 
 .btn-close-lightbox {
   position: absolute;
-  top: -40px;
-  right: 0;
-  background: none;
+  top: -42px;
+  right: -10px;
+  background: rgba(255, 255, 255, 0.15);
   border: none;
   color: #ffffff;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.btn-close-lightbox:hover {
+  background: #ef4444;
+}
+
+.lightbox-actions {
+  display: flex;
+  gap: 0.75rem;
 }
 
 .dynamic-point-group {

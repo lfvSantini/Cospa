@@ -1,11 +1,10 @@
-import { Component, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../core/services/auth';
 import { Title } from '@angular/platform-browser';
+import { AuthService } from '../../core/services/auth';
 
-this.titleService.setTitle('Cospa LOG');
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -13,15 +12,20 @@ this.titleService.setTitle('Cospa LOG');
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private titleService = inject(Title);
 
   usuario: string = '';
   senha: string = '';
   isLoading: boolean = false;
   errorMessage: string = '';
+
+  ngOnInit(): void {
+    this.titleService.setTitle('Cospa LOG');
+  }
 
   onSubmit(): void {
     if (!this.usuario.trim() || !this.senha.trim()) {

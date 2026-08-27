@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
@@ -27,7 +26,12 @@ public class AuthController {
         this.tokenService = tokenService;
     }
 
-    @PostMapping("/login")
+    @GetMapping("/")
+    public ResponseEntity<String> healthCheck() {
+        return ResponseEntity.ok("COSPA API Online");
+    }
+
+    @PostMapping("/api/auth/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDTO dto) {
         var usuarioOptional = usuarioRepository.findByUsername(dto.username());
 
@@ -45,7 +49,7 @@ public class AuthController {
         return ResponseEntity.ok(new TokenResponseDTO(token));
     }
 
-    @PostMapping("/registrar")
+    @PostMapping("/api/auth/registrar")
     public ResponseEntity<?> registrar(@RequestBody @Valid UsuarioRequestDTO dto) {
         if (usuarioRepository.findByUsername(dto.username()).isPresent()) {
             return ResponseEntity.badRequest().body("Username já em uso.");

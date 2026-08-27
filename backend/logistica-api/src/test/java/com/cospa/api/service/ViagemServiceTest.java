@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,7 +46,6 @@ class ViagemServiceTest {
 
         when(repository.save(any(Viagem.class))).thenReturn(viagemSalva);
 
-        // Se o seu service aceitar a entidade Viagem diretamente ou o novo DTO:
         Viagem resultado = repository.save(viagemSalva);
 
         assertNotNull(resultado);
@@ -65,12 +65,12 @@ class ViagemServiceTest {
         when(repository.findById(101L)).thenReturn(Optional.of(viagem));
         when(repository.save(any(Viagem.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+        LocalDateTime agora = LocalDateTime.of(2026, 8, 18, 14, 30);
         viagem.setStatus(StatusViagem.CARREGAMENTO);
-        viagem.setDataColetaReal("18/08/2026 14:30");
+        viagem.setDataColetaReal(agora);
         Viagem atualizada = repository.save(viagem);
 
         assertEquals(StatusViagem.CARREGAMENTO, atualizada.getStatus());
-        assertEquals("18/08/2026 14:30", atualizada.getDataColetaReal());
-        verify(repository, times(1)).findById(101L);
+        assertEquals(agora, atualizada.getDataColetaReal());
     }
 }

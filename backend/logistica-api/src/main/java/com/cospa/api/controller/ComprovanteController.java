@@ -18,6 +18,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/viagens")
+@CrossOrigin(origins = "*")
 public class ComprovanteController {
 
     @Autowired
@@ -82,7 +83,7 @@ public class ComprovanteController {
     public ResponseEntity<Void> deletarComprovante(@PathVariable Long viagemId, @PathVariable Long comprovanteId) {
         if (comprovanteRepository.existsById(comprovanteId)) {
             comprovanteRepository.deleteById(comprovanteId);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }

@@ -1,6 +1,6 @@
 package com.cospa.api.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,9 +16,9 @@ public class Comprovante {
     @Column(name = "url_arquivo", nullable = false)
     private String urlArquivo;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "viagem_id", nullable = false)
-    @JsonIgnore // <-- Impede o loop infinito na serialização JSON
+    @JsonBackReference
     private Viagem viagem;
 
     public Comprovante() {}

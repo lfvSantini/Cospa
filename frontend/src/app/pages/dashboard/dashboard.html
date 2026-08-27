@@ -1,0 +1,908 @@
+<div class="dashboard-wrapper" [class.light-mode]="!isDarkMode">
+  <div class="sidebar-backdrop" *ngIf="isSidebarOpen" (click)="closeSidebar()"></div>
+
+  <!-- Sidebar Lateral -->
+  <aside class="sidebar" [class.open]="isSidebarOpen">
+    <div class="sidebar-header">
+      <img src="assets/img/Logo.png" alt="COSPA" class="sidebar-logo" />
+      <button type="button" class="btn-close-sidebar" (click)="closeSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+
+    <div class="sidebar-section-title">MÓDULOS</div>
+    <nav class="sidebar-nav">
+      <button type="button" class="sidebar-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+        <span>Painel de Viagens</span>
+      </button>
+      <button type="button" class="sidebar-item disabled">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        <span>Financeiro (Em breve)</span>
+      </button>
+      <button type="button" class="sidebar-item disabled">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        <span>Estoque & Pátio</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button type="button" class="btn-hub" (click)="goToModules()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Trocar de Módulo</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="navbar-left">
+      <button type="button" class="btn-hamburger" (click)="toggleSidebar()" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+      <img src="assets/img/Logo.png" alt="COSPA" class="navbar-logo" />
+      <div class="navbar-divider"></div>
+      <span class="navbar-title">Painel de Viagens</span>
+    </div>
+
+    <div class="navbar-right">
+      <button type="button" class="theme-toggle" (click)="toggleTheme()" aria-label="Tema">
+        <div class="toggle-track" [class.dark]="isDarkMode">
+          <div class="toggle-thumb">
+            <svg *ngIf="!isDarkMode" class="theme-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg *ngIf="isDarkMode" class="theme-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </div>
+        </div>
+      </button>
+
+      <div class="dropdown-wrapper">
+        <button type="button" class="btn-nav-action" (click)="toggleManageMenu($event)" [class.active]="isManageOpen">
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7"></path><path d="M4 10V3"></path><path d="M12 21v-9"></path><path d="M12 8V3"></path><path d="M20 21v-5"></path><path d="M20 12V3"></path><circle cx="4" cy="14" r="2"></circle><circle cx="12" cy="8" r="2"></circle><circle cx="20" cy="16" r="2"></circle></svg>
+          <span>Gerenciar</span>
+          <svg class="chevron-icon" [class.rotate]="isManageOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+
+        <div class="dropdown-menu" *ngIf="isManageOpen">
+          <button type="button" class="dropdown-item" (click)="openGerenciarClientes()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <span>Gerenciar Clientes</span>
+          </button>
+          <button type="button" class="dropdown-item" (click)="openGerenciarFornecedores()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <span>Gerenciar Fornecedores</span>
+          </button>
+          <button type="button" class="dropdown-item" (click)="openGerenciarMotoristas()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg>
+            <span>Gerenciar Motoristas</span>
+          </button>
+        </div>
+      </div>
+
+      <button type="button" class="btn-primary-action" (click)="openNovaViagemModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <span>Nova Viagem</span>
+      </button>
+
+      <button type="button" class="btn-logout-nav" (click)="logout()" title="Encerrar Sessão">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <span>Sair</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="dashboard-content">
+    
+    <!-- 1. VIAGENS EM ANDAMENTO -->
+    <section class="accordion-section">
+      <button type="button" class="accordion-header" (click)="showAndamento = !showAndamento">
+        <span class="accordion-title">Viagens em Andamento</span>
+        <svg class="accordion-arrow" [class.open]="showAndamento" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+
+      <div class="accordion-collapse" [class.expanded]="showAndamento">
+        <div class="accordion-inner">
+          <div class="table-container">
+            <table class="cospa-table">
+              <thead>
+                <tr>
+                  <th>VIAGEM</th>
+                  <th>CLIENTE</th>
+                  <th>ORIGEM</th>
+                  <th>DESTINO</th>
+                  <th>PLACA</th>
+                  <th>MOTORISTA</th>
+                  <th>STATUS</th>
+                  <th>OBS</th>
+                  <th class="actions-th">AÇÕES</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of viagensAndamento">
+                  <td class="col-viagem">{{ item.id }}</td>
+                  <td class="col-cliente">{{ item.cliente }}</td>
+                  <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
+                  <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
+                  <td class="col-placa">{{ item.placa }}</td>
+                  <td class="col-motorista" [class.to-hire]="item.motorista === 'A Contratar'">{{ item.motorista }}</td>
+                  <td class="col-status">
+                    <span class="status-pill" [ngClass]="{
+                      'status-contratar': item.status === 'A CONTRATAR',
+                      'status-programado': item.status === 'PROGRAMADO',
+                      'status-carregamento': item.status === 'AG CARREGAMENTO' || item.status === 'CARREGAMENTO',
+                      'status-rota': item.status === 'EM ROTA',
+                      'status-doc': item.status === 'AG DOCUMENTAÇÃO',
+                      'status-descarga': item.status === 'AG DESCARGA' || item.status === 'DESCARGA'
+                    }">{{ item.status }}</span>
+                  </td>
+                  <td class="col-obs">
+                    <button *ngIf="item.obs && item.obs !== '-'" type="button" class="btn-obs" (click)="openObsModal(item)">
+                      {{ (item.obs.length > 9) ? (item.obs | slice:0:8) + '...' : item.obs }}
+                    </button>
+                    <span *ngIf="!item.obs || item.obs === '-'" class="dash-text">-</span>
+                  </td>
+                  <td class="col-acoes">
+                    <div class="row-dropdown-wrapper">
+                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)" [class.active]="openedActionMenuId === item.id">
+                        <span>Ações</span>
+                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </button>
+                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id">
+                        <button type="button" class="row-menu-item item-prosseguir" (click)="prosseguirParaPagar(item)">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                          <span>Avançar para A Pagar</span>
+                        </button>
+                        
+                        <div class="row-menu-divider"></div>
+
+                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
+                        <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'andamento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
+                        <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'andamento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. VIAGENS A PAGAR -->
+    <section class="accordion-section">
+      <button type="button" class="accordion-header" (click)="showPagar = !showPagar">
+        <span class="accordion-title">Viagens a Pagar</span>
+        <svg class="accordion-arrow" [class.open]="showPagar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+
+      <div class="accordion-collapse" [class.expanded]="showPagar">
+        <div class="accordion-inner">
+          <div class="table-container">
+            <table class="cospa-table">
+              <thead>
+                <tr>
+                  <th>VIAGEM</th>
+                  <th>CLIENTE</th>
+                  <th>ORIGEM</th>
+                  <th>DESTINO</th>
+                  <th>PLACA</th>
+                  <th>MOTORISTA</th>
+                  <th>STATUS</th>
+                  <th>OBS</th>
+                  <th class="actions-th">AÇÕES</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of viagensPagar">
+                  <td class="col-viagem">{{ item.id }}</td>
+                  <td class="col-cliente">{{ item.cliente }}</td>
+                  <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
+                  <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
+                  <td class="col-placa">{{ item.placa }}</td>
+                  <td class="col-motorista">{{ item.motorista }}</td>
+                  <td class="col-status"><span class="status-pill status-pagar">{{ item.status }}</span></td>
+                  <td class="col-obs">
+                    <button *ngIf="item.obs && item.obs !== '-'" type="button" class="btn-obs" (click)="openObsModal(item)">
+                      {{ (item.obs.length > 9) ? (item.obs | slice:0:8) + '...' : item.obs }}
+                    </button>
+                    <span *ngIf="!item.obs || item.obs === '-'" class="dash-text">-</span>
+                  </td>
+                  <td class="col-acoes">
+                    <div class="row-dropdown-wrapper">
+                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)" [class.active]="openedActionMenuId === item.id">
+                        <span>Ações</span>
+                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </button>
+                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id">
+                        <button type="button" class="row-menu-item item-finalizar" (click)="finalizarViagem(item)">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                          <span>Finalizar Viagem</span>
+                        </button>
+
+                        <div class="row-menu-divider"></div>
+
+                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
+                        <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'pagar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
+                        <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'pagar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. VIAGENS FINALIZADAS -->
+    <section class="accordion-section">
+      <button type="button" class="accordion-header" (click)="showFinalizadas = !showFinalizadas">
+        <span class="accordion-title">Viagens Finalizadas</span>
+        <svg class="accordion-arrow" [class.open]="showFinalizadas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+
+      <div class="accordion-collapse" [class.expanded]="showFinalizadas">
+        <div class="accordion-inner">
+          <div class="table-container">
+            <table class="cospa-table">
+              <thead>
+                <tr>
+                  <th>VIAGEM</th>
+                  <th>CLIENTE</th>
+                  <th>ORIGEM</th>
+                  <th>DESTINO</th>
+                  <th>PLACA</th>
+                  <th>MOTORISTA</th>
+                  <th>STATUS</th>
+                  <th>OBS</th>
+                  <th class="actions-th">AÇÕES</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of viagensFinalizadas">
+                  <td class="col-viagem">{{ item.id }}</td>
+                  <td class="col-cliente">{{ item.cliente }}</td>
+                  <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
+                  <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
+                  <td class="col-placa">{{ item.placa }}</td>
+                  <td class="col-motorista">{{ item.motorista }}</td>
+                  <td class="col-status"><span class="status-pill status-finalizado">{{ item.status }}</span></td>
+                  <td class="col-obs">
+                    <button *ngIf="item.obs && item.obs !== '-'" type="button" class="btn-obs" (click)="openObsModal(item)">
+                      {{ (item.obs.length > 9) ? (item.obs | slice:0:8) + '...' : item.obs }}
+                    </button>
+                    <span *ngIf="!item.obs || item.obs === '-'" class="dash-text">-</span>
+                  </td>
+                  <td class="col-acoes">
+                    <div class="row-dropdown-wrapper">
+                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)" [class.active]="openedActionMenuId === item.id">
+                        <span>Ações</span>
+                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </button>
+                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id">
+                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
+                        <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'finalizadas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
+                        <div class="row-menu-divider"></div>
+                        <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'finalizadas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== MODAL: COMPROVANTES DA VIAGEM ==================== -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'PHOTO'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-photo-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Comprovantes da Viagem {{ selectedViagem?.id }}</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activePhotoTab === 'ADICIONAR'" (click)="activePhotoTab = 'ADICIONAR'">
+          + Adicionar Comprovante
+        </button>
+        <button type="button" [class.active]="activePhotoTab === 'LISTAR'" (click)="activePhotoTab = 'LISTAR'">
+          Ver Cadastrados / Fotos ({{ selectedViagem?.fotos?.length || 0 }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <div *ngIf="activePhotoTab === 'ADICIONAR'" class="modal-pane-compact">
+          <div class="comprovante-form-row">
+            <div class="f-group desc-group">
+              <label>Descrição</label>
+              <input type="text" [(ngModel)]="novoComprovante.descricao" placeholder="Ex: Canhoto da Nota" />
+            </div>
+
+            <div class="f-group file-group">
+              <label>Arquivo</label>
+              <div class="comprovante-dropzone" (click)="fileInputComp.click()">
+                <input #fileInputComp type="file" (change)="onComprovanteFileSelected($event)" style="display: none;" accept="image/*,.pdf" />
+                <span>{{ novoComprovante.nomeArquivo || 'Arraste o Arquivo' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions-right">
+            <button type="button" class="btn-pri-cospa" (click)="adicionarComprovante()">
+              Adicionar à Lista
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="activePhotoTab === 'LISTAR'" class="modal-pane-compact">
+          <div class="photo-gallery" *ngIf="selectedViagem?.fotos?.length">
+            <div 
+              class="comprovante-card" 
+              *ngFor="let f of selectedViagem?.fotos" 
+              (click)="abrirPreviewFoto(f.url)" 
+              title="Clique para ver em tela cheia">
+              <div class="comp-img-wrapper">
+                <img [src]="f.url" alt="Comprovante" />
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, f.url)" title="Abrir imagem em nova aba">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </button>
+                <button type="button" class="btn-del-photo" (click)="removerComprovante($event, f.id)" title="Excluir">✕</button>
+              </div>
+              <div class="comp-info-footer">
+                <strong>{{ f.descricao }}</strong>
+                <span>{{ f.nomeArquivo }} • {{ f.dataEnvio }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-photos" *ngIf="!selectedViagem?.fotos?.length">
+            <p>Nenhum comprovante ou canhoto anexado a esta viagem.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: DOCUMENTOS / FOTOS DO MOTORISTA ==================== -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'MOTORISTA_PHOTO'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-photo-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Documentos e Fotos: {{ selectedMotorista?.nome }}</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeMotoristaPhotoTab === 'ADICIONAR'" (click)="activeMotoristaPhotoTab = 'ADICIONAR'">
+          + Adicionar Documento
+        </button>
+        <button type="button" [class.active]="activeMotoristaPhotoTab === 'LISTAR'" (click)="activeMotoristaPhotoTab = 'LISTAR'">
+          Documentos Cadastrados ({{ selectedMotorista?.documentos?.length || 0 }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <div *ngIf="activeMotoristaPhotoTab === 'ADICIONAR'" class="modal-pane-compact">
+          <div class="form-row-2">
+            <div class="f-group">
+              <label>Tipo de Documento</label>
+              <select [(ngModel)]="novoDocMotorista.tipo">
+                <option value="CNH">CNH (Carteira Nacional de Habilitação)</option>
+                <option value="CRLV">CRLV (Documento do Veículo)</option>
+                <option value="FOTO_PERFIL">Foto do Motorista / Perfil</option>
+                <option value="OUTRO">Outro Comprovante / Atestado</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Descrição / Observação</label>
+              <input type="text" [(ngModel)]="novoDocMotorista.descricao" placeholder="Ex: CNH Categoria E - 2026" />
+            </div>
+          </div>
+
+          <div class="f-group">
+            <label>Arquivo</label>
+            <div class="comprovante-dropzone" (click)="fileInputMotorista.click()">
+              <input #fileInputMotorista type="file" (change)="onMotoristaDocSelected($event)" style="display: none;" accept="image/*,.pdf" />
+              <span>{{ novoDocMotorista.nomeArquivo || 'Clique ou arraste o arquivo (CNH, CRLV, etc.)' }}</span>
+            </div>
+          </div>
+
+          <div class="modal-actions-right">
+            <button type="button" class="btn-pri-cospa" (click)="adicionarDocMotorista()">
+              Adicionar Documento
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="activeMotoristaPhotoTab === 'LISTAR'" class="modal-pane-compact">
+          <div class="photo-gallery" *ngIf="selectedMotorista?.documentos?.length">
+            <div 
+              class="comprovante-card" 
+              *ngFor="let doc of selectedMotorista?.documentos" 
+              (click)="abrirPreviewFoto(doc.url)" 
+              title="Clique para ver em tela cheia">
+              <div class="comp-img-wrapper">
+                <img [src]="doc.url" alt="Documento Motorista" />
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir em nova aba">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </button>
+                <button type="button" class="btn-del-photo" (click)="removerDocMotorista($event, doc.id)" title="Excluir">✕</button>
+              </div>
+              <div class="comp-info-footer">
+                <strong>{{ doc.descricao }}</strong>
+                <span>{{ doc.nomeArquivo }} • {{ doc.dataEnvio }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-photos" *ngIf="!selectedMotorista?.documentos?.length">
+            <p>Nenhum documento ou foto anexado para este motorista.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox-overlay" *ngIf="previewImageUrl" (click)="fecharPreviewFoto()">
+    <div class="lightbox-content" (click)="$event.stopPropagation()">
+      <button type="button" class="btn-close-lightbox" (click)="fecharPreviewFoto()">✕</button>
+      <img [src]="previewImageUrl" alt="Visualização em Tela Cheia" />
+      <div class="lightbox-actions">
+        <button type="button" class="btn-pri-cospa" (click)="abrirImagemNovaAba($event, previewImageUrl)">Abrir Imagem em Nova Aba</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: NOVA / EDITAR VIAGEM ==================== -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'TRIP_FORM'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-trip-form" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>{{ isEditing ? 'Editar Viagem #' + tripForm.id : 'Cadastrar Nova Viagem' }}</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <form (ngSubmit)="salvarViagemForm()" class="modal-trip-scroll">
+        <div class="f-group">
+          <label>Nº da Viagem (ID)</label>
+          <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="Ex: 101" />
+        </div>
+
+        <div class="f-group">
+          <label>Cliente</label>
+          <div class="form-row-2">
+            <select [(ngModel)]="tripForm.clienteSelect" name="clienteSelect">
+              <option value="">Selecione um Cliente cadastrado...</option>
+              <option *ngFor="let c of clientesList" [value]="c.nomeFantasia">{{ c.nomeFantasia }}</option>
+            </select>
+            <input type="text" [(ngModel)]="tripForm.clienteManual" name="clienteManual" placeholder="Ou digite o nome do cliente" />
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Origem / Coleta</label>
+            <div class="dynamic-point-group" *ngFor="let orig of tripForm.origens; let i = index">
+              <div class="input-with-action">
+                <input type="text" [(ngModel)]="orig.local" [name]="'orig_local_' + i" placeholder="Ponto de Origem" />
+                <button type="button" class="btn-add-point" (click)="addOrigem()" *ngIf="i === 0">+</button>
+                <button type="button" class="btn-rem-point" (click)="removeOrigem(i)" *ngIf="i > 0">✕</button>
+              </div>
+              <input type="text" [(ngModel)]="orig.endereco" [name]="'orig_end_' + i" placeholder="Rua da Coleta" />
+            </div>
+          </div>
+
+          <div class="f-group">
+            <label>Destino / Entrega</label>
+            <div class="dynamic-point-group" *ngFor="let dest of tripForm.destinos; let j = index">
+              <div class="input-with-action">
+                <input type="text" [(ngModel)]="dest.local" [name]="'dest_local_' + j" placeholder="Ponto de Destino" />
+                <button type="button" class="btn-add-point" (click)="addDestino()" *ngIf="j === 0">+</button>
+                <button type="button" class="btn-rem-point" (click)="removeDestino(j)" *ngIf="j > 0">✕</button>
+              </div>
+              <input type="text" [(ngModel)]="dest.endereco" [name]="'dest_end_' + j" placeholder="Rua da Entrega" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Motorista</label>
+            <select [(ngModel)]="tripForm.motorista" name="motorista">
+              <option value="">Sem Motorista (A Contratar)</option>
+              <option *ngFor="let m of motoristasList" [value]="m.nome">
+                {{ m.nome }} ({{ m.placa }})
+              </option>
+            </select>
+          </div>
+          <div class="f-group">
+            <label>Agência / Fornecedor</label>
+            <select [(ngModel)]="tripForm.agencia" name="agencia">
+              <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Coleta Prevista</label>
+            <input type="text" [(ngModel)]="tripForm.coletaPrevista" name="coletaPrevista" placeholder="Ex: 13/08/2026 14:00" />
+          </div>
+          <div class="f-group">
+            <label>Coleta Real</label>
+            <input type="text" [(ngModel)]="tripForm.coletaReal" name="coletaReal" placeholder="Ex: 13/08/2026 14:30" />
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Entrega Prevista</label>
+            <input type="text" [(ngModel)]="tripForm.entregaPrevista" name="entregaPrevista" placeholder="Ex: 14/08/2026 10:00" />
+          </div>
+          <div class="f-group">
+            <label>Entrega Real</label>
+            <input type="text" [(ngModel)]="tripForm.entregaReal" name="entregaReal" placeholder="" />
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Valor a Receber (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.valorReceber" name="valorReceber" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="f-group">
+            <label>Adicional a Receber (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.adicionalReceber" name="adicionalReceber" placeholder="0,00" step="0.01" />
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Valor a Pagar Motorista (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.valorPagarMotorista" name="valorPagarMotorista" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="f-group">
+            <label>Adicional a Pagar Motorista (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.adicionalPagarMotorista" name="adicionalPagarMotorista" placeholder="0,00" step="0.01" />
+          </div>
+        </div>
+
+        <div class="f-group">
+          <label>Valor Adicional da Agência (R$)</label>
+          <input type="number" [(ngModel)]="tripForm.valorAdicionalAgencia" name="valorAdicionalAgencia" placeholder="0,00" step="0.01" />
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Liberação</label>
+            <div class="checkbox-container">
+              <input type="checkbox" id="liberadoCheck" [(ngModel)]="tripForm.pagamentoLiberado" name="pagamentoLiberado" />
+              <label for="liberadoCheck">Pagamento Liberado?</label>
+            </div>
+          </div>
+          <div class="f-group">
+            <label>Pagamento Realizado</label>
+            <select [(ngModel)]="tripForm.pagamentoRealizado" name="pagamentoRealizado">
+              <option value="Não Realizado">Não Realizado</option>
+              <option value="Adiantamento pago">Adiantamento pago</option>
+              <option value="Saldo pago">Saldo pago</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="f-group">
+          <label>Hora / Data Pagada</label>
+          <input type="text" [(ngModel)]="tripForm.dataHoraPagada" name="dataHoraPagada" placeholder="Ex: 14/08/2026 15:45" />
+        </div>
+
+        <div class="f-group">
+          <label>Status Inicial</label>
+          <select [(ngModel)]="tripForm.statusInicial" name="statusInicial">
+            <option value="A CONTRATAR">A CONTRATAR</option>
+            <option value="PROGRAMADO">PROGRAMADO</option>
+            <option value="AG CARREGAMENTO">AG CARREGAMENTO</option>
+            <option value="CARREGAMENTO">CARREGAMENTO</option>
+            <option value="EM ROTA">EM ROTA</option>
+            <option value="AG DOCUMENTAÇÃO">AG DOCUMENTAÇÃO</option>
+            <option value="AG DESCARGA">AG DESCARGA</option>
+            <option value="DESCARGA">DESCARGA</option>
+            <option value="A PAGAR">A PAGAR</option>
+            <option value="FINALIZADO">FINALIZADO</option>
+          </select>
+        </div>
+
+        <div class="f-group">
+          <label>Observação</label>
+          <textarea rows="3" [(ngModel)]="tripForm.observacao" name="observacao" placeholder=""></textarea>
+        </div>
+
+        <div class="modal-trip-footer">
+          <button type="submit" class="btn-cadastrar-blue">{{ isEditing ? 'Salvar Alterações' : 'Cadastrar' }}</button>
+          <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- GERENCIAR FORNECEDORES -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'FORNECEDOR'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Gerenciar Fornecedores / Agenciadores</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="activeManageTab = 'CADASTRAR'">
+          {{ isEditingFornecedor ? 'Editar Fornecedor' : '+ Cadastrar Novo' }}
+        </button>
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="activeManageTab = 'LISTAR'">
+          Gerenciar Cadastrados ({{ fornecedoresList.length }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarFornecedor()" class="modal-pane-content">
+          <div class="form-row-3">
+            <input type="text" [(ngModel)]="fornecedorForm.nome" name="nome" placeholder="Nome do Fornecedor / Agência" required />
+            <input type="text" [(ngModel)]="fornecedorForm.cnpjCpf" name="cnpjCpf" placeholder="CNPJ / CPF" />
+            <input type="text" [(ngModel)]="fornecedorForm.nomeContato" name="nomeContato" placeholder="Nome de Contato" />
+          </div>
+
+          <div class="form-row-4">
+            <input type="text" [(ngModel)]="fornecedorForm.telefone" name="telefone" placeholder="Telefone / WhatsApp" />
+            <input type="email" [(ngModel)]="fornecedorForm.email" name="email" placeholder="E-mail" />
+            <input type="text" [(ngModel)]="fornecedorForm.chavePix" name="chavePix" placeholder="Chave PIX" />
+            <select [(ngModel)]="fornecedorForm.situacao" name="situacao">
+              <option value="ATIVO">Situação: ATIVO</option>
+              <option value="INATIVO">Situação: INATIVO</option>
+            </select>
+          </div>
+
+          <textarea rows="3" [(ngModel)]="fornecedorForm.obs" name="obs" placeholder="Observações adicionais..."></textarea>
+
+          <div class="modal-actions-right">
+            <button *ngIf="isEditingFornecedor" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoFornecedor()">Cancelar Edição</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingFornecedor ? 'Salvar Alterações' : 'Cadastrar Fornecedor' }}</button>
+          </div>
+        </form>
+
+        <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
+          <div class="manage-search-bar">
+            <input type="text" [(ngModel)]="manageSearchTerm" placeholder="Buscar por fornecedor, CNPJ ou contato..." />
+          </div>
+
+          <div class="crud-items-list">
+            <div class="crud-item-card" *ngFor="let f of filteredFornecedores">
+              <div class="crud-item-info">
+                <div class="crud-title-row">
+                  <h4>{{ f.nome }}</h4>
+                  <span class="badge-status" [class.badge-active]="f.situacao === 'ATIVO'" [class.badge-inactive]="f.situacao === 'INATIVO'">{{ f.situacao }}</span>
+                </div>
+                <p class="crud-subtext">{{ f.cnpjCpf }} • Contato: {{ f.nomeContato || '-' }} • {{ f.telefone || '-' }}</p>
+              </div>
+              <div class="crud-item-actions">
+                <button type="button" class="btn-edit-inline" (click)="editarFornecedor(f)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Editar</span>
+                </button>
+                <button type="button" class="btn-del-inline" (click)="excluirFornecedor(f.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GERENCIAR CLIENTES -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'CLIENTE'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Gerenciar Clientes</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="activeManageTab = 'CADASTRAR'">
+          {{ isEditingCliente ? 'Editar Cliente' : '+ Cadastrar Novo' }}
+        </button>
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="activeManageTab = 'LISTAR'">
+          Gerenciar Cadastrados ({{ clientesList.length }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarCliente()" class="modal-pane-content">
+          <div class="form-row-3">
+            <input type="text" [(ngModel)]="clienteForm.nomeFantasia" name="nomeFantasia" placeholder="Nome Fantasia / Identificação" required />
+            <input type="text" [(ngModel)]="clienteForm.razaoSocial" name="razaoSocial" placeholder="Razão Social" />
+            <input type="text" [(ngModel)]="clienteForm.cnpjCpf" name="cnpjCpf" placeholder="CNPJ / CPF" />
+          </div>
+
+          <div class="form-row-3-fixed">
+            <input type="text" [(ngModel)]="clienteForm.nomeContato" name="nomeContato" placeholder="Nome do Contato" />
+            <input type="text" [(ngModel)]="clienteForm.telefone" name="telefone" placeholder="Telefone" />
+            <input type="email" [(ngModel)]="clienteForm.email" name="email" placeholder="E-mail" />
+            <select [(ngModel)]="clienteForm.situacao" name="situacao">
+              <option value="ATIVO">Situação: ATIVO</option>
+              <option value="INATIVO">Situação: INATIVO</option>
+            </select>
+          </div>
+
+          <textarea rows="3" [(ngModel)]="clienteForm.obs" name="obs" placeholder="Observações do cliente..."></textarea>
+
+          <div class="modal-actions-right">
+            <button *ngIf="isEditingCliente" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoCliente()">Cancelar Edição</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingCliente ? 'Salvar Alterações' : 'Cadastrar Cliente' }}</button>
+          </div>
+        </form>
+
+        <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
+          <div class="manage-search-bar">
+            <input type="text" [(ngModel)]="manageSearchTerm" placeholder="Buscar por cliente, razão social ou CNPJ..." />
+          </div>
+
+          <div class="crud-items-list">
+            <div class="crud-item-card" *ngFor="let c of filteredClientes">
+              <div class="crud-item-info">
+                <div class="crud-title-row">
+                  <h4>{{ c.nomeFantasia }}</h4>
+                  <span class="badge-status" [class.badge-active]="c.situacao === 'ATIVO'" [class.badge-inactive]="c.situacao === 'INATIVO'">{{ c.situacao }}</span>
+                </div>
+                <p class="crud-subtext">{{ c.razaoSocial }} • {{ c.cnpjCpf }} • Contato: {{ c.nomeContato || '-' }}</p>
+              </div>
+              <div class="crud-item-actions">
+                <button type="button" class="btn-edit-inline" (click)="editarCliente(c)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Editar</span>
+                </button>
+                <button type="button" class="btn-del-inline" (click)="excluirCliente(c.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GERENCIAR MOTORISTAS -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'MOTORISTA'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Gerenciar Motoristas</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="activeManageTab = 'CADASTRAR'">
+          {{ isEditingMotorista ? 'Editar Motorista' : '+ Cadastrar Novo' }}
+        </button>
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="activeManageTab = 'LISTAR'">
+          Gerenciar Cadastrados ({{ motoristasList.length }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarMotorista()" class="modal-pane-content">
+          <div class="form-row-3">
+            <input type="text" [(ngModel)]="motoristaForm.nome" name="nome" placeholder="Nome do Motorista" required />
+            <input type="text" [(ngModel)]="motoristaForm.cpf" name="cpf" placeholder="CPF" />
+            <input type="text" [(ngModel)]="motoristaForm.placa" name="placa" placeholder="Placa" />
+          </div>
+
+          <div class="form-row-2">
+            <select [(ngModel)]="motoristaForm.fornecedorVinculado" name="fornecedor">
+              <option value="" disabled selected>Selecione a Agência / Fornecedor</option>
+              <option value="Sem Agência (Frota Própria)">Sem Agência (Frota Própria)</option>
+              <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+            </select>
+
+            <select [(ngModel)]="motoristaForm.situacao" name="situacao">
+              <option value="ATIVO">Situação: ATIVO</option>
+              <option value="INATIVO">Situação: INATIVO</option>
+            </select>
+          </div>
+
+          <textarea rows="3" [(ngModel)]="motoristaForm.informacoesAdicionais" name="info" placeholder="Informações Adicionais..."></textarea>
+
+          <div class="upload-dropzone-row">
+            <div class="dropzone-box" (click)="cnhInput.click()">
+              <input #cnhInput type="file" (change)="onFileSelected($event, 'CNH')" style="display: none;" accept="image/*,.pdf" />
+              <span class="dropzone-label">Anexar CNH (Arraste ou Cole)</span>
+              <p class="dropzone-text">{{ motoristaForm.cnhPreviewName || 'Arraste a CNH' }}</p>
+            </div>
+
+            <div class="dropzone-box" (click)="crlvInput.click()">
+              <input #crlvInput type="file" (change)="onFileSelected($event, 'CRLV')" style="display: none;" accept="image/*,.pdf" />
+              <span class="dropzone-label">Anexar CRLV (Arraste ou Cole)</span>
+              <p class="dropzone-text">{{ motoristaForm.crlvPreviewName || 'Arraste o CRLV' }}</p>
+            </div>
+          </div>
+
+          <div class="modal-actions-right">
+            <button *ngIf="isEditingMotorista" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoMotorista()">Cancelar Edição</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingMotorista ? 'Salvar Alterações' : 'Cadastrar Motorista' }}</button>
+          </div>
+        </form>
+
+        <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
+          <div class="manage-search-bar">
+            <input type="text" [(ngModel)]="manageSearchTerm" placeholder="Buscar por motorista, placa ou CPF..." />
+          </div>
+
+          <div class="crud-items-list">
+            <div class="crud-item-card" *ngFor="let m of filteredMotoristas">
+              <div class="crud-item-info">
+                <div class="crud-title-row">
+                  <h4>{{ m.nome }}</h4>
+                  <span class="badge-status" [class.badge-active]="m.situacao === 'ATIVO'" [class.badge-inactive]="m.situacao === 'INATIVO'">{{ m.situacao }}</span>
+                </div>
+                <p class="crud-subtext">CPF: {{ m.cpf }} • Placa: <strong>{{ m.placa }}</strong> • Vínculo: {{ m.fornecedorVinculado }}</p>
+              </div>
+              <div class="crud-item-actions">
+                <button type="button" class="btn-photo-inline" (click)="openMotoristaFotosModal(m)" title="Ver CNH, CRLV e Comprovantes">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <span>Fotos</span>
+                </button>
+
+                <button type="button" class="btn-edit-inline" (click)="editarMotorista(m)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Editar</span>
+                </button>
+
+                <button type="button" class="btn-del-inline" (click)="excluirMotorista(m.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL OBS -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'OBS'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Observação da Viagem {{ selectedViagem?.id }}</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-pane-content" *ngIf="selectedViagem">
+        <textarea rows="4" [(ngModel)]="selectedViagem.obs" placeholder="Digite as observações da viagem..."></textarea>
+        <div class="modal-actions-right">
+          <button type="button" class="btn-pri-cospa" (click)="salvarObs()">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EXCLUIR -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'DELETE'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Confirmar Exclusão</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-pane-content">
+        <p>Deseja realmente remover a viagem <strong>{{ selectedViagem?.id }}</strong> permanentemente?</p>
+        <div class="modal-actions-right">
+          <button type="button" class="btn-sec-cospa" (click)="closeModal()">Cancelar</button>
+          <button type="button" class="btn-danger-cospa" (click)="confirmarExclusao()">Excluir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

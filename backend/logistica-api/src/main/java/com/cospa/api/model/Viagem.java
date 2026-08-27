@@ -2,24 +2,33 @@ package com.cospa.api.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "viagens")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Viagem {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String cliente;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "local_coleta", length = 255)
     private String localColeta;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "local_entrega", length = 255)
     private String localEntrega;
 
     @Column(columnDefinition = "TEXT")
@@ -34,243 +43,71 @@ public class Viagem {
     @Column(name = "destino_nome", columnDefinition = "TEXT")
     private String destinoNome;
 
-    @Column(name = "nome_motorista")
+    @Column(name = "nome_motorista", length = 255)
     private String nomeMotorista;
 
-    @Column(name = "placa")
+    @Column(name = "placa", length = 20)
     private String placa;
 
+    @Column(name = "cpf_motorista", length = 14)
+    private String cpfMotorista;
+
     @Column(name = "data_coleta_prevista")
-    private String dataColetaPrevista;
+    private LocalDateTime dataColetaPrevista;
 
     @Column(name = "data_coleta_real")
-    private String dataColetaReal;
+    private LocalDateTime dataColetaReal;
 
     @Column(name = "data_entrega_prevista")
-    private String dataEntregaPrevista;
+    private LocalDateTime dataEntregaPrevista;
 
     @Column(name = "data_entrega_real")
-    private String dataEntregaReal;
+    private LocalDateTime dataEntregaReal;
 
-    @Column(name = "valor_a_receber")
+    @Builder.Default
+    @Column(name = "valor_a_receber", precision = 10, scale = 2)
     private BigDecimal valorAReceber = BigDecimal.ZERO;
 
-    @Column(name = "valor_a_pagar")
+    @Builder.Default
+    @Column(name = "valor_a_pagar", precision = 10, scale = 2)
     private BigDecimal valorAPagar = BigDecimal.ZERO;
 
-    @Column(name = "valor_adicional_receber")
+    @Builder.Default
+    @Column(name = "valor_adicional_receber", precision = 10, scale = 2)
     private BigDecimal valorAdicionalReceber = BigDecimal.ZERO;
 
-    @Column(name = "valor_adicional_pagar")
+    @Builder.Default
+    @Column(name = "valor_adicional_pagar", precision = 10, scale = 2)
     private BigDecimal valorAdicionalPagar = BigDecimal.ZERO;
 
-    @Column(name = "valor_adicional_agencia")
+    @Builder.Default
+    @Column(name = "valor_adicional_agencia", precision = 10, scale = 2)
     private BigDecimal valorAdicionalAgencia = BigDecimal.ZERO;
 
-    @Column(name = "fornecedor_agencia")
+    @Column(name = "fornecedor_agencia", length = 255)
     private String fornecedorAgencia;
 
+    @Builder.Default
     @Column(name = "pagamento_liberado")
     private Boolean pagamentoLiberado = false;
 
-    @Column(name = "pagamento_realizado_status")
+    @Builder.Default
+    @Column(name = "pagamento_realizado_status", length = 30)
     private String pagamentoRealizadoStatus = "NAO_REALIZADO";
 
-    @Column(name = "data_hora_pagamento")
+    @Column(name = "data_hora_pagamento", length = 50)
     private String dataHoraPagamento;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "status", length = 30, nullable = false)
     private StatusViagem status = StatusViagem.PROGRAMADO;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "observacao", columnDefinition = "TEXT")
     private String observacao;
 
     @OneToMany(mappedBy = "viagem", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @Builder.Default
     private List<Comprovante> comprovantes = new ArrayList<>();
-
-    public Viagem() {}
-
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCliente() {
-        return cliente;
-    }
-    public void setCliente(String cliente) {
-        this.cliente = cliente;
-    }
-
-    public String getLocalColeta() {
-        return localColeta;
-    }
-    public void setLocalColeta(String localColeta) {
-        this.localColeta = localColeta;
-    }
-
-    public String getLocalEntrega() {
-        return localEntrega;
-    }
-    public void setLocalEntrega(String localEntrega) {
-        this.localEntrega = localEntrega;
-    }
-
-    public String getOrigem() {
-        return origem;
-    }
-    public void setOrigem(String origem) {
-        this.origem = origem;
-    }
-
-    public String getDestino() {
-        return destino;
-    }
-    public void setDestino(String destino) {
-        this.destino = destino;
-    }
-
-    public String getOrigemNome() {
-        return origemNome;
-    }
-    public void setOrigemNome(String origemNome) {
-        this.origemNome = origemNome;
-    }
-
-    public String getDestinoNome() {
-        return destinoNome;
-    }
-    public void setDestinoNome(String destinoNome) {
-        this.destinoNome = destinoNome;
-    }
-
-    public String getNomeMotorista() {
-        return nomeMotorista;
-    }
-    public void setNomeMotorista(String nomeMotorista) {
-        this.nomeMotorista = nomeMotorista;
-    }
-
-    public String getPlaca() {
-        return placa;
-    }
-    public void setPlaca(String placa) {
-        this.placa = placa;
-    }
-
-    public String getDataColetaPrevista() {
-        return dataColetaPrevista;
-    }
-    public void setDataColetaPrevista(String dataColetaPrevista) {
-        this.dataColetaPrevista = dataColetaPrevista;
-    }
-
-    public String getDataColetaReal() {
-        return dataColetaReal;
-    }
-    public void setDataColetaReal(String dataColetaReal) {
-        this.dataColetaReal = dataColetaReal;
-    }
-
-    public String getDataEntregaPrevista() {
-        return dataEntregaPrevista;
-    }
-    public void setDataEntregaPrevista(String dataEntregaPrevista) {
-        this.dataEntregaPrevista = dataEntregaPrevista;
-    }
-
-    public String getDataEntregaReal() {
-        return dataEntregaReal;
-    }
-    public void setDataEntregaReal(String dataEntregaReal) {
-        this.dataEntregaReal = dataEntregaReal;
-    }
-
-    public BigDecimal getValorAReceber() {
-        return valorAReceber;
-    }
-    public void setValorAReceber(BigDecimal valorAReceber) {
-        this.valorAReceber = valorAReceber;
-    }
-
-    public BigDecimal getValorAPagar() {
-        return valorAPagar;
-    }
-    public void setValorAPagar(BigDecimal valorAPagar) {
-        this.valorAPagar = valorAPagar;
-    }
-
-    public BigDecimal getValorAdicionalReceber() {
-        return valorAdicionalReceber;
-    }
-    public void setValorAdicionalReceber(BigDecimal valorAdicionalReceber) {
-        this.valorAdicionalReceber = valorAdicionalReceber;
-    }
-
-    public BigDecimal getValorAdicionalPagar() {
-        return valorAdicionalPagar;
-    }
-    public void setValorAdicionalPagar(BigDecimal valorAdicionalPagar) {
-        this.valorAdicionalPagar = valorAdicionalPagar;
-    }
-
-    public BigDecimal getValorAdicionalAgencia() {
-        return valorAdicionalAgencia;
-    }
-    public void setValorAdicionalAgencia(BigDecimal valorAdicionalAgencia) {
-        this.valorAdicionalAgencia = valorAdicionalAgencia;
-    }
-
-    public String getFornecedorAgencia() {
-        return fornecedorAgencia;
-    }
-    public void setFornecedorAgencia(String fornecedorAgencia) {
-        this.fornecedorAgencia = fornecedorAgencia;
-    }
-
-    public Boolean getPagamentoLiberado() {
-        return pagamentoLiberado;
-    }
-    public void setPagamentoLiberado(Boolean pagamentoLiberado) {
-        this.pagamentoLiberado = pagamentoLiberado;
-    }
-
-    public String getPagamentoRealizadoStatus() {
-        return pagamentoRealizadoStatus;
-    }
-    public void setPagamentoRealizadoStatus(String pagamentoRealizadoStatus) {
-        this.pagamentoRealizadoStatus = pagamentoRealizadoStatus;
-    }
-
-    public String getDataHoraPagamento() {
-        return dataHoraPagamento;
-    }
-    public void setDataHoraPagamento(String dataHoraPagamento) {
-        this.dataHoraPagamento = dataHoraPagamento;
-    }
-
-    public StatusViagem getStatus() {
-        return status;
-    }
-    public void setStatus(StatusViagem status) {
-        this.status = status;
-    }
-
-    public String getObservacao() {
-        return observacao;
-    }
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
-    }
-
-    public List<Comprovante> getComprovantes() {
-        return comprovantes;
-    }
-    public void setComprovantes(List<Comprovante> comprovantes) {
-        this.comprovantes = comprovantes;
-    }
 }

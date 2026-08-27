@@ -38,7 +38,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         var uri = request.getRequestURI();
         // Não valida token em rotas públicas
-        if (uri.contains("/auth/login") || uri.contains("/swagger-ui") || uri.contains("/v3/api-docs")) {
+        if (uri.contains("/auth/") || uri.contains("/uploads/") || uri.contains("/swagger-ui") || uri.contains("/v3/api-docs")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -49,9 +49,6 @@ public class SecurityFilter extends OncePerRequestFilter {
                 var login = tokenService.validarToken(token);
                 if (login != null && !login.isBlank()) {
                     var usuarioOptional = usuarioRepository.findByUsername(login);
-                    if (usuarioOptional.isEmpty()) {
-                        usuarioOptional = usuarioRepository.findByLogin(login);
-                    }
 
                     if (usuarioOptional.isPresent()) {
                         var usuario = usuarioOptional.get();
@@ -64,7 +61,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                     }
                 }
             } catch (Exception e) {
-                // Token inválido ou expirado: apenas não autentica o contexto
+                // Token inválido ou expirado: limpa contexto
                 SecurityContextHolder.clearContext();
             }
         }

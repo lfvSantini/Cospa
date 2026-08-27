@@ -1,0 +1,103 @@
+<div class="modules-wrapper" [class.light-mode]="!isDarkMode">
+  <!-- Botão Dark / Light Mode -->
+  <div class="theme-toggle-container">
+    <button type="button" class="theme-toggle" (click)="toggleTheme()" aria-label="Alterar Tema">
+      <div class="toggle-track" [class.dark]="isDarkMode">
+        <div class="toggle-thumb">
+          <svg *ngIf="!isDarkMode" class="theme-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg *ngIf="isDarkMode" class="theme-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </div>
+      </div>
+    </button>
+  </div>
+
+  <main class="modules-container">
+    <div class="brand-header">
+      <img src="assets/img/Logo.png" alt="COSPA Logística" class="brand-logo" />
+    </div>
+
+    <h1 class="page-title">Selecione o Módulo</h1>
+    <p class="page-subtitle">Escolha o ambiente de trabalho que deseja acessar</p>
+
+    <div class="modules-grid">
+      <!-- Módulo Ativo: Gestão de Viagens -->
+      <div class="module-card active-card" (click)="selectModule('/dashboard')">
+        <div class="card-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+          </svg>
+        </div>
+        <div class="card-info">
+          <h3>Gestão de Viagens</h3>
+          <p>Controle operacional de frotas, motoristas, rotas e lançamentos.</p>
+        </div>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Módulo Futuro 1: Financeiro -->
+      <div class="module-card disabled-card">
+        <div class="card-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <div class="card-info">
+          <div class="card-title-row">
+            <h3>Financeiro & Faturamento</h3>
+            <span class="badge-soon">Em Breve</span>
+          </div>
+          <p>Contas a pagar, fluxo de caixa e relatórios fiscais.</p>
+        </div>
+      </div>
+
+      <!-- Módulo Futuro 2: Gestão de Pátio -->
+      <div class="module-card disabled-card">
+        <div class="card-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <div class="card-info">
+          <div class="card-title-row">
+            <h3>Pátio & Estoque</h3>
+            <span class="badge-soon">Em Breve</span>
+          </div>
+          <p>Entrada de suprimentos, manutenção de veículos e inventário.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-action">
+      <button class="btn-logout" (click)="authService.logout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span>Voltar ao Login</span>
+      </button>
+    </div>
+  </main>
+</div>

@@ -22,61 +22,33 @@ public class Usuario implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String nome;
-    private String login;
+
+    @Column(nullable = false, unique = true)
     private String username;
+
+    @Column(nullable = false)
     private String senha;
-    private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PerfilUsuario perfil;
 
-    // Métodos utilitários e compatibilidade
-    public String getNome() {
-        return this.nome != null ? this.nome : (this.username != null ? this.username : this.login);
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public PerfilUsuario getPerfil() {
-        return this.perfil;
-    }
-
-    public void setPerfil(PerfilUsuario perfil) {
-        this.perfil = perfil;
-    }
-
-    public String getSenha() {
-        return this.senha != null ? this.senha : this.password;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-        this.password = senha;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-        this.senha = password;
-    }
-
+    // Métodos utilitários de compatibilidade para getLogin / setLogin sem criar coluna no banco
     public String getLogin() {
-        return this.login != null ? this.login : this.username;
+        return this.username;
     }
 
     public void setLogin(String login) {
-        this.login = login;
         this.username = login;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-        this.login = username;
+    public void setPassword(String password) {
+        this.senha = password;
     }
 
-    // Implementação dos métodos do Spring Security UserDetails
+    // Implementação dos métodos da interface UserDetails do Spring Security
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.perfil != null) {
@@ -87,12 +59,12 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.senha != null ? this.senha : this.password;
+        return this.senha;
     }
 
     @Override
     public String getUsername() {
-        return this.username != null ? this.username : this.login;
+        return this.username;
     }
 
     @Override

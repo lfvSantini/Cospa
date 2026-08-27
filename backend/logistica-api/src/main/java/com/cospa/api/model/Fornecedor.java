@@ -10,88 +10,70 @@ public class Fornecedor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 150)
     private String nome;
 
-    @Column(name = "cnpj_cpf")
+    @Column(name = "cnpj_cpf", length = 20)
     private String cnpjCpf;
 
-    private String contato;
+    @Column(name = "nome_contato", length = 100)
+    private String nomeContato;
 
+    @Column(length = 30)
     private String telefone;
 
+    @Column(length = 100)
     private String email;
 
-    @Column(name = "chave_pix")
+    @Column(name = "chave_pix", length = 100)
     private String chavePix;
 
-    @Column(columnDefinition = "TEXT")
-    private String observacoes;
+    @Column(name = "situacao", length = 20)
+    private String situacao = "ATIVO";
 
+    @Column(name = "obs", columnDefinition = "TEXT")
+    private String obs;
+
+    @Column(name = "ativo")
     private Boolean ativo = true;
 
     public Fornecedor() {}
 
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getNome() {
-        return nome;
-    }
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public String getCnpjCpf() {
-        return cnpjCpf;
-    }
-    public void setCnpjCpf(String cnpjCpf) {
-        this.cnpjCpf = cnpjCpf;
-    }
+    public String getCnpjCpf() { return cnpjCpf; }
+    public void setCnpjCpf(String cnpjCpf) { this.cnpjCpf = cnpjCpf; }
 
-    public String getContato() {
-        return contato;
-    }
-    public void setContato(String contato) {
-        this.contato = contato;
-    }
+    public String getNomeContato() { return nomeContato; }
+    public void setNomeContato(String nomeContato) { this.nomeContato = nomeContato; }
 
-    public String getTelefone() {
-        return telefone;
-    }
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
+    // Compatibilidade para getContato/setContato sem criar coluna duplicada
+    public String getContato() { return this.nomeContato; }
+    public void setContato(String contato) { this.nomeContato = contato; }
 
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public String getTelefone() { return telefone; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
 
-    public String getChavePix() {
-        return chavePix;
-    }
-    public void setChavePix(String chavePix) {
-        this.chavePix = chavePix;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getObservacoes() {
-        return observacoes;
-    }
-    public void setObservacoes(String observacoes) {
-        this.observacoes = observacoes;
-    }
+    public String getChavePix() { return chavePix; }
+    public void setChavePix(String chavePix) { this.chavePix = chavePix; }
 
-    public Boolean getAtivo() {
-        return ativo;
-    }
-    public void setAtivo(Boolean ativo) {
-        this.ativo = ativo;
-    }
+    public String getSituacao() { return situacao; }
+    public void setSituacao(String situacao) { this.situacao = situacao; }
+
+    public String getObs() { return obs; }
+    public void setObs(String obs) { this.obs = obs; }
+
+    // Compatibilidade para getObservacoes/setObservacoes apontando para o campo obs
+    public String getObservacoes() { return this.obs; }
+    public void setObservacoes(String observacoes) { this.obs = observacoes; }
+
+    public Boolean getAtivo() { return ativo; }
+    public void setAtivo(Boolean ativo) { this.ativo = ativo; }
 }

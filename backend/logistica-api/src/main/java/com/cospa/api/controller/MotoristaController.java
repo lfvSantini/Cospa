@@ -2,9 +2,10 @@ package com.cospa.api.controller;
 
 import com.cospa.api.model.Motorista;
 import com.cospa.api.model.MotoristaDocumento;
-import com.cospa.api.repository.MotoristaRepository;
 import com.cospa.api.repository.MotoristaDocumentoRepository;
+import com.cospa.api.repository.MotoristaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/motoristas")
+@CrossOrigin(origins = "*")
 public class MotoristaController {
 
     @Autowired
@@ -39,13 +41,11 @@ public class MotoristaController {
         }
     }
 
-    // 1. Listar todos os motoristas
     @GetMapping
     public List<Motorista> listarTodos() {
         return repository.findAll();
     }
 
-    // 2. Buscar motorista por ID
     @GetMapping("/{id}")
     public ResponseEntity<Motorista> buscarPorId(@PathVariable Long id) {
         return repository.findById(id)
@@ -53,13 +53,11 @@ public class MotoristaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 3. Cadastrar motorista
     @PostMapping
-    public Motorista cadastrar(@RequestBody Motorista motorista) {
-        return repository.save(motorista);
+    public ResponseEntity<Motorista> cadastrar(@RequestBody Motorista motorista) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(motorista));
     }
 
-    // 4. Atualizar motorista
     @PutMapping("/{id}")
     public ResponseEntity<Motorista> atualizar(@PathVariable Long id, @RequestBody Motorista motoristaAtualizado) {
         return repository.findById(id).map(motorista -> {
@@ -67,24 +65,23 @@ public class MotoristaController {
             motorista.setCpf(motoristaAtualizado.getCpf());
             motorista.setPlaca(motoristaAtualizado.getPlaca());
             motorista.setFornecedor(motoristaAtualizado.getFornecedor());
-            motorista.setAtivo(motoristaAtualizado.getAtivo());
+            motorista.setSituacao(motoristaAtualizado.getSituacao() != null ? motoristaAtualizado.getSituacao() : "ATIVO");
+            motorista.setAtivo(motoristaAtualizado.getAtivo() != null ? motoristaAtualizado.getAtivo() : true);
+            motorista.setInformacoesAdicionais(motoristaAtualizado.getInformacoesAdicionais());
             motorista.setObservacoes(motoristaAtualizado.getObservacoes());
-            Motorista salvo = repository.save(motorista);
-            return ResponseEntity.ok(salvo);
+            return ResponseEntity.ok(repository.save(motorista));
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // 5. Deletar motorista
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
 
-    // 6. Upload de documentos principais (CNH / CRLV / COMP_ENDERECO)
     @PostMapping("/{id}/documentos")
     public ResponseEntity<?> uploadDocumento(
             @PathVariable Long id,
@@ -117,6 +114,10 @@ public class MotoristaController {
                     motorista.setUrlCompEndereco(urlRelativa);
                 }
 
+                // Salva também na lista genérica de documentos do motorista
+                MotoristaDocumento doc = new MotoristaDocumento(tipo, urlRelativa, nomeOriginal, motorista);
+                motoristaDocumentoRepository.save(doc);
+
                 repository.save(motorista);
                 return ResponseEntity.ok(motorista);
             } catch (IOException e) {
@@ -125,14 +126,11 @@ public class MotoristaController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // 7. Listar documentos extras do motorista ("Outros")
     @GetMapping("/{id}/documentos-extras")
     public ResponseEntity<List<MotoristaDocumento>> listarDocumentosExtras(@PathVariable Long id) {
-        List<MotoristaDocumento> docs = motoristaDocumentoRepository.findByMotoristaId(id);
-        return ResponseEntity.ok(docs);
+        return ResponseEntity.ok(motoristaDocumentoRepository.findByMotoristaId(id));
     }
 
-    // 8. Upload de documento extra do motorista ("Outros")
     @PostMapping("/{id}/documentos-extras")
     public ResponseEntity<?> uploadDocumentoExtra(
             @PathVariable Long id,
@@ -157,7 +155,7 @@ public class MotoristaController {
 
                 String urlRelativa = "/uploads/" + nomeArquivo;
 
-                MotoristaDocumento docExtra = new MotoristaDocumento(nome, urlRelativa, motorista);
+                MotoristaDocumento docExtra = new MotoristaDocumento(nome, urlRelativa, nomeOriginal != null ? nomeOriginal : nome, motorista);
                 motoristaDocumentoRepository.save(docExtra);
 
                 return ResponseEntity.ok(docExtra);
@@ -167,12 +165,11 @@ public class MotoristaController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // 9. Deletar documento extra do motorista
     @DeleteMapping("/documentos-extras/{docId}")
     public ResponseEntity<Void> deletarDocumentoExtra(@PathVariable Long docId) {
         if (motoristaDocumentoRepository.existsById(docId)) {
             motoristaDocumentoRepository.deleteById(docId);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }

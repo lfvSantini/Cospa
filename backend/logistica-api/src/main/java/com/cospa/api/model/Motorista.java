@@ -1,6 +1,9 @@
 package com.cospa.api.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "motoristas")
@@ -10,34 +13,45 @@ public class Motorista {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String nome;
 
+    @Column(length = 20)
     private String cpf;
 
-    @Column(nullable = false)
+    @Column(length = 20)
     private String placa;
 
+    @Column(name = "fornecedor_vinculado", length = 150)
     private String fornecedor;
 
-    @Column(nullable = false)
+    @Column(name = "situacao", length = 20)
+    private String situacao = "ATIVO";
+
+    @Column(name = "ativo")
     private Boolean ativo = true;
 
-    @Column(name = "url_cnh")
+    @Column(name = "url_cnh", length = 500)
     private String urlCnh;
 
-    @Column(name = "url_crlv")
+    @Column(name = "url_crlv", length = 500)
     private String urlCrlv;
 
-    @Column(name = "url_comp_endereco")
-    private String urlCompEndereco; // <--- Atributo adicionado para resolver o erro
+    @Column(name = "url_comp_endereco", length = 500)
+    private String urlCompEndereco;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "informacoes_adicionais", columnDefinition = "TEXT")
+    private String informacoesAdicionais;
+
+    @Column(name = "observacoes", columnDefinition = "TEXT")
     private String observacoes;
+
+    @OneToMany(mappedBy = "motorista", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<MotoristaDocumento> documentos = new ArrayList<>();
 
     public Motorista() {}
 
-    // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -53,6 +67,9 @@ public class Motorista {
     public String getFornecedor() { return fornecedor; }
     public void setFornecedor(String fornecedor) { this.fornecedor = fornecedor; }
 
+    public String getSituacao() { return situacao; }
+    public void setSituacao(String situacao) { this.situacao = situacao; }
+
     public Boolean getAtivo() { return ativo; }
     public void setAtivo(Boolean ativo) { this.ativo = ativo; }
 
@@ -65,6 +82,12 @@ public class Motorista {
     public String getUrlCompEndereco() { return urlCompEndereco; }
     public void setUrlCompEndereco(String urlCompEndereco) { this.urlCompEndereco = urlCompEndereco; }
 
+    public String getInformacoesAdicionais() { return informacoesAdicionais; }
+    public void setInformacoesAdicionais(String informacoesAdicionais) { this.informacoesAdicionais = informacoesAdicionais; }
+
     public String getObservacoes() { return observacoes; }
     public void setObservacoes(String observacoes) { this.observacoes = observacoes; }
+
+    public List<MotoristaDocumento> getDocumentos() { return documentos; }
+    public void setDocumentos(List<MotoristaDocumento> documentos) { this.documentos = documentos; }
 }

@@ -3,6 +3,7 @@ package com.cospa.api.controller;
 import com.cospa.api.model.Fornecedor;
 import com.cospa.api.repository.FornecedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class FornecedorController {
 
     @PostMapping
     public ResponseEntity<Fornecedor> criar(@RequestBody Fornecedor fornecedor) {
-        return ResponseEntity.ok(fornecedorRepository.save(fornecedor));
+        return ResponseEntity.status(HttpStatus.CREATED).body(fornecedorRepository.save(fornecedor));
     }
 
     @PutMapping("/{id}")
@@ -35,8 +36,10 @@ public class FornecedorController {
             f.setTelefone(dados.getTelefone());
             f.setEmail(dados.getEmail());
             f.setChavePix(dados.getChavePix());
+            f.setSituacao(dados.getSituacao() != null ? dados.getSituacao() : "ATIVO");
+            f.setObs(dados.getObs());
             f.setObservacoes(dados.getObservacoes());
-            f.setAtivo(dados.getAtivo());
+            f.setAtivo(dados.getAtivo() != null ? dados.getAtivo() : true);
             return ResponseEntity.ok(fornecedorRepository.save(f));
         }).orElse(ResponseEntity.notFound().build());
     }

@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -40,12 +42,16 @@ public class SecurityConfig {
                             "/uploads/**",
                             "/error"
                     ).permitAll();
-                    // Libera todas as rotas de autenticacao com coringa
                     req.requestMatchers("/auth/**", "/api/auth/**").permitAll();
                     req.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
@@ -55,6 +61,7 @@ public class SecurityConfig {
         config.setAllowedOriginPatterns(Arrays.asList(
                 "https://*.pages.dev",
                 "https://cospa-de9.pages.dev",
+                "https://*.up.railway.app",
                 "http://localhost:*",
                 "http://127.0.0.1:*"
         ));

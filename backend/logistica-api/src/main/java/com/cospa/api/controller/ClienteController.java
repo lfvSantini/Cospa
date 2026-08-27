@@ -5,6 +5,7 @@ import com.cospa.api.model.ClienteDocumento;
 import com.cospa.api.repository.ClienteDocumentoRepository;
 import com.cospa.api.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,20 +39,27 @@ public class ClienteController {
 
     @PostMapping
     public ResponseEntity<Cliente> criar(@RequestBody Cliente cliente) {
-        return ResponseEntity.ok(clienteRepository.save(cliente));
+        return ResponseEntity.status(HttpStatus.CREATED).body(clienteRepository.save(cliente));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Cliente> atualizar(@PathVariable Long id, @RequestBody Cliente dados) {
         return clienteRepository.findById(id).map(c -> {
             c.setNome(dados.getNome());
-            c.setCnpjCpf(dados.getCnpjCpf());
+            c.setNomeFantasia(dados.getNomeFantasia());
             c.setRazaoSocial(dados.getRazaoSocial());
+            c.setCnpjCpf(dados.getCnpjCpf());
+            c.setNomeContato(dados.getNomeContato());
             c.setContato(dados.getContato());
             c.setTelefone(dados.getTelefone());
             c.setEmail(dados.getEmail());
+            c.setEndereco(dados.getEndereco());
+            c.setCidade(dados.getCidade());
+            c.setEstado(dados.getEstado());
+            c.setSituacao(dados.getSituacao() != null ? dados.getSituacao() : "ATIVO");
+            c.setObs(dados.getObs());
             c.setObservacoes(dados.getObservacoes());
-            c.setAtivo(dados.getAtivo());
+            c.setAtivo(dados.getAtivo() != null ? dados.getAtivo() : true);
             return ResponseEntity.ok(clienteRepository.save(c));
         }).orElse(ResponseEntity.notFound().build());
     }
@@ -65,13 +73,11 @@ public class ClienteController {
         return ResponseEntity.noContent().build();
     }
 
-    // Listar documentos do cliente (CNPJ / Contratos)
     @GetMapping("/{id}/documentos")
     public ResponseEntity<List<ClienteDocumento>> listarDocumentos(@PathVariable Long id) {
         return ResponseEntity.ok(clienteDocumentoRepository.findByClienteId(id));
     }
 
-    // Upload de documento para o cliente
     @PostMapping("/{id}/documentos")
     public ResponseEntity<ClienteDocumento> uploadDocumento(
             @PathVariable Long id,

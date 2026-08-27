@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
@@ -30,9 +31,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDTO dto) {
         var usuarioOptional = usuarioRepository.findByUsername(dto.username());
-        if (usuarioOptional.isEmpty()) {
-            usuarioOptional = usuarioRepository.findByLogin(dto.username());
-        }
 
         if (usuarioOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário ou senha inválidos");
@@ -48,7 +46,6 @@ public class AuthController {
         return ResponseEntity.ok(new TokenResponseDTO(token));
     }
 
-    // Endpoint genérico para registrar qualquer usuário
     @PostMapping("/registrar")
     public ResponseEntity<?> registrar(@RequestBody @Valid UsuarioRequestDTO dto) {
         if (usuarioRepository.findByUsername(dto.username()).isPresent()) {
@@ -58,7 +55,6 @@ public class AuthController {
         Usuario usuario = new Usuario();
         usuario.setNome(dto.nome());
         usuario.setUsername(dto.username());
-        usuario.setLogin(dto.username());
         usuario.setSenha(passwordEncoder.encode(dto.senha()));
         usuario.setPerfil(dto.perfil() != null ? dto.perfil() : PerfilUsuario.ADMIN);
 

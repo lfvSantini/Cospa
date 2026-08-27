@@ -1,0 +1,1 @@
+ALTER TABLE motoristas ADD COLUMN url_comp_endereco VARCHAR(500);

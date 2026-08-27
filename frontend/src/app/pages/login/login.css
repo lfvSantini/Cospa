@@ -1,0 +1,213 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: radial-gradient(circle at 50% 38%, #0e1726 0%, #060911 65%, #030509 100%);
+  color: #e2e8f0;
+}
+
+.login-page {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* Botão de Tema no Topo */
+.theme-toggle {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 40px;
+  height: 22px;
+  background: #111724;
+  border: 1px solid #232d40;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 4px;
+  cursor: pointer;
+  outline: none;
+}
+
+.theme-toggle .moon-icon {
+  width: 13px;
+  height: 13px;
+  stroke: #4f8cf6;
+}
+
+/* Card */
+.login-card {
+  width: 100%;
+  max-width: 410px;
+  background: #161922;
+  border: 1px solid #222632;
+  border-radius: 14px;
+  padding: 3.5rem 2.5rem 2.2rem 2.5rem;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+/* Logo Fixada */
+.logo-box {
+  margin-top: 1.6rem;
+  margin-bottom: 4.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  overflow: visible;
+}
+
+.logo-img {
+  display: block;
+  height: 48px;
+  width: auto;
+  transform: scale(4.5);
+  object-fit: contain;
+  filter: drop-shadow(0 2px 12px rgba(0, 102, 255, 0.3));
+}
+
+.logo-text {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #1d6fe6 0%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card-title {
+  margin: 0 0 2rem 0;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+.error-msg {
+  background: rgba(220, 38, 38, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.84rem;
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  text-align: left;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.form-group label {
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 0.95rem;
+  width: 16px;
+  height: 16px;
+  stroke: #64748b;
+  pointer-events: none;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 0.82rem 0.95rem 0.82rem 2.6rem;
+  background: #1a1e28;
+  border: 1px solid #252c3a;
+  border-radius: 7px;
+  color: #f1f5f9;
+  font-size: 0.88rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.input-wrapper input:focus {
+  border-color: #1760c2;
+  background: #1d222e;
+}
+
+.input-wrapper input::placeholder {
+  color: #475569;
+  font-size: 0.85rem;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 0.82rem;
+  margin-top: 0.6rem;
+  background: #1760c2;
+  border: none;
+  border-radius: 7px;
+  color: #ffffff;
+  font-size: 0.94rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: #1b6cdb;
+}
+
+.btn-submit:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.7s linear infinite;
+}
+
+.card-footer {
+  margin-top: 2.4rem;
+  font-size: 0.74rem;
+  color: #475569;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

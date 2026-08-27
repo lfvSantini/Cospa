@@ -8,7 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ComprovanteRepository extends JpaRepository<Comprovante, Long> {
-
-    // Método para buscar todos os comprovantes de uma viagem específica
     List<Comprovante> findByViagemId(Long viagemId);
 }

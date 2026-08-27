@@ -1,0 +1,71 @@
+<div class="login-page">
+  <button class="theme-toggle" type="button" aria-label="Alternar tema">
+    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+    </svg>
+  </button>
+
+  <div class="login-card">
+    <div class="logo-box">
+      <img 
+        src="assets/img/Logo.png" 
+        alt="COSPA" 
+        class="logo-img" 
+        (error)="onImgError($event)" 
+      />
+    </div>
+
+    <h2 class="card-title">Painel de Login</h2>
+
+    <div *ngIf="errorMessage" class="error-msg">
+      {{ errorMessage }}
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="usuario">Usuário</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <input 
+            type="text" 
+            id="usuario" 
+            name="usuario" 
+            [(ngModel)]="usuario" 
+            placeholder="Digite seu usuário..." 
+            autocomplete="username"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <input 
+            type="password" 
+            id="senha" 
+            name="senha" 
+            [(ngModel)]="senha" 
+            placeholder="Digite sua senha..." 
+            autocomplete="current-password"
+          />
+        </div>
+      </div>
+
+      <button type="button" class="btn-submit" (click)="onSubmit()" [disabled]="isLoading">
+        <span *ngIf="!isLoading">Entrar</span>
+        <span *ngIf="isLoading" class="spinner"></span>
+      </button>
+    </form>
+
+    <div class="card-footer">
+      <span>COSPA v1.0.0</span>
+    </div>
+  </div>
+</div>

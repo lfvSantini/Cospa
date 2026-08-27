@@ -2,6 +2,7 @@ package com.cospa.api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "cliente_documentos")
@@ -17,13 +18,16 @@ public class ClienteDocumento {
     private Cliente cliente;
 
     @Column(nullable = false)
-    private String tipo; // 'CNPJ', 'CONTRATO', 'OUTROS'
+    private String tipo;
 
     @Column(name = "nome_arquivo")
     private String nomeArquivo;
 
-    @Column(name = "url_arquivo")
+    @Column(name = "url_arquivo", nullable = false)
     private String urlArquivo;
+
+    @Column(name = "data_upload")
+    private LocalDateTime dataUpload = LocalDateTime.now();
 
     public ClienteDocumento() {}
 
@@ -41,4 +45,7 @@ public class ClienteDocumento {
 
     public String getUrlArquivo() { return urlArquivo; }
     public void setUrlArquivo(String urlArquivo) { this.urlArquivo = urlArquivo; }
+
+    public LocalDateTime getDataUpload() { return dataUpload; }
+    public void setDataUpload(LocalDateTime dataUpload) { this.dataUpload = dataUpload; }
 }

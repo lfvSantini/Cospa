@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,7 +50,6 @@ public class ViagemResponseDTO {
 
     private List<ComprovanteDTO> comprovantes = new ArrayList<>();
 
-    // Construtor a partir da entidade Viagem
     public ViagemResponseDTO(Viagem entity) {
         if (entity != null) {
             this.id = entity.getId();
@@ -63,10 +64,10 @@ public class ViagemResponseDTO {
             this.placa = entity.getPlaca();
             this.fornecedorAgencia = entity.getFornecedorAgencia();
 
-            this.dataColetaPrevista = entity.getDataColetaPrevista();
-            this.dataColetaReal = entity.getDataColetaReal();
-            this.dataEntregaPrevista = entity.getDataEntregaPrevista();
-            this.dataEntregaReal = entity.getDataEntregaReal();
+            this.dataColetaPrevista = formatarData(entity.getDataColetaPrevista());
+            this.dataColetaReal = formatarData(entity.getDataColetaReal());
+            this.dataEntregaPrevista = formatarData(entity.getDataEntregaPrevista());
+            this.dataEntregaReal = formatarData(entity.getDataEntregaReal());
 
             this.valorAReceber = entity.getValorAReceber();
             this.valorAPagar = entity.getValorAPagar();
@@ -87,5 +88,12 @@ public class ViagemResponseDTO {
                         .collect(Collectors.toList());
             }
         }
+    }
+
+    private String formatarData(LocalDateTime data) {
+        if (data == null) {
+            return null;
+        }
+        return data.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 }

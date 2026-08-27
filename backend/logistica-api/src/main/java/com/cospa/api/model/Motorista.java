@@ -1,3 +1,4 @@
+// backend/src/main/java/com/cospa/api/model/Motorista.java
 package com.cospa.api.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -46,7 +47,7 @@ public class Motorista {
     @Column(name = "observacoes", columnDefinition = "TEXT")
     private String observacoes;
 
-    @OneToMany(mappedBy = "motorista", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "motorista", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<MotoristaDocumento> documentos = new ArrayList<>();
 

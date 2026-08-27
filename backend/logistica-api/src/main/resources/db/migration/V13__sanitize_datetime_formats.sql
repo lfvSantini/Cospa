@@ -1,13 +1,8 @@
--- 1. Corrige formatos 'DD/MM/YYYY HH:MM' para 'YYYY-MM-DD HH:MM:00' na tabela viagens
-UPDATE viagens 
-SET data_hora_pagamento = DATE_FORMAT(STR_TO_DATE(data_hora_pagamento, '%d/%m/%Y %H:%i'), '%Y-%m-%d %H:%i:00')
-WHERE data_hora_pagamento LIKE '%/%/% %:%';
+-- 1. Garante que data_hora_pagamento seja TEXT sem quebrar textos livres
+ALTER TABLE viagens MODIFY COLUMN data_hora_pagamento TEXT;
 
--- 2. Limpa strings vazias ou inválidas que não possam ser convertidas para datetime
-UPDATE viagens 
-SET data_hora_pagamento = NULL 
-WHERE data_hora_pagamento = '' OR data_hora_pagamento = ' ' OR data_hora_pagamento = 'null';
-
--- 3. Sanitizar colunas de datas em clientes e motoristas caso existam textos vazios
-UPDATE clientes SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL;
-UPDATE motoristas SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL;
+-- 2. Limpa datas invalidas/vazias nas colunas de data/hora de viagens
+UPDATE viagens SET data_coleta_prevista = NULL WHERE CAST(data_coleta_prevista AS CHAR) = '' OR CAST(data_coleta_prevista AS CHAR) = '0000-00-00 00:00:00';
+UPDATE viagens SET data_coleta_real = NULL WHERE CAST(data_coleta_real AS CHAR) = '' OR CAST(data_coleta_real AS CHAR) = '0000-00-00 00:00:00';
+UPDATE viagens SET data_entrega_prevista = NULL WHERE CAST(data_entrega_prevista AS CHAR) = '' OR CAST(data_entrega_prevista AS CHAR) = '0000-00-00 00:00:00';
+UPDATE viagens SET data_entrega_real = NULL WHERE CAST(data_entrega_real AS CHAR) = '' OR CAST(data_entrega_real AS CHAR) = '0000-00-00 00:00:00';

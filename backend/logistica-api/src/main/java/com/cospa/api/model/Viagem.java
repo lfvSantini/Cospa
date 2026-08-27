@@ -1,3 +1,4 @@
+// backend/src/main/java/com/cospa/api/model/Viagem.java
 package com.cospa.api.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -95,7 +96,7 @@ public class Viagem {
     @Column(name = "pagamento_realizado_status", length = 30)
     private String pagamentoRealizadoStatus = "NAO_REALIZADO";
 
-    @Column(name = "data_hora_pagamento", length = 50)
+    @Column(name = "data_hora_pagamento", columnDefinition = "TEXT")
     private String dataHoraPagamento;
 
     @Builder.Default
@@ -106,7 +107,7 @@ public class Viagem {
     @Column(name = "observacao", columnDefinition = "TEXT")
     private String observacao;
 
-    @OneToMany(mappedBy = "viagem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "viagem", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     @Builder.Default
     private List<Comprovante> comprovantes = new ArrayList<>();

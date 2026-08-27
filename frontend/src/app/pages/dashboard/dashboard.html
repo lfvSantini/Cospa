@@ -643,10 +643,10 @@
       </div>
 
       <div class="modal-subtabs">
-        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="activeManageTab = 'CADASTRAR'">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
           {{ isEditingFornecedor ? 'Editar Fornecedor' : '+ Cadastrar Novo' }}
         </button>
-        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="activeManageTab = 'LISTAR'">
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
           Gerenciar Cadastrados ({{ fornecedoresList.length }})
         </button>
       </div>
@@ -716,10 +716,10 @@
       </div>
 
       <div class="modal-subtabs">
-        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="activeManageTab = 'CADASTRAR'">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
           {{ isEditingCliente ? 'Editar Cliente' : '+ Cadastrar Novo' }}
         </button>
-        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="activeManageTab = 'LISTAR'">
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
           Gerenciar Cadastrados ({{ clientesList.length }})
         </button>
       </div>
@@ -789,10 +789,10 @@
       </div>
 
       <div class="modal-subtabs">
-        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="activeManageTab = 'CADASTRAR'">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
           {{ isEditingMotorista ? 'Editar Motorista' : '+ Cadastrar Novo' }}
         </button>
-        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="activeManageTab = 'LISTAR'">
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
           Gerenciar Cadastrados ({{ motoristasList.length }})
         </button>
       </div>

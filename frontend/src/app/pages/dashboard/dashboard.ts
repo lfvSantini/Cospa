@@ -253,6 +253,15 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  trocarAbaGerenciar(tab: 'CADASTRAR' | 'LISTAR', event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.activeManageTab = tab;
+    this.cdr.detectChanges();
+  }
+
   public sanitizarUrlArquivo(url: string | null | undefined): string {
     if (!url) return '';
     let fullUrl = url;
@@ -806,18 +815,32 @@ export class DashboardComponent implements OnInit {
     this.selectedListOrigin = origin;
 
     const raw: any = item.rawViagem;
+    
+    // Mapeamento correto de endereços múltiplos divididos por ';'
+    const rawColetaArr = (raw?.localColeta || raw?.local_coleta || '').split(';').map((s: string) => s.trim());
+    const origensMapeadas: PontoRota[] = item.origem.map((o, idx) => ({
+      local: o === '-' ? '' : o,
+      endereco: rawColetaArr[idx] || (rawColetaArr.length === 1 && rawColetaArr[0] !== o ? rawColetaArr[0] : '')
+    }));
+
+    const rawEntregaArr = (raw?.localEntrega || raw?.local_entrega || '').split(';').map((s: string) => s.trim());
+    const destinosMapeados: PontoRota[] = item.destino.map((d, idx) => ({
+      local: d === '-' ? '' : d,
+      endereco: rawEntregaArr[idx] || (rawEntregaArr.length === 1 && rawEntregaArr[0] !== d ? rawEntregaArr[0] : '')
+    }));
+
     this.tripForm = {
       id: item.id.replace('#', ''),
       clienteSelect: item.cliente,
       clienteManual: '',
-      origens: item.origem.map(o => ({ local: o, endereco: raw?.localColeta || raw?.local_coleta || '' })),
-      destinos: item.destino.map(d => ({ local: d, endereco: raw?.localEntrega || raw?.local_entrega || '' })),
+      origens: origensMapeadas.length > 0 ? origensMapeadas : [{ local: '', endereco: '' }],
+      destinos: destinosMapeados.length > 0 ? destinosMapeados : [{ local: '', endereco: '' }],
       motorista: item.motorista === 'A Contratar' ? '' : item.motorista,
       agencia: raw?.fornecedorAgencia || raw?.fornecedor_agencia || 'Sem Agência (Frota Própria)',
-      coletaPrevista: raw?.dataColetaPrevista || raw?.data_coleta_prevista || '',
-      coletaReal: raw?.dataColetaReal || raw?.data_coleta_real || '',
-      entregaPrevista: raw?.dataEntregaPrevista || raw?.data_entrega_prevista || '',
-      entregaReal: raw?.dataEntregaReal || raw?.data_entrega_real || '',
+      coletaPrevista: (raw?.dataColetaPrevista || raw?.data_coleta_prevista || '') === 'A confirmar' ? '' : (raw?.dataColetaPrevista || raw?.data_coleta_prevista || ''),
+      coletaReal: (raw?.dataColetaReal || raw?.data_coleta_real || '') === 'A confirmar' ? '' : (raw?.dataColetaReal || raw?.data_coleta_real || ''),
+      entregaPrevista: (raw?.dataEntregaPrevista || raw?.data_entrega_prevista || '') === 'A confirmar' ? '' : (raw?.dataEntregaPrevista || raw?.data_entrega_prevista || ''),
+      entregaReal: (raw?.dataEntregaReal || raw?.data_entrega_real || '') === 'A confirmar' ? '' : (raw?.dataEntregaReal || raw?.data_entrega_real || ''),
       valorReceber: raw?.valorAReceber || raw?.valor_a_receber || 0,
       adicionalReceber: raw?.valorAdicionalReceber || raw?.valor_adicional_receber || 0,
       valorPagarMotorista: raw?.valorAPagar || raw?.valor_a_pagar || 0,
@@ -830,10 +853,8 @@ export class DashboardComponent implements OnInit {
       observacao: item.obs === '-' ? '' : (item.obs || '')
     };
 
-    if (this.tripForm.origens.length === 0) this.tripForm.origens.push({ local: '', endereco: '' });
-    if (this.tripForm.destinos.length === 0) this.tripForm.destinos.push({ local: '', endereco: '' });
-
     this.modalType = 'TRIP_FORM';
+    this.closeRowActions();
     this.cdr.detectChanges();
   }
 
@@ -844,15 +865,13 @@ export class DashboardComponent implements OnInit {
       .map(o => (o.local || '').trim())
       .filter(o => o.length > 0);
     const origensEnderecosArray = (this.tripForm.origens || [])
-      .map(o => (o.endereco || '').trim())
-      .filter(e => e.length > 0);
+      .map(o => (o.endereco || '').trim());
 
     const destinosLocaisArray = (this.tripForm.destinos || [])
       .map(d => (d.local || '').trim())
       .filter(d => d.length > 0);
     const destinosEnderecosArray = (this.tripForm.destinos || [])
-      .map(d => (d.endereco || '').trim())
-      .filter(e => e.length > 0);
+      .map(d => (d.endereco || '').trim());
 
     const strOrigemLocal = origensLocaisArray.join('; ') || 'Origem não informada';
     const strOrigemEndereco = origensEnderecosArray.join('; ') || strOrigemLocal;
@@ -871,8 +890,16 @@ export class DashboardComponent implements OnInit {
       cpfFinal = motSelected ? motSelected.cpf : '';
     }
 
+    // Identificador manual caso seja preenchido
+    let idFinal: number | undefined = undefined;
+    if (this.isEditing && this.selectedViagem) {
+      idFinal = this.selectedViagem.rawId;
+    } else if (this.tripForm.id && !isNaN(Number(this.tripForm.id))) {
+      idFinal = Number(this.tripForm.id);
+    }
+
     const payload: any = {
-      id: this.isEditing && this.selectedViagem ? this.selectedViagem.rawId : undefined,
+      id: idFinal,
       cliente: nomeClienteFinal,
 
       origem: strOrigemLocal,
@@ -896,15 +923,15 @@ export class DashboardComponent implements OnInit {
       fornecedorAgencia: this.tripForm.agencia || 'Sem Agência (Frota Própria)',
       fornecedor_agencia: this.tripForm.agencia || 'Sem Agência (Frota Própria)',
 
-      dataColetaPrevista: this.tripForm.coletaPrevista || 'A confirmar',
-      data_coleta_prevista: this.tripForm.coletaPrevista || 'A confirmar',
-      dataColetaReal: this.tripForm.coletaReal || 'A confirmar',
-      data_coleta_real: this.tripForm.coletaReal || 'A confirmar',
+      dataColetaPrevista: this.tripForm.coletaPrevista || '',
+      data_coleta_prevista: this.tripForm.coletaPrevista || '',
+      dataColetaReal: this.tripForm.coletaReal || '',
+      data_coleta_real: this.tripForm.coletaReal || '',
 
-      dataEntregaPrevista: this.tripForm.entregaPrevista || 'A confirmar',
-      data_entrega_prevista: this.tripForm.entregaPrevista || 'A confirmar',
-      dataEntregaReal: this.tripForm.entregaReal || 'A confirmar',
-      data_entrega_real: this.tripForm.entregaReal || 'A confirmar',
+      dataEntregaPrevista: this.tripForm.entregaPrevista || '',
+      data_entrega_prevista: this.tripForm.entregaPrevista || '',
+      dataEntregaReal: this.tripForm.entregaReal || '',
+      data_entrega_real: this.tripForm.entregaReal || '',
 
       valorAReceber: Number(this.tripForm.valorReceber) || 0,
       valor_a_receber: Number(this.tripForm.valorReceber) || 0,
@@ -960,6 +987,7 @@ export class DashboardComponent implements OnInit {
   openObsModal(item: ViagemItem): void {
     this.selectedViagem = item;
     this.modalType = 'OBS';
+    this.closeRowActions();
     this.cdr.detectChanges();
   }
 
@@ -978,6 +1006,7 @@ export class DashboardComponent implements OnInit {
     this.selectedViagem = item;
     this.selectedListOrigin = origin;
     this.modalType = 'DELETE';
+    this.closeRowActions();
     this.cdr.detectChanges();
   }
 

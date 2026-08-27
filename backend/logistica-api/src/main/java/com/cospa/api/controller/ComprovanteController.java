@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/viagens")
+@RequestMapping({"/api/viagens", "/api/comprovantes"})
 @CrossOrigin(origins = "*")
 public class ComprovanteController {
 
@@ -82,12 +82,25 @@ public class ComprovanteController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
+    // Rota 1: /api/viagens/{viagemId}/comprovantes/{comprovanteId}
     @DeleteMapping("/{viagemId}/comprovantes/{comprovanteId}")
-    public ResponseEntity<Void> deletarComprovante(@PathVariable Long viagemId, @PathVariable Long comprovanteId) {
-        return comprovanteRepository.findById(comprovanteId).map(c -> {
+    public ResponseEntity<Void> deletarComprovanteComViagem(@PathVariable Long viagemId, @PathVariable Long comprovanteId) {
+        return removerComprovante(comprovanteId);
+    }
+
+    // Rota 2: /api/comprovantes/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarComprovanteDireto(@PathVariable Long id) {
+        return removerComprovante(id);
+    }
+
+    private ResponseEntity<Void> removerComprovante(Long id) {
+        return comprovanteRepository.findById(id).map(c -> {
             try {
-                String nomeArquivo = c.getUrlArquivo().substring(c.getUrlArquivo().lastIndexOf('/') + 1);
-                Files.deleteIfExists(getUploadPath().resolve(nomeArquivo));
+                if (c.getUrlArquivo() != null) {
+                    String nomeArquivo = c.getUrlArquivo().substring(c.getUrlArquivo().lastIndexOf('/') + 1);
+                    Files.deleteIfExists(getUploadPath().resolve(nomeArquivo));
+                }
             } catch (Exception ignored) {}
             comprovanteRepository.delete(c);
             return ResponseEntity.noContent().<Void>build();

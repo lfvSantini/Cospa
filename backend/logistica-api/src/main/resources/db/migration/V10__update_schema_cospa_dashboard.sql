@@ -11,23 +11,46 @@ CREATE TABLE IF NOT EXISTS fornecedores (
     obs TEXT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Helper procedure para adicionar colunas com segurança se nao existirem
+DROP PROCEDURE IF EXISTS AddColumnSafely;
+DELIMITER $$
+CREATE PROCEDURE AddColumnSafely(
+    IN p_table_name VARCHAR(64),
+    IN p_column_name VARCHAR(64),
+    IN p_column_def TEXT
+)
+BEGIN
+    DECLARE col_count INT;
+    SELECT COUNT(*) INTO col_count
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = p_table_name
+      AND COLUMN_NAME = p_column_name;
+
+    IF col_count = 0 THEN
+        SET @sql = CONCAT('ALTER TABLE `', p_table_name, '` ADD COLUMN `', p_column_name, '` ', p_column_def);
+        PREPARE stmt FROM @sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+    END IF;
+END$$
+DELIMITER ;
+
 -- 2. Atualizar tabela de clientes
-ALTER TABLE clientes
-    ADD COLUMN IF NOT EXISTS nome_fantasia VARCHAR(150),
-    ADD COLUMN IF NOT EXISTS razao_social VARCHAR(200),
-    ADD COLUMN IF NOT EXISTS nome_contato VARCHAR(100),
-    ADD COLUMN IF NOT EXISTS situacao VARCHAR(20) NOT NULL DEFAULT 'ATIVO',
-    ADD COLUMN IF NOT EXISTS obs TEXT;
+CALL AddColumnSafely('clientes', 'nome_fantasia', 'VARCHAR(150)');
+CALL AddColumnSafely('clientes', 'razao_social', 'VARCHAR(200)');
+CALL AddColumnSafely('clientes', 'nome_contato', 'VARCHAR(100)');
+CALL AddColumnSafely('clientes', 'situacao', 'VARCHAR(20) NOT NULL DEFAULT ''ATIVO''');
+CALL AddColumnSafely('clientes', 'obs', 'TEXT');
 
 UPDATE clientes SET nome_fantasia = nome WHERE nome_fantasia IS NULL;
 ALTER TABLE clientes MODIFY COLUMN nome VARCHAR(255) NULL;
 
 -- 3. Atualizar tabela de motoristas
-ALTER TABLE motoristas
-    ADD COLUMN IF NOT EXISTS cpf VARCHAR(20),
-    ADD COLUMN IF NOT EXISTS fornecedor_vinculado VARCHAR(150),
-    ADD COLUMN IF NOT EXISTS situacao VARCHAR(20) NOT NULL DEFAULT 'ATIVO',
-    ADD COLUMN IF NOT EXISTS informacoes_adicionais TEXT;
+CALL AddColumnSafely('motoristas', 'cpf', 'VARCHAR(20)');
+CALL AddColumnSafely('motoristas', 'fornecedor_vinculado', 'VARCHAR(150)');
+CALL AddColumnSafely('motoristas', 'situacao', 'VARCHAR(20) NOT NULL DEFAULT ''ATIVO''');
+CALL AddColumnSafely('motoristas', 'informacoes_adicionais', 'TEXT');
 
 -- 4. Criar tabela de documentos para motoristas
 CREATE TABLE IF NOT EXISTS documentos_motorista (
@@ -40,12 +63,16 @@ CREATE TABLE IF NOT EXISTS documentos_motorista (
     CONSTRAINT fk_documento_motorista FOREIGN KEY (motorista_id) REFERENCES motoristas(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 5. Atualizar tabela de viagens com os campos financeiros, agência e origens/destinos estendidos
-ALTER TABLE viagens
-    ADD COLUMN IF NOT EXISTS origem_nome TEXT,
-    ADD COLUMN IF NOT EXISTS destino_nome TEXT,
-    ADD COLUMN IF NOT EXISTS valor_adicional_receber DECIMAL(10,2) DEFAULT 0.00,
-    ADD COLUMN IF NOT EXISTS valor_adicional_pagar DECIMAL(10,2) DEFAULT 0.00,
-    ADD COLUMN IF NOT EXISTS valor_adicional_agencia DECIMAL(10,2) DEFAULT 0.00,
-    ADD COLUMN IF NOT EXISTS fornecedor_agencia VARCHAR(255),
-    ADD COLUMN IF NOT EXISTS data_hora_pagamento VARCHAR(50);
+-- 5. Atualizar tabela de viagens
+CALL AddColumnSafely('viagens', 'origem_nome', 'TEXT');
+CALL AddColumnSafely('viagens', 'destino_nome', 'TEXT');
+CALL AddColumnSafely('viagens', 'valor_adicional_receber', 'DECIMAL(10,2) DEFAULT 0.00');
+CALL AddColumnSafely('viagens', 'valor_adicional_pagar', 'DECIMAL(10,2) DEFAULT 0.00');
+CALL AddColumnSafely('viagens', 'valor_adicional_agencia', 'DECIMAL(10,2) DEFAULT 0.00');
+CALL AddColumnSafely('viagens', 'fornecedor_agencia', 'VARCHAR(255)');
+CALL AddColumnSafely('viagens', 'pagamento_liberado', 'BOOLEAN DEFAULT FALSE');
+CALL AddColumnSafely('viagens', 'pagamento_realizado_status', 'VARCHAR(30) DEFAULT ''NAO_REALIZADO''');
+CALL AddColumnSafely('viagens', 'data_hora_pagamento', 'VARCHAR(50)');
+
+-- Remover a procedure temporária
+DROP PROCEDURE IF EXISTS AddColumnSafely;

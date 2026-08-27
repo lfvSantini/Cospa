@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,9 +37,9 @@ public class ComprovanteController {
         if (!Files.exists(path)) {
             try {
                 Files.createDirectories(path);
-            } catch (IOException ignored) {
-                path = Paths.get("uploads").toAbsolutePath().normalize();
-                try { Files.createDirectories(path); } catch (IOException ignored2) {}
+            } catch (IOException e) {
+                path = Paths.get(System.getProperty("user.dir"), "uploads").toAbsolutePath().normalize();
+                try { Files.createDirectories(path); } catch (IOException ignored) {}
             }
         }
         return path;
@@ -70,7 +69,9 @@ public class ComprovanteController {
                 }
 
                 String nomeArquivo = "viagem_" + viagemId + "_" + UUID.randomUUID().toString().substring(0, 8) + extensao;
-                Path destino = getUploadPath().resolve(nomeArquivo);
+                Path uploadFolder = getUploadPath();
+                Path destino = uploadFolder.resolve(nomeArquivo).normalize();
+
                 Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
 
                 String urlRelativa = "/uploads/" + nomeArquivo;
@@ -91,7 +92,6 @@ public class ComprovanteController {
             @PathVariable Long comprovanteId) {
 
         return comprovanteRepository.findById(comprovanteId).map(comprovante -> {
-            // Remove o arquivo físico se existir
             try {
                 if (comprovante.getUrlArquivo() != null) {
                     String nomeArquivo = comprovante.getUrlArquivo().substring(comprovante.getUrlArquivo().lastIndexOf('/') + 1);
@@ -100,7 +100,6 @@ public class ComprovanteController {
                 }
             } catch (Exception ignored) {}
 
-            // Remove o registro do banco de dados
             comprovanteRepository.delete(comprovante);
             return ResponseEntity.noContent().<Void>build();
         }).orElse(ResponseEntity.notFound().build());

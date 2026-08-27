@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,17 +52,17 @@ public class Viagem {
     @Column(name = "cpf_motorista", length = 14)
     private String cpfMotorista;
 
-    @Column(name = "data_coleta_prevista")
-    private LocalDateTime dataColetaPrevista;
+    @Column(name = "data_coleta_prevista", columnDefinition = "TEXT")
+    private String dataColetaPrevista;
 
-    @Column(name = "data_coleta_real")
-    private LocalDateTime dataColetaReal;
+    @Column(name = "data_coleta_real", columnDefinition = "TEXT")
+    private String dataColetaReal;
 
-    @Column(name = "data_entrega_prevista")
-    private LocalDateTime dataEntregaPrevista;
+    @Column(name = "data_entrega_prevista", columnDefinition = "TEXT")
+    private String dataEntregaPrevista;
 
-    @Column(name = "data_entrega_real")
-    private LocalDateTime dataEntregaReal;
+    @Column(name = "data_entrega_real", columnDefinition = "TEXT")
+    private String dataEntregaReal;
 
     @Builder.Default
     @Column(name = "valor_a_receber", precision = 10, scale = 2)

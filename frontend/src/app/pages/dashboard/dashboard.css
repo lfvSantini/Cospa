@@ -251,7 +251,7 @@
 .accordion-inner { overflow: visible; min-height: 0; opacity: 0; transform: translateY(-8px); transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
 .accordion-collapse.expanded .accordion-inner { opacity: 1; transform: translateY(0); }
 
-/* Tabela e Alinhamento */
+/* Tabela e Empilhamento Corrigido */
 .table-container { 
   background-color: var(--bg-table-card); 
   border: 1px solid var(--border-nav); 
@@ -273,10 +273,21 @@
 .cospa-table thead tr { border-bottom: 1px solid var(--border-nav); }
 .cospa-table th { padding: 1.15rem 0.75rem; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cospa-table td { padding: 1rem 0.75rem; border-bottom: 1px solid var(--border-table); vertical-align: middle; }
-.cospa-table tbody tr { position: relative; }
-.cospa-table tbody tr:hover { background-color: var(--row-hover); }
-.cospa-table tbody tr:hover,
-.cospa-table tbody tr:focus-within { z-index: 40; }
+
+.cospa-table tbody tr { 
+  position: relative; 
+  z-index: 1;
+}
+
+.cospa-table tbody tr:hover { 
+  background-color: var(--row-hover); 
+}
+
+/* Linha com Menu Aberto ganha z-index superior para não ser sobreposta */
+.cospa-table tbody tr.row-menu-open {
+  z-index: 500 !important;
+}
+
 .cospa-table tbody tr:last-child td { border-bottom: none; }
 
 /* Larguras Proporcionais das Colunas */
@@ -361,7 +372,6 @@
   display: inline-flex; 
   justify-content: flex-end; 
   position: relative; 
-  z-index: 50;
 }
 
 .btn-row-action {
@@ -387,17 +397,17 @@
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  background-color: var(--dropdown-bg);
+  background-color: #1a1c23;
   border: 1px solid var(--border-nav);
   border-radius: 9px;
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.65);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
   min-width: 185px;
   padding: 0.35rem;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  z-index: 9999 !important;
-  animation: dropdownFade 0.18s ease-out;
+  z-index: 1000 !important;
+  animation: dropdownFade 0.15s ease-out;
 }
 
 @keyframes dropdownFade { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
@@ -433,7 +443,7 @@
   justify-content: center;
   align-items: center;
   padding: 1.5rem;
-  z-index: 1000;
+  z-index: 2000;
   animation: fadeIn 0.2s ease;
 }
 
@@ -448,7 +458,7 @@
   overflow: hidden;
   box-sizing: border-box;
   position: relative;
-  z-index: 1010;
+  z-index: 2010;
 }
 
 .cospa-modal-box.modal-fixed-frame {
@@ -775,7 +785,7 @@
   color: var(--text-muted);
 }
 
-/* Lightbox Isolado Sem Sobreposição */
+/* Lightbox Isolado */
 .lightbox-overlay {
   position: fixed;
   inset: 0;

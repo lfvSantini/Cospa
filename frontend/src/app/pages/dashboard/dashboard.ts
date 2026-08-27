@@ -358,6 +358,16 @@ export class DashboardComponent implements OnInit {
     this.novoComprovante = { descricao: '', arquivo: null, nomeArquivo: '' };
     this.activePhotoTab = (this.selectedViagem.fotos && this.selectedViagem.fotos.length > 0) ? 'LISTAR' : 'ADICIONAR';
     this.modalType = 'PHOTO';
+    this.closeRowActions();
+    this.cdr.detectChanges();
+  }
+
+  trocarAbaFoto(aba: 'ADICIONAR' | 'LISTAR', event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.activePhotoTab = aba;
     this.cdr.detectChanges();
   }
 
@@ -372,28 +382,60 @@ export class DashboardComponent implements OnInit {
   }
 
   adicionarComprovante(): void {
-    if (!this.selectedViagem || !this.novoComprovante.arquivo || !this.novoComprovante.descricao.trim()) return;
+    if (!this.selectedViagem || !this.novoComprovante.arquivo || !this.novoComprovante.descricao.trim()) {
+      alert('Selecione um arquivo e informe uma descrição.');
+      return;
+    }
+
+    const viagemAtual = this.selectedViagem;
+    const nomeDescricao = this.novoComprovante.descricao.trim();
+    const arquivoParaEnvio = this.novoComprovante.arquivo;
 
     this.viagemService.uploadComprovante(
-      this.selectedViagem.rawId,
-      this.novoComprovante.descricao.trim(),
-      this.novoComprovante.arquivo
+      viagemAtual.rawId,
+      nomeDescricao,
+      arquivoParaEnvio
     ).subscribe({
-      next: () => {
-        this.carregarViagens();
+      next: (compSalvo: any) => {
+        const novoItem: ComprovanteItem = {
+          id: compSalvo?.id || Date.now(),
+          descricao: compSalvo?.nome || nomeDescricao,
+          url: this.sanitizarUrlArquivo(compSalvo?.urlArquivo || compSalvo?.url || ''),
+          nomeArquivo: compSalvo?.nome || arquivoParaEnvio.name,
+          dataEnvio: compSalvo?.dataEnvio || 'Agora'
+        };
+
+        if (!viagemAtual.fotos) {
+          viagemAtual.fotos = [];
+        }
+        viagemAtual.fotos.unshift(novoItem);
+
         this.novoComprovante = { descricao: '', arquivo: null, nomeArquivo: '' };
         this.activePhotoTab = 'LISTAR';
+        this.carregarViagens();
         this.cdr.detectChanges();
       },
-      error: () => alert('Erro ao enviar comprovante.')
+      error: (err) => {
+        console.error('Erro no upload do comprovante:', err);
+        alert('Erro ao enviar comprovante.');
+      }
     });
   }
 
   removerComprovante(event: Event, id: number): void {
     event.stopPropagation();
     if (!this.selectedViagem) return;
-    this.viagemService.deletarComprovante(this.selectedViagem.rawId, id).subscribe({
-      next: () => this.carregarViagens(),
+    
+    const viagemAtual = this.selectedViagem;
+
+    this.viagemService.deletarComprovante(viagemAtual.rawId, id).subscribe({
+      next: () => {
+        if (viagemAtual.fotos) {
+          viagemAtual.fotos = viagemAtual.fotos.filter(f => f.id !== id);
+        }
+        this.carregarViagens();
+        this.cdr.detectChanges();
+      },
       error: () => alert('Erro ao deletar comprovante.')
     });
   }

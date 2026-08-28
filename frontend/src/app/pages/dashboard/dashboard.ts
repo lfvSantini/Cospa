@@ -370,11 +370,6 @@ export class DashboardComponent implements OnInit {
     return url.toLowerCase().includes('.pdf') || url.toLowerCase().endsWith('.pdf');
   }
 
-  public getSafeUrl(url: string | null | undefined): SafeResourceUrl {
-    const clean = this.sanitizarUrlArquivo(url);
-    return this.sanitizer.bypassSecurityTrustResourceUrl(clean);
-  }
-
   public sanitizarUrlArquivo(url: string | null | undefined): string {
     if (!url) return '';
     let fullUrl = url;
@@ -594,9 +589,14 @@ export class DashboardComponent implements OnInit {
   }
 
   abrirPreviewFoto(url: string): void { 
+    const urlFormatada = this.sanitizarUrlArquivo(url);
+    if (this.isPdf(urlFormatada)) {
+      window.open(urlFormatada, '_blank');
+      return;
+    }
     this.previousModalType = this.modalType as any;
     this.modalType = null; 
-    this.previewImageUrl = this.sanitizarUrlArquivo(url); 
+    this.previewImageUrl = urlFormatada; 
     this.cdr.detectChanges(); 
   }
 
@@ -694,7 +694,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    const tipoDoc = this.novoDocMotorista.nome.trim() || 'Documento';
+    const tipoDoc: string = this.novoDocMotorista.nome.trim() || 'Documento';
 
     this.motoristaService.uploadDocumento(
       this.selectedMotorista.id,
@@ -1093,7 +1093,6 @@ export class DashboardComponent implements OnInit {
       cpfFinal = motSelected ? motSelected.cpf : '';
     }
 
-    // Garante que, em Nova Viagem (isEditing = false), o ID não seja enviado (evitando erro 404 de PUT)
     let idFinal: number | undefined = undefined;
     if (this.isEditing && this.selectedViagem) {
       idFinal = this.selectedViagem.rawId;

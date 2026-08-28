@@ -507,7 +507,7 @@
   to { opacity: 1; }
 }
 
-/* Modificado para manter os botões isolados e não deixar vazar */
+/* Header isolado para bloquear botões vazando */
 .modal-head {
   display: flex;
   justify-content: space-between;
@@ -515,16 +515,17 @@
   padding: 1.2rem 1.75rem;
   border-bottom: 1px solid var(--border-nav);
   flex-shrink: 0;
-  position: relative;
-  z-index: 50;
   background-color: var(--bg-table-card);
+  position: relative;
+  z-index: 100;
 }
 
 .modal-head h3 {
-  font-size: 1.18rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-main);
   margin: 0;
+  line-height: 1.2;
 }
 
 .btn-close-modal {
@@ -534,9 +535,12 @@
   font-size: 1.25rem;
   cursor: pointer;
   padding: 4px;
-  transition: color 0.15s ease;
+  line-height: 1;
 }
-.btn-close-modal:hover { color: #ffffff; }
+
+.btn-close-modal:hover {
+  color: #ffffff;
+}
 
 .modal-subtabs {
   display: flex;
@@ -670,7 +674,6 @@
   align-items: flex-start;
 }
 
-/* Dropzone com Feedback Visual para Drag & Drop e Paste */
 .comprovante-dropzone {
   border: 2px dashed #3f4452;
   border-radius: 8px;
@@ -710,13 +713,13 @@
   gap: 1.15rem;
 }
 
-/* Isolamento do Card da Galeria */
+/* Card da Galeria */
 .comprovante-card {
-  position: relative; /* OBRIGATÓRIO PARA NÃO VAZAR */
+  position: relative;
   background-color: var(--btn-action-bg);
   border: 1px solid var(--btn-action-border);
   border-radius: 10px;
-  overflow: hidden; /* CORTA BOTOES EXCEDENTES */
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   cursor: pointer;
@@ -730,7 +733,7 @@
 }
 
 .comp-img-wrapper {
-  position: relative; /* Contexto de posicionamento isolado */
+  position: relative;
   height: 140px;
   width: 100%;
   background-color: #000000;
@@ -744,9 +747,8 @@
   transition: opacity 0.2s ease;
 }
 
-/* Container Visual de PDF */
 .comp-pdf-wrapper {
-  position: relative; /* Contexto de posicionamento isolado */
+  position: relative;
   height: 140px;
   width: 100%;
   background: linear-gradient(135deg, #181b22 0%, #0d0e12 100%);
@@ -777,7 +779,6 @@
   border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
-/* BOTOES ISOLADOS (Presos no card, não vazam no Header) */
 .btn-open-ext {
   position: absolute;
   top: 8px;
@@ -840,7 +841,7 @@
   color: var(--text-muted);
 }
 
-/* Lightbox com Leitor de PDF e Imagem */
+/* Lightbox Isolado */
 .lightbox-overlay {
   position: fixed;
   inset: 0;
@@ -874,59 +875,6 @@
   object-fit: contain;
   border-radius: 8px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
-}
-
-/* Lightbox PDF Redesenhado */
-.lightbox-pdf-container {
-  width: 85vw;
-  height: 80vh;
-  max-width: 1000px;
-  background-color: #15171c;
-  border-radius: 12px;
-  border: 1px solid var(--border-nav);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
-}
-
-.pdf-viewer-frame {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-.pdf-fallback-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  text-align: center;
-  gap: 1rem;
-  color: var(--text-main);
-  height: 100%;
-  background-color: #15171c;
-}
-
-.pdf-fallback-icon {
-  width: 64px;
-  height: 64px;
-  stroke: #f87171;
-}
-
-.pdf-fallback-box h3 {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.pdf-fallback-box p {
-  color: var(--text-muted);
-  max-width: 450px;
-  font-size: 0.92rem;
-  margin: 0;
 }
 
 .btn-close-lightbox {

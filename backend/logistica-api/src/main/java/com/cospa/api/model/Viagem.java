@@ -1,4 +1,3 @@
-// backend/src/main/java/com/cospa/api/model/Viagem.java
 package com.cospa.api.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -19,7 +18,7 @@ import java.util.List;
 public class Viagem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
     @Column(nullable = false, length = 255)

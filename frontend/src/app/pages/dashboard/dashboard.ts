@@ -9,7 +9,7 @@ import { MotoristaService } from '../../core/services/motorista';
 import { ClienteService } from '../../core/services/cliente';
 import { FornecedorService } from '../../core/services/fornecedor';
 import { Viagem, StatusViagem } from '../../core/models/viagem.model';
-import { Motorista, MotoristaDocumento } from '../../core/models/motorista.model';
+import { Motorista } from '../../core/models/motorista.model';
 import { Cliente } from '../../core/models/cliente.model';
 import { Fornecedor } from '../../core/models/fornecedor.model';
 import { environment } from '../../../environments/environment';
@@ -1112,6 +1112,8 @@ export class DashboardComponent implements OnInit {
     let idFinal: number | undefined = undefined;
     if (this.isEditing && this.selectedViagem) {
       idFinal = this.selectedViagem.rawId;
+    } else if (this.tripForm.id && !isNaN(Number(this.tripForm.id.trim()))) {
+      idFinal = Number(this.tripForm.id.trim());
     }
 
     const payload: any = {

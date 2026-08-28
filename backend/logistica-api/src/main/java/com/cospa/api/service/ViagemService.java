@@ -30,23 +30,27 @@ public class ViagemService {
 
     @Transactional
     public Viagem salvar(ViagemRequestDTO dto) {
-        Viagem viagem = new Viagem();
-        if (dto.getId() != null) {
-            viagem.setId(dto.getId());
+        if (dto.getId() == null || dto.getId() <= 0) {
+            throw new IllegalArgumentException("O Número da Viagem (ID) é obrigatório.");
         }
+        Viagem viagem = new Viagem();
+        viagem.setId(dto.getId());
         copiarDtoParaEntidade(dto, viagem);
         return repository.save(viagem);
     }
 
     @Transactional
     public Viagem salvarOuAtualizar(Long id, ViagemRequestDTO dto) {
-        Viagem viagem = (id != null)
-                ? repository.findById(id).orElseGet(() -> {
+        Long idFinal = (id != null) ? id : dto.getId();
+        if (idFinal == null || idFinal <= 0) {
+            throw new IllegalArgumentException("O Número da Viagem (ID) é obrigatório.");
+        }
+
+        Viagem viagem = repository.findById(idFinal).orElseGet(() -> {
             Viagem nova = new Viagem();
-            nova.setId(id);
+            nova.setId(idFinal);
             return nova;
-        })
-                : new Viagem();
+        });
 
         copiarDtoParaEntidade(dto, viagem);
         return repository.save(viagem);

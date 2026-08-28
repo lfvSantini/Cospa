@@ -2,9 +2,8 @@ package com.cospa.api.controller;
 
 import com.cospa.api.dto.ViagemRequestDTO;
 import com.cospa.api.dto.ViagemResponseDTO;
-import com.cospa.api.model.StatusViagem;
 import com.cospa.api.model.Viagem;
-import com.cospa.api.repository.ViagemRepository;
+import com.cospa.api.service.ViagemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +18,11 @@ import java.util.stream.Collectors;
 public class ViagemController {
 
     @Autowired
-    private ViagemRepository viagemRepository;
+    private ViagemService viagemService;
 
     @GetMapping
     public ResponseEntity<List<ViagemResponseDTO>> listarTodas() {
-        List<ViagemResponseDTO> lista = viagemRepository.findAll().stream()
+        List<ViagemResponseDTO> lista = viagemService.listarTodas().stream()
                 .map(ViagemResponseDTO::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(lista);
@@ -31,70 +30,30 @@ public class ViagemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ViagemResponseDTO> buscarPorId(@PathVariable Long id) {
-        return viagemRepository.findById(id)
+        return viagemService.buscarPorId(id)
                 .map(v -> ResponseEntity.ok(new ViagemResponseDTO(v)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<ViagemResponseDTO> criar(@RequestBody @Valid ViagemRequestDTO dto) {
-        Viagem v = new Viagem();
-        v.setId(dto.getId());
-        copiarDtoParaEntidade(dto, v);
-        Viagem salva = viagemRepository.save(v);
+        Viagem salva = viagemService.salvar(dto);
         return ResponseEntity.ok(new ViagemResponseDTO(salva));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ViagemResponseDTO> atualizar(@PathVariable Long id, @RequestBody @Valid ViagemRequestDTO dto) {
-        return viagemRepository.findById(id).map(v -> {
-            copiarDtoParaEntidade(dto, v);
-            Viagem atualizada = viagemRepository.save(v);
-            return ResponseEntity.ok(new ViagemResponseDTO(atualizada));
-        }).orElse(ResponseEntity.notFound().build());
+        // Upsert automático: Se a viagem com ID fornecido não existir, cria o registro sem gerar erro 404
+        Viagem salva = viagemService.salvarOuAtualizar(id, dto);
+        return ResponseEntity.ok(new ViagemResponseDTO(salva));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        if (!viagemRepository.existsById(id)) {
+        boolean deletado = viagemService.deletar(id);
+        if (!deletado) {
             return ResponseEntity.notFound().build();
         }
-        viagemRepository.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private void copiarDtoParaEntidade(ViagemRequestDTO dto, Viagem v) {
-        v.setCliente(dto.getCliente());
-        v.setLocalColeta(dto.getLocalColeta());
-        v.setLocalEntrega(dto.getLocalEntrega());
-        v.setOrigem(dto.getOrigem());
-        v.setDestino(dto.getDestino());
-        v.setOrigemNome(dto.getOrigemNome());
-        v.setDestinoNome(dto.getDestinoNome());
-        v.setNomeMotorista(dto.getNomeMotorista());
-        v.setPlaca(dto.getPlaca());
-        v.setFornecedorAgencia(dto.getFornecedorAgencia());
-
-        // Atribuição direta de datas em formato texto flexível
-        v.setDataColetaPrevista(dto.getDataColetaPrevista());
-        v.setDataColetaReal(dto.getDataColetaReal());
-        v.setDataEntregaPrevista(dto.getDataEntregaPrevista());
-        v.setDataEntregaReal(dto.getDataEntregaReal());
-
-        v.setValorAReceber(dto.getValorAReceber());
-        v.setValorAPagar(dto.getValorAPagar());
-        v.setValorAdicionalReceber(dto.getValorAdicionalReceber());
-        v.setValorAdicionalPagar(dto.getValorAdicionalPagar());
-        v.setValorAdicionalAgencia(dto.getValorAdicionalAgencia());
-        v.setPagamentoLiberado(dto.getPagamentoLiberado());
-        v.setPagamentoRealizadoStatus(dto.getPagamentoRealizadoStatus());
-        v.setDataHoraPagamento(dto.getDataHoraPagamento());
-        v.setObservacao(dto.getObservacao());
-
-        if (dto.getStatus() != null) {
-            v.setStatus(dto.getStatus());
-        } else {
-            v.setStatus(StatusViagem.PROGRAMADO);
-        }
     }
 }

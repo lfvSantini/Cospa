@@ -1093,11 +1093,10 @@ export class DashboardComponent implements OnInit {
       cpfFinal = motSelected ? motSelected.cpf : '';
     }
 
+    // Garante que, em Nova Viagem (isEditing = false), o ID não seja enviado (evitando erro 404 de PUT)
     let idFinal: number | undefined = undefined;
     if (this.isEditing && this.selectedViagem) {
       idFinal = this.selectedViagem.rawId;
-    } else if (this.tripForm.id && !isNaN(Number(this.tripForm.id))) {
-      idFinal = Number(this.tripForm.id);
     }
 
     const payload: any = {

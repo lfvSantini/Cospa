@@ -238,7 +238,7 @@
 
                         <div class="row-menu-divider"></div>
 
-                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Ver Foto</span></button>
+                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
                         <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'pagar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
                         <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'pagar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
                       </div>
@@ -509,11 +509,26 @@
 
       <!-- Se for PDF -->
       <div *ngIf="isPdf(previewImageUrl)" class="lightbox-pdf-container">
-        <iframe [src]="getSafeUrl(previewImageUrl)" class="pdf-viewer-frame"></iframe>
+        <object [data]="getSafeUrl(previewImageUrl)" type="application/pdf" class="pdf-viewer-frame">
+          <div class="pdf-fallback-box">
+            <svg class="pdf-fallback-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <h3>Visualização de PDF</h3>
+            <p>O navegador bloqueou a incorporação direta ou o documento está pronto para leitura.</p>
+            <button type="button" class="btn-pri-cospa" (click)="abrirImagemNovaAba($event, previewImageUrl)">
+              Abrir Documento PDF Completo
+            </button>
+          </div>
+        </object>
       </div>
 
-      <div class="lightbox-actions">
-        <button type="button" class="btn-pri-cospa" (click)="abrirImagemNovaAba($event, previewImageUrl)">Abrir em Nova Aba</button>
+      <div class="lightbox-actions" *ngIf="!isPdf(previewImageUrl)">
+        <button type="button" class="btn-pri-cospa" (click)="abrirImagemNovaAba($event, previewImageUrl)">Abrir Imagem em Nova Aba</button>
       </div>
     </div>
   </div>
@@ -529,7 +544,7 @@
       <form (ngSubmit)="salvarViagemForm()" class="modal-trip-scroll">
         <div class="f-group">
           <label>Nº da Viagem (ID)</label>
-          <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="Ex: 101" />
+          <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="Gerado automaticamente (Ou digite para forçar ID)" />
         </div>
 
         <div class="f-group">
@@ -922,7 +937,7 @@
               </div>
               <div class="crud-item-actions">
                 <button type="button" class="btn-photo-inline" (click)="openMotoristaFotosModal(m)" title="Ver CNH, CRLV e Comprovantes">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><circle cx="12" cy="13" r="4"></circle></svg>
                   <span>Documentos</span>
                 </button>
 

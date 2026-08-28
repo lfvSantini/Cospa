@@ -27,6 +27,7 @@ public class ViagemRequestDTO {
 
     private String nomeMotorista;
     private String placa;
+    private String cpfMotorista;
     private String fornecedorAgencia;
 
     private String dataColetaPrevista;

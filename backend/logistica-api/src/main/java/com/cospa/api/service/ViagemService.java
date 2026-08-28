@@ -5,8 +5,10 @@ import com.cospa.api.model.StatusViagem;
 import com.cospa.api.model.Viagem;
 import com.cospa.api.repository.ViagemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,8 +33,12 @@ public class ViagemService {
     @Transactional
     public Viagem salvar(ViagemRequestDTO dto) {
         if (dto.getId() == null || dto.getId() <= 0) {
-            throw new IllegalArgumentException("O Número da Viagem (ID) é obrigatório.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O Número da Viagem (ID) é obrigatório.");
         }
+        if (repository.existsById(dto.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe uma viagem cadastrada com o número #" + dto.getId());
+        }
+
         Viagem viagem = new Viagem();
         viagem.setId(dto.getId());
         copiarDtoParaEntidade(dto, viagem);
@@ -43,7 +49,7 @@ public class ViagemService {
     public Viagem salvarOuAtualizar(Long id, ViagemRequestDTO dto) {
         Long idFinal = (id != null) ? id : dto.getId();
         if (idFinal == null || idFinal <= 0) {
-            throw new IllegalArgumentException("O Número da Viagem (ID) é obrigatório.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O Número da Viagem (ID) é obrigatório.");
         }
 
         Viagem viagem = repository.findById(idFinal).orElseGet(() -> {

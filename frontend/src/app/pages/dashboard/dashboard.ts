@@ -332,35 +332,36 @@ export class DashboardComponent implements OnInit {
 
   onRestaurarBackupSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
-    if (!target.files || target.files.length > 0) return;
+    if (!target.files || target.files.length > 0) {
+      if (!target.files || target.files.length === 0) return;
+      const file = target.files[0];
+      if (!file.name.endsWith('.zip')) {
+        alert('Por favor, selecione um arquivo no formato .zip');
+        return;
+      }
 
-    const file = target.files[0];
-    if (!file.name.endsWith('.zip')) {
-      alert('Por favor, selecione um arquivo no formato .zip');
-      return;
+      if (!confirm('Deseja restaurar este backup completo? As fotos e o banco de dados serão atualizados com o conteúdo do .zip.')) {
+        target.value = '';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      this.http.post(`${environment.apiUrl}/admin/backup/restaurar-zip`, formData, { responseType: 'text' })
+        .subscribe({
+          next: (res) => {
+            alert(res);
+            this.carregarTodosDados();
+            target.value = '';
+            this.closeSidebar();
+          },
+          error: (err) => {
+            alert('Erro ao restaurar backup: ' + (err.error || err.message));
+            target.value = '';
+          }
+        });
     }
-
-    if (!confirm('Deseja restaurar este backup completo? As fotos e o banco de dados serão atualizados com o conteúdo do .zip.')) {
-      target.value = '';
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    this.http.post(`${environment.apiUrl}/admin/backup/restaurar-zip`, formData, { responseType: 'text' })
-      .subscribe({
-        next: (res) => {
-          alert(res);
-          this.carregarTodosDados();
-          target.value = '';
-          this.closeSidebar();
-        },
-        error: (err) => {
-          alert('Erro ao restaurar backup: ' + (err.error || err.message));
-          target.value = '';
-        }
-      });
   }
 
   public isPdf(url: string | null | undefined): boolean {
@@ -1078,7 +1079,22 @@ export class DashboardComponent implements OnInit {
   }
 
   salvarViagemForm(): void {
-    const nomeClienteFinal = (this.tripForm.clienteManual || '').trim() || this.tripForm.clienteSelect || 'Cliente Não Informado';
+    const rawIdInput = (this.tripForm.id || '').toString().trim();
+
+    if (!this.isEditing && (!rawIdInput || isNaN(Number(rawIdInput)) || Number(rawIdInput) <= 0)) {
+      alert('Por favor, informe o Nº da Viagem (ID) antes de cadastrar.');
+      return;
+    }
+
+    const idFinal = this.isEditing && this.selectedViagem 
+      ? this.selectedViagem.rawId 
+      : Number(rawIdInput);
+
+    const nomeClienteFinal = (this.tripForm.clienteManual || '').trim() || this.tripForm.clienteSelect;
+    if (!nomeClienteFinal) {
+      alert('Por favor, selecione ou digite o nome do Cliente.');
+      return;
+    }
 
     const origensLocaisArray = (this.tripForm.origens || [])
       .map(o => (o.local || '').trim())
@@ -1107,13 +1123,6 @@ export class DashboardComponent implements OnInit {
       motoristaFinal = motSelected ? motSelected.nome : this.tripForm.motorista;
       placaFinal = motSelected ? motSelected.placa : '-';
       cpfFinal = motSelected ? motSelected.cpf : '';
-    }
-
-    let idFinal: number | undefined = undefined;
-    if (this.isEditing && this.selectedViagem) {
-      idFinal = this.selectedViagem.rawId;
-    } else if (this.tripForm.id && !isNaN(Number(this.tripForm.id.trim()))) {
-      idFinal = Number(this.tripForm.id.trim());
     }
 
     const payload: any = {
@@ -1182,7 +1191,8 @@ export class DashboardComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Erro ao salvar viagem:', err);
-        alert('Erro ao salvar viagem: ' + (err.error?.mensagem || err.error?.message || err.message || 'Verifique os dados informados'));
+        const msg = err.error?.reason || err.error?.message || err.error?.mensagem || (typeof err.error === 'string' ? err.error : null) || 'Verifique se o ID informado já existe.';
+        alert('Erro ao salvar viagem: ' + msg);
       }
     });
   }

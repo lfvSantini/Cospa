@@ -2,7 +2,6 @@ package com.cospa.api.dto;
 
 import com.cospa.api.model.StatusViagem;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,10 +13,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ViagemRequestDTO {
 
-    @NotNull(message = "O Número da Viagem (ID) é obrigatório")
     private Long id;
 
-    @NotBlank(message = "O cliente é obrigatório")
+    @NotBlank(message = "O nome do cliente é obrigatório")
     private String cliente;
 
     private String origem;

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AuthService } from '../../core/services/auth';
 import { ViagemService } from '../../core/services/viagem';
 import { MotoristaService } from '../../core/services/motorista';
@@ -27,6 +28,7 @@ export interface ComprovanteItem {
   url: string;
   nomeArquivo: string;
   dataEnvio: string;
+  isPdf?: boolean;
 }
 
 export interface ViagemItem {
@@ -93,6 +95,7 @@ export class DashboardComponent implements OnInit {
   private router = inject(Router);
   public authService = inject(AuthService);
   private http = inject(HttpClient);
+  private sanitizer = inject(DomSanitizer);
   private viagemService = inject(ViagemService);
   private motoristaService = inject(MotoristaService);
   private clienteService = inject(ClienteService);
@@ -119,7 +122,10 @@ export class DashboardComponent implements OnInit {
 
   activePhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
   activeMotoristaPhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
+  
   previewImageUrl: string | null = null;
+  previewSafePdfUrl: SafeResourceUrl | null = null;
+  isPreviewPdf: boolean = false;
 
   isDraggingComprovante: boolean = false;
   isDraggingMotoristaDoc: boolean = false;
@@ -133,7 +139,7 @@ export class DashboardComponent implements OnInit {
   };
 
   novoDocMotorista = {
-    tipo: 'CNH' as 'CNH' | 'CRLV' | 'COMP_ENDERECO',
+    nomeDocumento: '',
     descricao: '',
     arquivo: null as File | null,
     nomeArquivo: ''
@@ -191,7 +197,7 @@ export class DashboardComponent implements OnInit {
     this.carregarTodosDados();
   }
 
-  // ==================== LISTENER GLOBAL PARA CTRL + V ====================
+  // Listener para colar prints ou imagens da área de transferência
   @HostListener('window:paste', ['$event'])
   handlePaste(event: ClipboardEvent): void {
     const clipboardData = event.clipboardData;
@@ -204,7 +210,7 @@ export class DashboardComponent implements OnInit {
         if (file) {
           const timestamp = new Date().getTime();
           const ext = file.type.split('/')[1] || 'png';
-          const pastedFile = new File([file], `print_${timestamp}.${ext}`, { type: file.type });
+          const pastedFile = new File([file], `anexo_${timestamp}.${ext}`, { type: file.type });
 
           if (this.modalType === 'PHOTO') {
             this.novoComprovante.arquivo = pastedFile;
@@ -219,8 +225,8 @@ export class DashboardComponent implements OnInit {
           } else if (this.modalType === 'MOTORISTA_PHOTO') {
             this.novoDocMotorista.arquivo = pastedFile;
             this.novoDocMotorista.nomeArquivo = pastedFile.name;
-            if (!this.novoDocMotorista.descricao.trim()) {
-              this.novoDocMotorista.descricao = 'Documento Colado';
+            if (!this.novoDocMotorista.nomeDocumento.trim()) {
+              this.novoDocMotorista.nomeDocumento = 'Documento Colado';
             }
             this.activeMotoristaPhotoTab = 'ADICIONAR';
             this.cdr.detectChanges();
@@ -309,6 +315,8 @@ export class DashboardComponent implements OnInit {
     this.activeMotoristaPhotoTab = 'ADICIONAR';
     this.manageSearchTerm = '';
     this.previewImageUrl = null;
+    this.previewSafePdfUrl = null;
+    this.isPreviewPdf = false;
     this.isDraggingComprovante = false;
     this.isDraggingMotoristaDoc = false;
     this.isDraggingCnh = false;
@@ -341,7 +349,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    if (!confirm('Deseja restaurar este arquivo de backup? O banco de dados e as fotos existentes serão atualizados.')) {
+    if (!confirm('Deseja restaurar este arquivo de backup? O banco de dados e as fotos serão recuperados.')) {
       target.value = '';
       return;
     }
@@ -374,6 +382,11 @@ export class DashboardComponent implements OnInit {
       fullUrl = `${baseDomain}/${cleanPath}`;
     }
     return fullUrl.replace(/\/uploads\/+uploads\//g, '/uploads/');
+  }
+
+  public verificarSeEhPdf(url: string | null | undefined, nomeArquivo?: string): boolean {
+    const alvo = (url || '') + (nomeArquivo || '');
+    return alvo.toLowerCase().includes('.pdf');
   }
 
   carregarViagens(): void {
@@ -412,13 +425,18 @@ export class DashboardComponent implements OnInit {
     const origens = rawOrigem ? rawOrigem.split(';').map((s: string) => s.trim()).filter((s: string) => s.length > 0) : [];
     const destinos = rawDestino ? rawDestino.split(';').map((s: string) => s.trim()).filter((s: string) => s.length > 0) : [];
 
-    const fotos: ComprovanteItem[] = (v.comprovantes || []).map((c: any) => ({
-      id: c.id || 0,
-      descricao: c.nome || c.descricao || 'Comprovante',
-      url: this.sanitizarUrlArquivo(c.urlArquivo || c.url),
-      nomeArquivo: c.nome || c.nomeArquivo || 'Arquivo',
-      dataEnvio: c.dataEnvio || ''
-    }));
+    const fotos: ComprovanteItem[] = (v.comprovantes || []).map((c: any) => {
+      const urlSanitizada = this.sanitizarUrlArquivo(c.urlArquivo || c.url);
+      const nomeArq = c.nome || c.nomeArquivo || 'Arquivo';
+      return {
+        id: c.id || 0,
+        descricao: c.nome || c.descricao || 'Comprovante',
+        url: urlSanitizada,
+        nomeArquivo: nomeArq,
+        dataEnvio: c.dataEnvio || '',
+        isPdf: this.verificarSeEhPdf(urlSanitizada, nomeArq)
+      };
+    });
 
     return {
       id: `#${v.id}`,
@@ -488,11 +506,13 @@ export class DashboardComponent implements OnInit {
       const file = target.files[0];
       this.novoComprovante.arquivo = file;
       this.novoComprovante.nomeArquivo = file.name;
+      if (!this.novoComprovante.descricao.trim()) {
+        this.novoComprovante.descricao = file.name.replace(/\.[^/.]+$/, '');
+      }
       this.cdr.detectChanges();
     }
   }
 
-  // Drag and Drop: Comprovante
   onComprovanteDragOver(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
@@ -537,12 +557,16 @@ export class DashboardComponent implements OnInit {
       arquivoParaEnvio
     ).subscribe({
       next: (compSalvo: any) => {
+        const urlFinal = this.sanitizarUrlArquivo(compSalvo?.urlArquivo || compSalvo?.url || '');
+        const nomeArqFinal = compSalvo?.nome || arquivoParaEnvio.name;
+
         const novoItem: ComprovanteItem = {
           id: compSalvo?.id || Date.now(),
           descricao: compSalvo?.nome || nomeDescricao,
-          url: this.sanitizarUrlArquivo(compSalvo?.urlArquivo || compSalvo?.url || ''),
-          nomeArquivo: compSalvo?.nome || arquivoParaEnvio.name,
-          dataEnvio: compSalvo?.dataEnvio || 'Agora'
+          url: urlFinal,
+          nomeArquivo: nomeArqFinal,
+          dataEnvio: compSalvo?.dataEnvio || 'Agora',
+          isPdf: this.verificarSeEhPdf(urlFinal, nomeArqFinal)
         };
 
         if (!viagemAtual.fotos) {
@@ -580,10 +604,19 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  abrirPreviewFoto(url: string): void { 
+  abrirPreviewFoto(url: string, nomeArquivo?: string): void { 
     this.previousModalType = this.modalType as any;
     this.modalType = null; 
-    this.previewImageUrl = this.sanitizarUrlArquivo(url); 
+    const urlLimpa = this.sanitizarUrlArquivo(url);
+    this.previewImageUrl = urlLimpa; 
+    this.isPreviewPdf = this.verificarSeEhPdf(urlLimpa, nomeArquivo);
+
+    if (this.isPreviewPdf) {
+      this.previewSafePdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(urlLimpa);
+    } else {
+      this.previewSafePdfUrl = null;
+    }
+
     this.cdr.detectChanges(); 
   }
 
@@ -594,6 +627,8 @@ export class DashboardComponent implements OnInit {
 
   fecharPreviewFoto(): void { 
     this.previewImageUrl = null;
+    this.previewSafePdfUrl = null;
+    this.isPreviewPdf = false;
     if (this.previousModalType) {
       this.modalType = this.previousModalType;
       this.previousModalType = null;
@@ -612,13 +647,18 @@ export class DashboardComponent implements OnInit {
           fornecedorVinculado: m.fornecedor || 'Sem Agência (Frota Própria)',
           situacao: (m.situacao === 'INATIVO' || m.ativo === false) ? 'INATIVO' : 'ATIVO',
           informacoesAdicionais: m.informacoesAdicionais || m.observacoes || '',
-          documentos: (m.documentos || []).map((d: any) => ({
-            id: d.id || 0,
-            descricao: d.descricao || d.nome || '',
-            url: this.sanitizarUrlArquivo(d.url || d.urlArquivo),
-            nomeArquivo: d.nomeArquivo || '',
-            dataEnvio: d.dataEnvio || ''
-          }))
+          documentos: (m.documentos || []).map((d: any) => {
+            const urlSanitizada = this.sanitizarUrlArquivo(d.url || d.urlArquivo);
+            const nomeArq = d.nomeArquivo || d.descricao || d.nome || 'Documento';
+            return {
+              id: d.id || 0,
+              descricao: d.descricao || d.nome || 'Documento',
+              url: urlSanitizada,
+              nomeArquivo: nomeArq,
+              dataEnvio: d.dataEnvio || '',
+              isPdf: this.verificarSeEhPdf(urlSanitizada, nomeArq)
+            };
+          })
         }));
         this.cdr.detectChanges();
       },
@@ -628,7 +668,7 @@ export class DashboardComponent implements OnInit {
 
   openMotoristaFotosModal(m: MotoristaModel): void {
     this.selectedMotorista = m;
-    this.novoDocMotorista = { tipo: 'CNH', descricao: '', arquivo: null, nomeArquivo: '' };
+    this.novoDocMotorista = { nomeDocumento: '', descricao: '', arquivo: null, nomeArquivo: '' };
     this.activeMotoristaPhotoTab = (m.documentos && m.documentos.length > 0) ? 'LISTAR' : 'ADICIONAR';
     this.modalType = 'MOTORISTA_PHOTO';
     this.cdr.detectChanges();
@@ -640,11 +680,13 @@ export class DashboardComponent implements OnInit {
       const file = target.files[0];
       this.novoDocMotorista.arquivo = file;
       this.novoDocMotorista.nomeArquivo = file.name;
+      if (!this.novoDocMotorista.nomeDocumento.trim()) {
+        this.novoDocMotorista.nomeDocumento = file.name.replace(/\.[^/.]+$/, '');
+      }
       this.cdr.detectChanges();
     }
   }
 
-  // Drag and Drop: Documento do Motorista
   onMotoristaDocDragOver(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
@@ -666,24 +708,31 @@ export class DashboardComponent implements OnInit {
       const file = event.dataTransfer.files[0];
       this.novoDocMotorista.arquivo = file;
       this.novoDocMotorista.nomeArquivo = file.name;
-      if (!this.novoDocMotorista.descricao.trim()) {
-        this.novoDocMotorista.descricao = file.name.replace(/\.[^/.]+$/, '');
+      if (!this.novoDocMotorista.nomeDocumento.trim()) {
+        this.novoDocMotorista.nomeDocumento = file.name.replace(/\.[^/.]+$/, '');
       }
       this.cdr.detectChanges();
     }
   }
 
   adicionarDocMotorista(): void {
-    if (!this.selectedMotorista || !this.novoDocMotorista.arquivo) return;
+    if (!this.selectedMotorista || !this.novoDocMotorista.arquivo || !this.novoDocMotorista.nomeDocumento.trim()) {
+      alert('Informe o nome do documento e selecione o arquivo.');
+      return;
+    }
+
+    const nomeFormatado = this.novoDocMotorista.descricao.trim() 
+      ? `${this.novoDocMotorista.nomeDocumento.trim()} - ${this.novoDocMotorista.descricao.trim()}`
+      : this.novoDocMotorista.nomeDocumento.trim();
 
     this.motoristaService.uploadDocumento(
       this.selectedMotorista.id,
-      this.novoDocMotorista.tipo,
+      nomeFormatado,
       this.novoDocMotorista.arquivo
     ).subscribe({
       next: () => {
         this.carregarMotoristas();
-        this.novoDocMotorista = { tipo: 'CNH', descricao: '', arquivo: null, nomeArquivo: '' };
+        this.novoDocMotorista = { nomeDocumento: '', descricao: '', arquivo: null, nomeArquivo: '' };
         this.activeMotoristaPhotoTab = 'LISTAR';
         this.cdr.detectChanges();
       },
@@ -774,7 +823,6 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // Drag and Drop: Form CNH / CRLV
   onCnhDrop(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();

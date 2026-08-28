@@ -175,7 +175,7 @@
   border: 1px solid var(--border-nav);
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-  min-width: 240px;
+  min-width: 250px;
   padding: 0.4rem;
   display: flex;
   flex-direction: column;
@@ -210,6 +210,14 @@
 }
 
 .dropdown-item:hover { background-color: var(--dropdown-hover); }
+
+.btn-backup-action {
+  color: #60a5fa;
+  font-weight: 600;
+}
+.btn-backup-action svg {
+  stroke: #60a5fa;
+}
 
 .btn-primary-action { display: flex; align-items: center; gap: 0.45rem; background-color: var(--btn-primary); border: none; color: #ffffff; padding: 0.55rem 1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 102, 214, 0.3); }
 .btn-primary-action svg { width: 16px; height: 16px; }
@@ -251,7 +259,7 @@
 .accordion-inner { overflow: visible; min-height: 0; opacity: 0; transform: translateY(-8px); transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
 .accordion-collapse.expanded .accordion-inner { opacity: 1; transform: translateY(0); }
 
-/* Tabela e Empilhamento Corrigido */
+/* Tabela e Empilhamento */
 .table-container { 
   background-color: var(--bg-table-card); 
   border: 1px solid var(--border-nav); 
@@ -289,7 +297,7 @@
 
 .cospa-table tbody tr:last-child td { border-bottom: none; }
 
-/* Larguras Proporcionais das Colunas */
+/* Larguras das Colunas */
 .cospa-table th:nth-child(1), .cospa-table td:nth-child(1) { width: 7%; }
 .cospa-table th:nth-child(2), .cospa-table td:nth-child(2) { width: 13%; }
 .cospa-table th:nth-child(3), .cospa-table td:nth-child(3) { width: 14%; }
@@ -319,7 +327,6 @@
 .status-pagar { background-color: #ea580c; color: #ffffff; font-weight: 700; }
 .status-finalizado { background-color: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
 
-/* Botão OBS */
 .cospa-table th:nth-child(8) { text-align: center; }
 .col-obs {
   text-align: center;
@@ -357,7 +364,6 @@
   font-size: 0.9rem;
 }
 
-/* Coluna e Dropdown Ações Flutuante */
 .actions-th { text-align: right; padding-right: 1.5rem !important; }
 .col-acoes { 
   text-align: right; 
@@ -429,7 +435,7 @@
 .row-menu-item.item-excluir svg { stroke: #f87171; }
 .row-menu-divider { height: 1px; background-color: var(--border-nav); margin: 3px 0; }
 
-/* Modais Padronizados */
+/* Modais */
 .cospa-modal-overlay {
   position: fixed;
   top: 0;
@@ -467,9 +473,9 @@
 }
 
 .cospa-modal-box.modal-photo-frame {
-  width: 680px;
+  width: 720px;
   max-width: 95vw;
-  min-height: 380px;
+  min-height: 420px;
   max-height: 85vh;
 }
 
@@ -608,7 +614,7 @@
   background-color: #3b4354;
 }
 
-/* Inputs e Formulários */
+/* Formulários */
 .f-group {
   display: flex;
   flex-direction: column;
@@ -666,7 +672,7 @@
   align-items: flex-start;
 }
 
-/* Dropzone com Feedback Visual para Drag & Drop e Paste */
+/* Dropzone */
 .comprovante-dropzone {
   border: 2px dashed #3f4452;
   border-radius: 8px;
@@ -727,7 +733,10 @@
   position: relative;
   height: 140px;
   width: 100%;
-  background-color: #000000;
+  background-color: #111317;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .comp-img-wrapper img {
@@ -735,6 +744,36 @@
   height: 100%;
   object-fit: cover;
   transition: opacity 0.2s ease;
+}
+
+/* Card Visual de PDF (Substitui Imagem Quebrada) */
+.pdf-preview-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #1e222d 0%, #151821 100%);
+  color: #f87171;
+}
+
+.pdf-preview-box svg {
+  width: 42px;
+  height: 42px;
+  stroke: #ef4444;
+}
+
+.pdf-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #fca5a5;
+  background-color: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 3px 8px;
+  border-radius: 4px;
 }
 
 .btn-open-ext {
@@ -751,6 +790,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  z-index: 5;
 }
 
 .btn-open-ext:hover { background-color: #0066d6; }
@@ -771,6 +811,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  z-index: 5;
 }
 
 .btn-del-photo:hover { background-color: #ef4444; }
@@ -795,7 +836,7 @@
   color: var(--text-muted);
 }
 
-/* Lightbox Isolado */
+/* Lightbox Isolado (Imagens e PDFs) */
 .lightbox-overlay {
   position: fixed;
   inset: 0;
@@ -828,6 +869,15 @@
   max-height: 78vh;
   object-fit: contain;
   border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+}
+
+.lightbox-pdf-container {
+  width: 80vw;
+  height: 75vh;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
 }
 

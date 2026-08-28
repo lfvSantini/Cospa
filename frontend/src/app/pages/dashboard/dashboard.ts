@@ -694,7 +694,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    const tipoDoc: string = this.novoDocMotorista.nome.trim() || 'Documento';
+    const tipoDoc = this.novoDocMotorista.nome.trim() || 'Documento';
 
     this.motoristaService.uploadDocumento(
       this.selectedMotorista.id,

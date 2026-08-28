@@ -1,7 +1,7 @@
 <div class="dashboard-wrapper" [class.light-mode]="!isDarkMode" (click)="closeAllMenus()">
   <div class="sidebar-backdrop" *ngIf="isSidebarOpen" (click)="closeSidebar()"></div>
 
-  <!-- Sidebar Lateral -->
+  <!-- Sidebar Lateral com Seção de Backup Separada -->
   <aside class="sidebar" [class.open]="isSidebarOpen" (click)="$event.stopPropagation()">
     <div class="sidebar-header">
       <img src="assets/img/Logo.png" alt="COSPA" class="sidebar-logo" />
@@ -25,6 +25,21 @@
         <span>Estoque & Pátio</span>
       </button>
     </nav>
+
+    <!-- Seção Isolada de Backup e Banco de Dados -->
+    <div class="sidebar-section-title">BANCO DE DADOS & ARQUIVOS</div>
+    <div class="sidebar-backup-group">
+      <button type="button" class="sidebar-item btn-backup-action" (click)="baixarBackupZip()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <span>Baixar Backup (.zip)</span>
+      </button>
+
+      <input #sidebarRestaurarZip type="file" accept=".zip" (change)="onRestaurarBackupSelected($event)" style="display: none;" />
+      <button type="button" class="sidebar-item btn-backup-action" (click)="sidebarRestaurarZip.click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <span>Restaurar Backup (.zip)</span>
+      </button>
+    </div>
 
     <div class="sidebar-footer">
       <button type="button" class="btn-hub" (click)="goToModules()">
@@ -55,7 +70,7 @@
         </div>
       </button>
 
-      <!-- Dropdown Gerenciar -->
+      <!-- Dropdown Cadastros Rápidos -->
       <div class="dropdown-wrapper">
         <button type="button" class="btn-nav-action" (click)="toggleManageMenu($event)" [class.active]="isManageOpen">
           <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7"></path><path d="M4 10V3"></path><path d="M12 21v-9"></path><path d="M12 8V3"></path><path d="M20 21v-5"></path><path d="M20 12V3"></path><circle cx="4" cy="14" r="2"></circle><circle cx="12" cy="8" r="2"></circle><circle cx="20" cy="16" r="2"></circle></svg>
@@ -75,21 +90,6 @@
           <button type="button" class="dropdown-item" (click)="openGerenciarMotoristas()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg>
             <span>Gerenciar Motoristas</span>
-          </button>
-
-          <div class="row-menu-divider"></div>
-
-          <!-- Backup Completo -->
-          <input #inputRestaurarZip type="file" accept=".zip" (change)="onRestaurarBackupSelected($event)" style="display: none;" />
-
-          <button type="button" class="dropdown-item btn-backup-action" (click)="baixarBackupZip()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            <span>Baixar Backup Completo (.zip)</span>
-          </button>
-
-          <button type="button" class="dropdown-item btn-backup-action" (click)="inputRestaurarZip.click()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-            <span>Restaurar Backup (.zip)</span>
           </button>
         </div>
       </div>
@@ -171,7 +171,7 @@
                         
                         <div class="row-menu-divider"></div>
 
-                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
+                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Ver Foto</span></button>
                         <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'andamento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
                         <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'andamento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
                       </div>
@@ -238,7 +238,7 @@
 
                         <div class="row-menu-divider"></div>
 
-                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
+                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Ver Foto</span></button>
                         <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'pagar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
                         <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'pagar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
                       </div>
@@ -298,7 +298,7 @@
                         <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                       </button>
                       <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
-                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
+                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Ver Foto</span></button>
                         <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'finalizadas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
                         <div class="row-menu-divider"></div>
                         <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'finalizadas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
@@ -333,7 +333,7 @@
           type="button" 
           [class.active]="activePhotoTab === 'LISTAR'" 
           (click)="trocarAbaFoto('LISTAR', $event)">
-          Ver Cadastrados ({{ selectedViagem?.fotos?.length || 0 }})
+          Ver Cadastrados / Fotos ({{ selectedViagem?.fotos?.length || 0 }})
         </button>
       </div>
 
@@ -341,12 +341,12 @@
         <div *ngIf="activePhotoTab === 'ADICIONAR'" class="modal-pane-compact">
           <div class="comprovante-form-row">
             <div class="f-group desc-group">
-              <label>Nome / Descrição do Comprovante</label>
-              <input type="text" [(ngModel)]="novoComprovante.descricao" placeholder="Ex: Canhoto Assinado, NF 1024..." />
+              <label>Descrição do Comprovante</label>
+              <input type="text" [(ngModel)]="novoComprovante.descricao" placeholder="Ex: Canhoto Assinado, Manifesto, etc." />
             </div>
 
             <div class="f-group file-group">
-              <label>Arquivo</label>
+              <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
               <div 
                 class="comprovante-dropzone" 
                 [class.drag-over]="isDraggingComprovante"
@@ -363,7 +363,7 @@
 
           <div class="modal-actions-right">
             <button type="button" class="btn-pri-cospa" (click)="adicionarComprovante()">
-              Adicionar Comprovante
+              Adicionar à Lista
             </button>
           </div>
         </div>
@@ -373,18 +373,22 @@
             <div 
               class="comprovante-card" 
               *ngFor="let f of selectedViagem?.fotos" 
-              (click)="abrirPreviewFoto(f.url, f.nomeArquivo)" 
-              title="Clique para visualizar">
+              (click)="abrirPreviewFoto(f.url)" 
+              title="Clique para ver em tela cheia">
               
-              <!-- Exibição Condicional: Imagem ou Ícone de PDF -->
-              <div class="comp-img-wrapper">
-                <img *ngIf="!f.isPdf" [src]="f.url" alt="Comprovante" />
-                
-                <div *ngIf="f.isPdf" class="pdf-preview-box">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                  <span class="pdf-badge">DOCUMENTO PDF</span>
-                </div>
+              <!-- Imagem -->
+              <div class="comp-img-wrapper" *ngIf="!isPdf(f.url)">
+                <img [src]="f.url" alt="Comprovante" />
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, f.url)" title="Abrir em nova aba">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </button>
+                <button type="button" class="btn-del-photo" (click)="removerComprovante($event, f.id)" title="Excluir">✕</button>
+              </div>
 
+              <!-- PDF -->
+              <div class="comp-pdf-wrapper" *ngIf="isPdf(f.url)">
+                <svg class="pdf-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span class="pdf-badge">DOCUMENTO PDF</span>
                 <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, f.url)" title="Abrir em nova aba">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                 </button>
@@ -399,7 +403,7 @@
           </div>
 
           <div class="empty-photos" *ngIf="!selectedViagem?.fotos?.length">
-            <p>Nenhum comprovante ou documento anexado a esta viagem.</p>
+            <p>Nenhum comprovante anexado a esta viagem.</p>
           </div>
         </div>
       </div>
@@ -424,20 +428,15 @@
       </div>
 
       <div class="modal-body-container">
+        <!-- NOME LIVRE DO DOCUMENTO -->
         <div *ngIf="activeMotoristaPhotoTab === 'ADICIONAR'" class="modal-pane-compact">
-          <div class="form-row-2">
-            <div class="f-group">
-              <label>Nome do Documento</label>
-              <input type="text" [(ngModel)]="novoDocMotorista.nomeDocumento" placeholder="Ex: CNH, CRLV, ANTT, Dados Bancários..." />
-            </div>
-            <div class="f-group">
-              <label>Observação / Detalhe (Opcional)</label>
-              <input type="text" [(ngModel)]="novoDocMotorista.descricao" placeholder="Ex: Validade 2028, Conta Corrente..." />
-            </div>
+          <div class="f-group">
+            <label>Nome / Tipo do Documento</label>
+            <input type="text" [(ngModel)]="novoDocMotorista.nome" placeholder="Digite o nome livremente (Ex: CNH, ANTT, Dados Bancários, CRLV 2026)" />
           </div>
 
           <div class="f-group">
-            <label>Arquivo</label>
+            <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
             <div 
               class="comprovante-dropzone"
               [class.drag-over]="isDraggingMotoristaDoc"
@@ -447,7 +446,7 @@
               (drop)="onMotoristaDocDrop($event)">
               <input #fileInputMotorista type="file" (change)="onMotoristaDocSelected($event)" style="display: none;" accept="image/*,.pdf" />
               <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-              <span>{{ novoDocMotorista.nomeArquivo || 'Clique, arraste ou use Ctrl+V (PDF ou Imagem)' }}</span>
+              <span>{{ novoDocMotorista.nomeArquivo || 'Clique, arraste o arquivo (PDF/Imagem) ou use Ctrl+V' }}</span>
             </div>
           </div>
 
@@ -463,18 +462,22 @@
             <div 
               class="comprovante-card" 
               *ngFor="let doc of selectedMotorista?.documentos" 
-              (click)="abrirPreviewFoto(doc.url, doc.nomeArquivo)" 
-              title="Clique para visualizar">
+              (click)="abrirPreviewFoto(doc.url)" 
+              title="Clique para ver em tela cheia">
               
-              <!-- Exibição Condicional: Imagem ou Ícone de PDF -->
-              <div class="comp-img-wrapper">
-                <img *ngIf="!doc.isPdf" [src]="doc.url" alt="Documento Motorista" />
-                
-                <div *ngIf="doc.isPdf" class="pdf-preview-box">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                  <span class="pdf-badge">DOCUMENTO PDF</span>
-                </div>
+              <!-- Se for imagem -->
+              <div class="comp-img-wrapper" *ngIf="!isPdf(doc.url)">
+                <img [src]="doc.url" alt="Documento Motorista" />
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir em nova aba">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </button>
+                <button type="button" class="btn-del-photo" (click)="removerDocMotorista($event, doc.id)" title="Excluir">✕</button>
+              </div>
 
+              <!-- Se for PDF -->
+              <div class="comp-pdf-wrapper" *ngIf="isPdf(doc.url)">
+                <svg class="pdf-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span class="pdf-badge">DOCUMENTO PDF</span>
                 <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir em nova aba">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                 </button>
@@ -496,23 +499,21 @@
     </div>
   </div>
 
-  <!-- LIGHTBOX / ZOOM DA IMAGEM E PDF ISOLADO -->
+  <!-- LIGHTBOX COM SUPORTE A PDF E IMAGEM -->
   <div class="lightbox-overlay" *ngIf="previewImageUrl" (click)="fecharPreviewFoto()">
     <div class="lightbox-content" (click)="$event.stopPropagation()">
       <button type="button" class="btn-close-lightbox" (click)="fecharPreviewFoto()">✕</button>
       
-      <!-- Visualizador de Imagem -->
-      <img *ngIf="!isPreviewPdf" [src]="previewImageUrl" alt="Visualização em Tela Cheia" />
-      
-      <!-- Visualizador de PDF Embutido -->
-      <div *ngIf="isPreviewPdf" class="lightbox-pdf-container">
-        <iframe [src]="previewSafePdfUrl" width="100%" height="100%" frameborder="0"></iframe>
+      <!-- Se for Imagem -->
+      <img *ngIf="!isPdf(previewImageUrl)" [src]="previewImageUrl" alt="Visualização em Tela Cheia" />
+
+      <!-- Se for PDF -->
+      <div *ngIf="isPdf(previewImageUrl)" class="lightbox-pdf-container">
+        <iframe [src]="getSafeUrl(previewImageUrl)" class="pdf-viewer-frame"></iframe>
       </div>
 
       <div class="lightbox-actions">
-        <button type="button" class="btn-pri-cospa" (click)="abrirImagemNovaAba($event, previewImageUrl)">
-          Abrir em Nova Aba
-        </button>
+        <button type="button" class="btn-pri-cospa" (click)="abrirImagemNovaAba($event, previewImageUrl)">Abrir em Nova Aba</button>
       </div>
     </div>
   </div>
@@ -920,8 +921,8 @@
                 <p class="crud-subtext">CPF: {{ m.cpf }} • Placa: <strong>{{ m.placa }}</strong> • Vínculo: {{ m.fornecedorVinculado }}</p>
               </div>
               <div class="crud-item-actions">
-                <button type="button" class="btn-photo-inline" (click)="openMotoristaFotosModal(m)" title="Ver Documentos e Fotos">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <button type="button" class="btn-photo-inline" (click)="openMotoristaFotosModal(m)" title="Ver CNH, CRLV e Comprovantes">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                   <span>Documentos</span>
                 </button>
 

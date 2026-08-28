@@ -43,7 +43,6 @@ public class ViagemController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ViagemResponseDTO> atualizar(@PathVariable Long id, @RequestBody @Valid ViagemRequestDTO dto) {
-        // Upsert automático: Se a viagem com ID fornecido não existir, cria o registro sem gerar erro 404
         Viagem salva = viagemService.salvarOuAtualizar(id, dto);
         return ResponseEntity.ok(new ViagemResponseDTO(salva));
     }

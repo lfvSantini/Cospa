@@ -1,5 +1,6 @@
 package com.cospa.api.service;
 
+import com.cospa.api.dto.ViagemRequestDTO;
 import com.cospa.api.model.StatusViagem;
 import com.cospa.api.model.Viagem;
 import com.cospa.api.repository.ViagemRepository;
@@ -17,100 +18,48 @@ public class ViagemService {
     @Autowired
     private ViagemRepository repository;
 
-    // 1. Listar todas as viagens
     @Transactional(readOnly = true)
     public List<Viagem> listarTodas() {
         return repository.findAll();
     }
 
-    // 2. Buscar viagem por ID
     @Transactional(readOnly = true)
     public Optional<Viagem> buscarPorId(Long id) {
         return repository.findById(id);
     }
 
-    // 3. Cadastrar nova viagem
     @Transactional
-    public Viagem salvar(Viagem viagem) {
-        if (viagem.getStatus() == null) {
-            viagem.setStatus(StatusViagem.PROGRAMADO);
+    public Viagem salvar(ViagemRequestDTO dto) {
+        Viagem viagem = new Viagem();
+        if (dto.getId() != null) {
+            viagem.setId(dto.getId());
         }
-
-        // Garante valores padrão caso venham nulos do frontend
-        if (viagem.getValorAReceber() == null) {
-            viagem.setValorAReceber(BigDecimal.ZERO);
-        }
-        if (viagem.getValorAPagar() == null) {
-            viagem.setValorAPagar(BigDecimal.ZERO);
-        }
-        if (viagem.getValorAdicionalReceber() == null) {
-            viagem.setValorAdicionalReceber(BigDecimal.ZERO);
-        }
-        if (viagem.getValorAdicionalPagar() == null) {
-            viagem.setValorAdicionalPagar(BigDecimal.ZERO);
-        }
-        if (viagem.getValorAdicionalAgencia() == null) {
-            viagem.setValorAdicionalAgencia(BigDecimal.ZERO);
-        }
-        if (viagem.getPagamentoLiberado() == null) {
-            viagem.setPagamentoLiberado(false);
-        }
-        if (viagem.getPagamentoRealizadoStatus() == null || viagem.getPagamentoRealizadoStatus().isBlank()) {
-            viagem.setPagamentoRealizadoStatus("NAO_REALIZADO");
-        }
-
+        copiarDtoParaEntidade(dto, viagem);
         return repository.save(viagem);
     }
 
-    // 4. Atualizar viagem existente
     @Transactional
-    public Optional<Viagem> atualizar(Long id, Viagem dadosAtualizados) {
+    public Viagem salvarOuAtualizar(Long id, ViagemRequestDTO dto) {
+        Viagem viagem = (id != null)
+                ? repository.findById(id).orElseGet(() -> {
+            Viagem nova = new Viagem();
+            nova.setId(id);
+            return nova;
+        })
+                : new Viagem();
+
+        copiarDtoParaEntidade(dto, viagem);
+        return repository.save(viagem);
+    }
+
+    @Transactional
+    public Optional<Viagem> atualizar(Long id, ViagemRequestDTO dto) {
         return repository.findById(id).map(viagem -> {
-            viagem.setCliente(dadosAtualizados.getCliente());
-            viagem.setLocalColeta(dadosAtualizados.getLocalColeta());
-            viagem.setLocalEntrega(dadosAtualizados.getLocalEntrega());
-            viagem.setOrigem(dadosAtualizados.getOrigem());
-            viagem.setDestino(dadosAtualizados.getDestino());
-            viagem.setOrigemNome(dadosAtualizados.getOrigemNome());
-            viagem.setDestinoNome(dadosAtualizados.getDestinoNome());
-            viagem.setNomeMotorista(dadosAtualizados.getNomeMotorista());
-            viagem.setPlaca(dadosAtualizados.getPlaca());
-            viagem.setCpfMotorista(dadosAtualizados.getCpfMotorista());
-            viagem.setFornecedorAgencia(dadosAtualizados.getFornecedorAgencia());
-
-            // Datas e observações
-            viagem.setDataColetaPrevista(dadosAtualizados.getDataColetaPrevista());
-            viagem.setDataColetaReal(dadosAtualizados.getDataColetaReal());
-            viagem.setDataEntregaPrevista(dadosAtualizados.getDataEntregaPrevista());
-            viagem.setDataEntregaReal(dadosAtualizados.getDataEntregaReal());
-            viagem.setObservacao(dadosAtualizados.getObservacao());
-
-            // Valores e adicionais
-            viagem.setValorAReceber(dadosAtualizados.getValorAReceber() != null ? dadosAtualizados.getValorAReceber() : BigDecimal.ZERO);
-            viagem.setValorAPagar(dadosAtualizados.getValorAPagar() != null ? dadosAtualizados.getValorAPagar() : BigDecimal.ZERO);
-            viagem.setValorAdicionalReceber(dadosAtualizados.getValorAdicionalReceber() != null ? dadosAtualizados.getValorAdicionalReceber() : BigDecimal.ZERO);
-            viagem.setValorAdicionalPagar(dadosAtualizados.getValorAdicionalPagar() != null ? dadosAtualizados.getValorAdicionalPagar() : BigDecimal.ZERO);
-            viagem.setValorAdicionalAgencia(dadosAtualizados.getValorAdicionalAgencia() != null ? dadosAtualizados.getValorAdicionalAgencia() : BigDecimal.ZERO);
-
-            // Status e dados de Pagamento
-            viagem.setPagamentoLiberado(dadosAtualizados.getPagamentoLiberado() != null ? dadosAtualizados.getPagamentoLiberado() : false);
-            viagem.setPagamentoRealizadoStatus(
-                    dadosAtualizados.getPagamentoRealizadoStatus() != null && !dadosAtualizados.getPagamentoRealizadoStatus().isBlank()
-                            ? dadosAtualizados.getPagamentoRealizadoStatus()
-                            : "NAO_REALIZADO"
-            );
-            viagem.setDataHoraPagamento(dadosAtualizados.getDataHoraPagamento());
-
-            // Status da viagem
-            if (dadosAtualizados.getStatus() != null) {
-                viagem.setStatus(dadosAtualizados.getStatus());
-            }
-
+            copiarDtoParaEntidade(dto, viagem);
             return repository.save(viagem);
         });
     }
 
-    // 5. Atualizar apenas o status da viagem
     @Transactional
     public Optional<Viagem> atualizarStatus(Long id, StatusViagem status) {
         return repository.findById(id).map(viagem -> {
@@ -119,7 +68,6 @@ public class ViagemService {
         });
     }
 
-    // 6. Atualizar apenas as observações da viagem
     @Transactional
     public Optional<Viagem> atualizarObs(Long id, String obs) {
         return repository.findById(id).map(viagem -> {
@@ -128,7 +76,6 @@ public class ViagemService {
         });
     }
 
-    // 7. Finalizar viagem (troca status para FINALIZADO)
     @Transactional
     public Optional<Viagem> finalizar(Long id) {
         return repository.findById(id).map(viagem -> {
@@ -137,7 +84,6 @@ public class ViagemService {
         });
     }
 
-    // 8. Deletar viagem
     @Transactional
     public boolean deletar(Long id) {
         if (repository.existsById(id)) {
@@ -145,5 +91,45 @@ public class ViagemService {
             return true;
         }
         return false;
+    }
+
+    public void copiarDtoParaEntidade(ViagemRequestDTO dto, Viagem v) {
+        v.setCliente(dto.getCliente());
+        v.setLocalColeta(dto.getLocalColeta());
+        v.setLocalEntrega(dto.getLocalEntrega());
+        v.setOrigem(dto.getOrigem());
+        v.setDestino(dto.getDestino());
+        v.setOrigemNome(dto.getOrigemNome());
+        v.setDestinoNome(dto.getDestinoNome());
+        v.setNomeMotorista(dto.getNomeMotorista());
+        v.setPlaca(dto.getPlaca());
+        v.setCpfMotorista(dto.getCpfMotorista());
+        v.setFornecedorAgencia(dto.getFornecedorAgencia());
+
+        v.setDataColetaPrevista(dto.getDataColetaPrevista());
+        v.setDataColetaReal(dto.getDataColetaReal());
+        v.setDataEntregaPrevista(dto.getDataEntregaPrevista());
+        v.setDataEntregaReal(dto.getDataEntregaReal());
+
+        v.setValorAReceber(dto.getValorAReceber() != null ? dto.getValorAReceber() : BigDecimal.ZERO);
+        v.setValorAPagar(dto.getValorAPagar() != null ? dto.getValorAPagar() : BigDecimal.ZERO);
+        v.setValorAdicionalReceber(dto.getValorAdicionalReceber() != null ? dto.getValorAdicionalReceber() : BigDecimal.ZERO);
+        v.setValorAdicionalPagar(dto.getValorAdicionalPagar() != null ? dto.getValorAdicionalPagar() : BigDecimal.ZERO);
+        v.setValorAdicionalAgencia(dto.getValorAdicionalAgencia() != null ? dto.getValorAdicionalAgencia() : BigDecimal.ZERO);
+
+        v.setPagamentoLiberado(dto.getPagamentoLiberado() != null ? dto.getPagamentoLiberado() : false);
+        v.setPagamentoRealizadoStatus(
+                dto.getPagamentoRealizadoStatus() != null && !dto.getPagamentoRealizadoStatus().isBlank()
+                        ? dto.getPagamentoRealizadoStatus()
+                        : "NAO_REALIZADO"
+        );
+        v.setDataHoraPagamento(dto.getDataHoraPagamento());
+        v.setObservacao(dto.getObservacao());
+
+        if (dto.getStatus() != null) {
+            v.setStatus(dto.getStatus());
+        } else if (v.getStatus() == null) {
+            v.setStatus(StatusViagem.PROGRAMADO);
+        }
     }
 }

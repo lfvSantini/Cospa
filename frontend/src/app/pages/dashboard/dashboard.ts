@@ -10,7 +10,7 @@ import { MotoristaService } from '../../core/services/motorista';
 import { ClienteService } from '../../core/services/cliente';
 import { FornecedorService } from '../../core/services/fornecedor';
 import { Viagem, StatusViagem } from '../../core/models/viagem.model';
-import { Motorista } from '../../core/models/motorista.model';
+import { Motorista, MotoristaDocumento } from '../../core/models/motorista.model';
 import { Cliente } from '../../core/models/cliente.model';
 import { Fornecedor } from '../../core/models/fornecedor.model';
 import { environment } from '../../../environments/environment';
@@ -28,7 +28,6 @@ export interface ComprovanteItem {
   url: string;
   nomeArquivo: string;
   dataEnvio: string;
-  isPdf?: boolean;
 }
 
 export interface ViagemItem {
@@ -122,10 +121,7 @@ export class DashboardComponent implements OnInit {
 
   activePhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
   activeMotoristaPhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
-  
   previewImageUrl: string | null = null;
-  previewSafePdfUrl: SafeResourceUrl | null = null;
-  isPreviewPdf: boolean = false;
 
   isDraggingComprovante: boolean = false;
   isDraggingMotoristaDoc: boolean = false;
@@ -139,7 +135,7 @@ export class DashboardComponent implements OnInit {
   };
 
   novoDocMotorista = {
-    nomeDocumento: '',
+    nome: '',
     descricao: '',
     arquivo: null as File | null,
     nomeArquivo: ''
@@ -197,7 +193,6 @@ export class DashboardComponent implements OnInit {
     this.carregarTodosDados();
   }
 
-  // Listener para colar prints ou imagens da área de transferência
   @HostListener('window:paste', ['$event'])
   handlePaste(event: ClipboardEvent): void {
     const clipboardData = event.clipboardData;
@@ -210,7 +205,7 @@ export class DashboardComponent implements OnInit {
         if (file) {
           const timestamp = new Date().getTime();
           const ext = file.type.split('/')[1] || 'png';
-          const pastedFile = new File([file], `anexo_${timestamp}.${ext}`, { type: file.type });
+          const pastedFile = new File([file], `print_${timestamp}.${ext}`, { type: file.type });
 
           if (this.modalType === 'PHOTO') {
             this.novoComprovante.arquivo = pastedFile;
@@ -225,8 +220,8 @@ export class DashboardComponent implements OnInit {
           } else if (this.modalType === 'MOTORISTA_PHOTO') {
             this.novoDocMotorista.arquivo = pastedFile;
             this.novoDocMotorista.nomeArquivo = pastedFile.name;
-            if (!this.novoDocMotorista.nomeDocumento.trim()) {
-              this.novoDocMotorista.nomeDocumento = 'Documento Colado';
+            if (!this.novoDocMotorista.nome.trim()) {
+              this.novoDocMotorista.nome = 'Documento Colado';
             }
             this.activeMotoristaPhotoTab = 'ADICIONAR';
             this.cdr.detectChanges();
@@ -315,8 +310,6 @@ export class DashboardComponent implements OnInit {
     this.activeMotoristaPhotoTab = 'ADICIONAR';
     this.manageSearchTerm = '';
     this.previewImageUrl = null;
-    this.previewSafePdfUrl = null;
-    this.isPreviewPdf = false;
     this.isDraggingComprovante = false;
     this.isDraggingMotoristaDoc = false;
     this.isDraggingCnh = false;
@@ -336,7 +329,7 @@ export class DashboardComponent implements OnInit {
   baixarBackupZip(): void {
     const urlBackup = `${environment.apiUrl}/admin/backup/uploads-zip`;
     window.open(urlBackup, '_blank');
-    this.isManageOpen = false;
+    this.closeSidebar();
   }
 
   onRestaurarBackupSelected(event: Event): void {
@@ -349,7 +342,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    if (!confirm('Deseja restaurar este arquivo de backup? O banco de dados e as fotos serão recuperados.')) {
+    if (!confirm('Deseja restaurar este backup completo? As fotos e o banco de dados serão atualizados com o conteúdo do .zip.')) {
       target.value = '';
       return;
     }
@@ -363,13 +356,23 @@ export class DashboardComponent implements OnInit {
           alert(res);
           this.carregarTodosDados();
           target.value = '';
-          this.isManageOpen = false;
+          this.closeSidebar();
         },
         error: (err) => {
           alert('Erro ao restaurar backup: ' + (err.error || err.message));
           target.value = '';
         }
       });
+  }
+
+  public isPdf(url: string | null | undefined): boolean {
+    if (!url) return false;
+    return url.toLowerCase().includes('.pdf') || url.toLowerCase().endsWith('.pdf');
+  }
+
+  public getSafeUrl(url: string | null | undefined): SafeResourceUrl {
+    const clean = this.sanitizarUrlArquivo(url);
+    return this.sanitizer.bypassSecurityTrustResourceUrl(clean);
   }
 
   public sanitizarUrlArquivo(url: string | null | undefined): string {
@@ -382,11 +385,6 @@ export class DashboardComponent implements OnInit {
       fullUrl = `${baseDomain}/${cleanPath}`;
     }
     return fullUrl.replace(/\/uploads\/+uploads\//g, '/uploads/');
-  }
-
-  public verificarSeEhPdf(url: string | null | undefined, nomeArquivo?: string): boolean {
-    const alvo = (url || '') + (nomeArquivo || '');
-    return alvo.toLowerCase().includes('.pdf');
   }
 
   carregarViagens(): void {
@@ -425,18 +423,13 @@ export class DashboardComponent implements OnInit {
     const origens = rawOrigem ? rawOrigem.split(';').map((s: string) => s.trim()).filter((s: string) => s.length > 0) : [];
     const destinos = rawDestino ? rawDestino.split(';').map((s: string) => s.trim()).filter((s: string) => s.length > 0) : [];
 
-    const fotos: ComprovanteItem[] = (v.comprovantes || []).map((c: any) => {
-      const urlSanitizada = this.sanitizarUrlArquivo(c.urlArquivo || c.url);
-      const nomeArq = c.nome || c.nomeArquivo || 'Arquivo';
-      return {
-        id: c.id || 0,
-        descricao: c.nome || c.descricao || 'Comprovante',
-        url: urlSanitizada,
-        nomeArquivo: nomeArq,
-        dataEnvio: c.dataEnvio || '',
-        isPdf: this.verificarSeEhPdf(urlSanitizada, nomeArq)
-      };
-    });
+    const fotos: ComprovanteItem[] = (v.comprovantes || []).map((c: any) => ({
+      id: c.id || 0,
+      descricao: c.nome || c.descricao || 'Comprovante',
+      url: this.sanitizarUrlArquivo(c.urlArquivo || c.url),
+      nomeArquivo: c.nome || c.nomeArquivo || 'Arquivo',
+      dataEnvio: c.dataEnvio || ''
+    }));
 
     return {
       id: `#${v.id}`,
@@ -557,16 +550,12 @@ export class DashboardComponent implements OnInit {
       arquivoParaEnvio
     ).subscribe({
       next: (compSalvo: any) => {
-        const urlFinal = this.sanitizarUrlArquivo(compSalvo?.urlArquivo || compSalvo?.url || '');
-        const nomeArqFinal = compSalvo?.nome || arquivoParaEnvio.name;
-
         const novoItem: ComprovanteItem = {
           id: compSalvo?.id || Date.now(),
           descricao: compSalvo?.nome || nomeDescricao,
-          url: urlFinal,
-          nomeArquivo: nomeArqFinal,
-          dataEnvio: compSalvo?.dataEnvio || 'Agora',
-          isPdf: this.verificarSeEhPdf(urlFinal, nomeArqFinal)
+          url: this.sanitizarUrlArquivo(compSalvo?.urlArquivo || compSalvo?.url || ''),
+          nomeArquivo: compSalvo?.nome || arquivoParaEnvio.name,
+          dataEnvio: compSalvo?.dataEnvio || 'Agora'
         };
 
         if (!viagemAtual.fotos) {
@@ -604,19 +593,10 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  abrirPreviewFoto(url: string, nomeArquivo?: string): void { 
+  abrirPreviewFoto(url: string): void { 
     this.previousModalType = this.modalType as any;
     this.modalType = null; 
-    const urlLimpa = this.sanitizarUrlArquivo(url);
-    this.previewImageUrl = urlLimpa; 
-    this.isPreviewPdf = this.verificarSeEhPdf(urlLimpa, nomeArquivo);
-
-    if (this.isPreviewPdf) {
-      this.previewSafePdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(urlLimpa);
-    } else {
-      this.previewSafePdfUrl = null;
-    }
-
+    this.previewImageUrl = this.sanitizarUrlArquivo(url); 
     this.cdr.detectChanges(); 
   }
 
@@ -627,8 +607,6 @@ export class DashboardComponent implements OnInit {
 
   fecharPreviewFoto(): void { 
     this.previewImageUrl = null;
-    this.previewSafePdfUrl = null;
-    this.isPreviewPdf = false;
     if (this.previousModalType) {
       this.modalType = this.previousModalType;
       this.previousModalType = null;
@@ -647,18 +625,13 @@ export class DashboardComponent implements OnInit {
           fornecedorVinculado: m.fornecedor || 'Sem Agência (Frota Própria)',
           situacao: (m.situacao === 'INATIVO' || m.ativo === false) ? 'INATIVO' : 'ATIVO',
           informacoesAdicionais: m.informacoesAdicionais || m.observacoes || '',
-          documentos: (m.documentos || []).map((d: any) => {
-            const urlSanitizada = this.sanitizarUrlArquivo(d.url || d.urlArquivo);
-            const nomeArq = d.nomeArquivo || d.descricao || d.nome || 'Documento';
-            return {
-              id: d.id || 0,
-              descricao: d.descricao || d.nome || 'Documento',
-              url: urlSanitizada,
-              nomeArquivo: nomeArq,
-              dataEnvio: d.dataEnvio || '',
-              isPdf: this.verificarSeEhPdf(urlSanitizada, nomeArq)
-            };
-          })
+          documentos: (m.documentos || []).map((d: any) => ({
+            id: d.id || 0,
+            descricao: d.descricao || d.nome || '',
+            url: this.sanitizarUrlArquivo(d.url || d.urlArquivo),
+            nomeArquivo: d.nomeArquivo || d.descricao || '',
+            dataEnvio: d.dataEnvio || ''
+          }))
         }));
         this.cdr.detectChanges();
       },
@@ -668,7 +641,7 @@ export class DashboardComponent implements OnInit {
 
   openMotoristaFotosModal(m: MotoristaModel): void {
     this.selectedMotorista = m;
-    this.novoDocMotorista = { nomeDocumento: '', descricao: '', arquivo: null, nomeArquivo: '' };
+    this.novoDocMotorista = { nome: '', descricao: '', arquivo: null, nomeArquivo: '' };
     this.activeMotoristaPhotoTab = (m.documentos && m.documentos.length > 0) ? 'LISTAR' : 'ADICIONAR';
     this.modalType = 'MOTORISTA_PHOTO';
     this.cdr.detectChanges();
@@ -680,8 +653,8 @@ export class DashboardComponent implements OnInit {
       const file = target.files[0];
       this.novoDocMotorista.arquivo = file;
       this.novoDocMotorista.nomeArquivo = file.name;
-      if (!this.novoDocMotorista.nomeDocumento.trim()) {
-        this.novoDocMotorista.nomeDocumento = file.name.replace(/\.[^/.]+$/, '');
+      if (!this.novoDocMotorista.nome.trim()) {
+        this.novoDocMotorista.nome = file.name.replace(/\.[^/.]+$/, '');
       }
       this.cdr.detectChanges();
     }
@@ -708,31 +681,29 @@ export class DashboardComponent implements OnInit {
       const file = event.dataTransfer.files[0];
       this.novoDocMotorista.arquivo = file;
       this.novoDocMotorista.nomeArquivo = file.name;
-      if (!this.novoDocMotorista.nomeDocumento.trim()) {
-        this.novoDocMotorista.nomeDocumento = file.name.replace(/\.[^/.]+$/, '');
+      if (!this.novoDocMotorista.nome.trim()) {
+        this.novoDocMotorista.nome = file.name.replace(/\.[^/.]+$/, '');
       }
       this.cdr.detectChanges();
     }
   }
 
   adicionarDocMotorista(): void {
-    if (!this.selectedMotorista || !this.novoDocMotorista.arquivo || !this.novoDocMotorista.nomeDocumento.trim()) {
-      alert('Informe o nome do documento e selecione o arquivo.');
+    if (!this.selectedMotorista || !this.novoDocMotorista.arquivo) {
+      alert('Selecione um arquivo para adicionar.');
       return;
     }
 
-    const nomeFormatado = this.novoDocMotorista.descricao.trim() 
-      ? `${this.novoDocMotorista.nomeDocumento.trim()} - ${this.novoDocMotorista.descricao.trim()}`
-      : this.novoDocMotorista.nomeDocumento.trim();
+    const tipoDoc: string = this.novoDocMotorista.nome.trim() || 'Documento';
 
     this.motoristaService.uploadDocumento(
       this.selectedMotorista.id,
-      nomeFormatado,
+      tipoDoc,
       this.novoDocMotorista.arquivo
     ).subscribe({
       next: () => {
         this.carregarMotoristas();
-        this.novoDocMotorista = { nomeDocumento: '', descricao: '', arquivo: null, nomeArquivo: '' };
+        this.novoDocMotorista = { nome: '', descricao: '', arquivo: null, nomeArquivo: '' };
         this.activeMotoristaPhotoTab = 'LISTAR';
         this.cdr.detectChanges();
       },

@@ -2,6 +2,8 @@ package com.cospa.api.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.text.Normalizer;
+import java.util.regex.Pattern;
 
 public enum StatusViagem {
     A_CONTRATAR("A CONTRATAR"),
@@ -29,12 +31,28 @@ public enum StatusViagem {
 
     @JsonCreator
     public static StatusViagem fromString(String value) {
-        if (value == null || value.isBlank()) return PROGRAMADO;
+        if (value == null || value.isBlank()) {
+            return PROGRAMADO;
+        }
+
+        String normalizado = normalizar(value);
+
         for (StatusViagem s : StatusViagem.values()) {
-            if (s.name().equalsIgnoreCase(value) || s.descricao.equalsIgnoreCase(value)) {
+            if (normalizar(s.name()).equals(normalizado) || normalizar(s.descricao).equals(normalizado)) {
                 return s;
             }
         }
         return PROGRAMADO;
+    }
+
+    private static String normalizar(String str) {
+        if (str == null) return "";
+        String semAcento = Normalizer.normalize(str, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(semAcento)
+                .replaceAll("")
+                .replace("_", " ")
+                .trim()
+                .toUpperCase();
     }
 }

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AuthService } from '../../core/services/auth';
 import { ViagemService } from '../../core/services/viagem';
 import { MotoristaService } from '../../core/services/motorista';
@@ -94,7 +93,6 @@ export class DashboardComponent implements OnInit {
   private router = inject(Router);
   public authService = inject(AuthService);
   private http = inject(HttpClient);
-  private sanitizer = inject(DomSanitizer);
   private viagemService = inject(ViagemService);
   private motoristaService = inject(MotoristaService);
   private clienteService = inject(ClienteService);
@@ -334,7 +332,7 @@ export class DashboardComponent implements OnInit {
 
   onRestaurarBackupSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
-    if (!target.files || target.files.length === 0) return;
+    if (!target.files || target.files.length > 0) return;
 
     const file = target.files[0];
     if (!file.name.endsWith('.zip')) {
@@ -392,9 +390,11 @@ export class DashboardComponent implements OnInit {
 
         (viagens || []).forEach((v: Viagem) => {
           const item = this.mapViagemParaItem(v);
-          if (item.status === 'FINALIZADO') {
+          const st = (item.status || '').toString().toUpperCase().replace(/_/g, ' ').trim();
+
+          if (st === 'FINALIZADO') {
             this.viagensFinalizadas.push(item);
-          } else if (item.status === 'A PAGAR') {
+          } else if (st === 'A PAGAR') {
             this.viagensPagar.push(item);
           } else {
             this.viagensAndamento.push(item);
@@ -443,27 +443,43 @@ export class DashboardComponent implements OnInit {
 
   prosseguirParaPagar(item: ViagemItem): void {
     if (!item.rawViagem) return;
-    const atualizada: any = { ...item.rawViagem, status: 'A PAGAR' };
+    const atualizada: any = { 
+      ...item.rawViagem, 
+      id: item.rawId,
+      status: 'A_PAGAR' 
+    };
+    
     this.viagemService.salvar(atualizada).subscribe({
       next: () => {
-        this.carregarViagens();
         this.showPagar = true;
         this.closeRowActions();
+        this.carregarViagens();
       },
-      error: () => alert('Erro ao atualizar status da viagem.')
+      error: (err) => {
+        console.error('Erro ao avançar viagem para A Pagar:', err);
+        alert('Erro ao atualizar status da viagem.');
+      }
     });
   }
 
   finalizarViagem(item: ViagemItem): void {
     if (!item.rawViagem) return;
-    const atualizada: any = { ...item.rawViagem, status: 'FINALIZADO' };
+    const atualizada: any = { 
+      ...item.rawViagem, 
+      id: item.rawId,
+      status: 'FINALIZADO' 
+    };
+    
     this.viagemService.salvar(atualizada).subscribe({
       next: () => {
-        this.carregarViagens();
         this.showFinalizadas = true;
         this.closeRowActions();
+        this.carregarViagens();
       },
-      error: () => alert('Erro ao finalizar viagem.')
+      error: (err) => {
+        console.error('Erro ao finalizar viagem:', err);
+        alert('Erro ao finalizar viagem.');
+      }
     });
   }
 

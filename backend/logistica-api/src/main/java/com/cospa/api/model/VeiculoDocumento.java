@@ -1,6 +1,6 @@
 package com.cospa.api.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -26,7 +26,7 @@ public class VeiculoDocumento {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "veiculo_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnoreProperties({"documentos", "motoristas"})
     private Veiculo veiculo;
 
     public VeiculoDocumento() {}

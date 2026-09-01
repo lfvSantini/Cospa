@@ -1,7 +1,7 @@
 package com.cospa.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +57,7 @@ public class Veiculo {
     private String situacao = "ATIVO";
 
     @OneToMany(mappedBy = "veiculo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonIgnoreProperties("veiculo")
     private List<VeiculoDocumento> documentos = new ArrayList<>();
 
     @ManyToMany(mappedBy = "veiculos", fetch = FetchType.LAZY)
@@ -111,9 +111,9 @@ public class Veiculo {
     public String getSituacao() { return situacao; }
     public void setSituacao(String situacao) { this.situacao = situacao; }
 
-    public List<VeiculoDocumento> getDocumentos() { return documentos; }
+    public List<VeiculoDocumento> getDocumentos() { return documentos != null ? documentos : new ArrayList<>(); }
     public void setDocumentos(List<VeiculoDocumento> documentos) { this.documentos = documentos; }
 
-    public List<Motorista> getMotoristas() { return motoristas; }
+    public List<Motorista> getMotoristas() { return motoristas != null ? motoristas : new ArrayList<>(); }
     public void setMotoristas(List<Motorista> motoristas) { this.motoristas = motoristas; }
 }

@@ -66,13 +66,14 @@ public class VeiculoController {
 
     @GetMapping
     @Transactional(readOnly = true)
-    public ResponseEntity<List<Veiculo>> listarTodos() {
+    public ResponseEntity<?> listarTodos() {
         try {
             List<Veiculo> veiculos = repository.findAll();
             return ResponseEntity.ok(veiculos);
         } catch (Exception e) {
             log.error("Erro ao listar veiculos: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao buscar veiculos: " + e.getMessage());
         }
     }
 

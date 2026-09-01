@@ -66,8 +66,8 @@ public class VeiculoController {
     }
 
     @GetMapping
-    public List<Veiculo> listarTodos() {
-        return repository.findAll();
+    public ResponseEntity<List<Veiculo>> listarTodos() {
+        return ResponseEntity.ok(repository.findAll());
     }
 
     @GetMapping("/{id}")
@@ -87,13 +87,23 @@ public class VeiculoController {
 
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody Veiculo veiculo) {
-        if (veiculo.getPlaca() != null) {
-            veiculo.setPlaca(veiculo.getPlaca().trim().toUpperCase());
-            if (repository.findByPlaca(veiculo.getPlaca()).isPresent()) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Placa já cadastrada no sistema.");
+        try {
+            if (veiculo.getPlaca() != null) {
+                veiculo.setPlaca(veiculo.getPlaca().trim().toUpperCase());
+                if (repository.findByPlaca(veiculo.getPlaca()).isPresent()) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("Placa já cadastrada no sistema.");
+                }
             }
+            if (veiculo.getSituacao() == null || veiculo.getSituacao().isBlank()) {
+                veiculo.setSituacao("ATIVO");
+            }
+            Veiculo salvo = repository.save(veiculo);
+            return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+        } catch (Exception e) {
+            log.error("Erro ao cadastrar veiculo: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao salvar veiculo no banco: " + e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(veiculo));
     }
 
     @PutMapping("/{id}")

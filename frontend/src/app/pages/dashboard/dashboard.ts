@@ -8,10 +8,12 @@ import { ViagemService } from '../../core/services/viagem';
 import { MotoristaService } from '../../core/services/motorista';
 import { ClienteService } from '../../core/services/cliente';
 import { FornecedorService } from '../../core/services/fornecedor';
+import { VeiculoService } from '../../core/services/veiculo';
 import { Viagem, StatusViagem } from '../../core/models/viagem.model';
 import { Motorista } from '../../core/models/motorista.model';
 import { Cliente } from '../../core/models/cliente.model';
 import { Fornecedor } from '../../core/models/fornecedor.model';
+import { Veiculo } from '../../core/models/veiculo.model';
 import { environment } from '../../../environments/environment';
 
 export type TipoPagamentoRealizado = 'Não Realizado' | 'Adiantamento pago' | 'Saldo pago';
@@ -35,6 +37,7 @@ export interface ViagemItem {
   cliente: string;
   origem: string[];
   destino: string[];
+  coletaPrevista: string;
   placa: string;
   motorista: string;
   status: StatusViagem;
@@ -82,6 +85,25 @@ export interface MotoristaModel {
   documentos?: ComprovanteItem[];
 }
 
+export interface VeiculoModel {
+  id: number;
+  placa: string;
+  tipoVeiculo: string;
+  tipoCarroceria: string;
+  adicional: string;
+  numeroEixos: string;
+  cubagemBau: string;
+  capacidadePeso: string;
+  numeroPaletes: string;
+  anoFabricacao: string;
+  dataVencimento: string;
+  fornecedor: string;
+  numeroAntt: string;
+  tipoRastreador: string;
+  situacao: 'ATIVO' | 'INATIVO';
+  documentos?: ComprovanteItem[];
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -97,6 +119,7 @@ export class DashboardComponent implements OnInit {
   private motoristaService = inject(MotoristaService);
   private clienteService = inject(ClienteService);
   private fornecedorService = inject(FornecedorService);
+  private veiculoService = inject(VeiculoService);
   private cdr = inject(ChangeDetectorRef);
 
   uploadsUrl = environment.uploadsUrl || environment.apiUrl;
@@ -107,22 +130,24 @@ export class DashboardComponent implements OnInit {
   isManageOpen: boolean = false;
   openedActionMenuId: string | null = null;
 
+  showProgramadas: boolean = true;
   showAndamento: boolean = true;
-  showPagar: boolean = true;
   showFinalizadas: boolean = false;
 
-  modalType: 'TRIP_FORM' | 'PHOTO' | 'OBS' | 'DELETE' | 'FORNECEDOR' | 'CLIENTE' | 'MOTORISTA' | 'MOTORISTA_PHOTO' | null = null;
-  private previousModalType: 'PHOTO' | 'MOTORISTA_PHOTO' | null = null;
+  modalType: 'TRIP_FORM' | 'PHOTO' | 'OBS' | 'DELETE' | 'FORNECEDOR' | 'CLIENTE' | 'MOTORISTA' | 'VEICULO' | 'MOTORISTA_PHOTO' | 'VEICULO_PHOTO' | null = null;
+  private previousModalType: 'PHOTO' | 'MOTORISTA_PHOTO' | 'VEICULO_PHOTO' | null = null;
 
   activeManageTab: 'CADASTRAR' | 'LISTAR' = 'CADASTRAR';
   manageSearchTerm: string = '';
 
   activePhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
   activeMotoristaPhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
+  activeVeiculoPhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
   previewImageUrl: string | null = null;
 
   isDraggingComprovante: boolean = false;
   isDraggingMotoristaDoc: boolean = false;
+  isDraggingVeiculoDoc: boolean = false;
   isDraggingCnh: boolean = false;
   isDraggingCrlv: boolean = false;
 
@@ -139,7 +164,15 @@ export class DashboardComponent implements OnInit {
     nomeArquivo: ''
   };
 
+  novoDocVeiculo = {
+    nome: '',
+    descricao: '',
+    arquivo: null as File | null,
+    nomeArquivo: ''
+  };
+
   selectedMotorista: MotoristaModel | null = null;
+  selectedVeiculo: VeiculoModel | null = null;
 
   fornecedoresList: FornecedorModel[] = [];
   filteredFornecedores: FornecedorModel[] = [];
@@ -155,6 +188,21 @@ export class DashboardComponent implements OnInit {
   filteredMotoristas: MotoristaModel[] = [];
   motoristaForm: MotoristaModel = this.getEmptyMotorista();
   isEditingMotorista: boolean = false;
+
+  veiculosList: VeiculoModel[] = [];
+  filteredVeiculos: VeiculoModel[] = [];
+  veiculoForm: VeiculoModel = this.getEmptyVeiculo();
+  isEditingVeiculo: boolean = false;
+
+  tiposVeiculosOpcoes: string[] = [
+    'Carro de passeio', 'Fiorino', 'Van', 'HR', 'Vuc', '3.4',
+    'Toco', 'Truck', 'Bitruck', 'Cavalo', 'Bau reboque', 'Bitrem', 'Rodotrem'
+  ];
+
+  tiposCarroceriaOpcoes: string[] = [
+    'Bau Seco', 'Bau Refrigerado', 'Baú Frigorífico', 'Bau Blindado',
+    'Bau Plataforma', 'Sider', 'Aberta', 'Graneleira'
+  ];
 
   tripForm = {
     id: '',
@@ -181,11 +229,11 @@ export class DashboardComponent implements OnInit {
   };
 
   selectedViagem: ViagemItem | null = null;
-  selectedListOrigin: 'andamento' | 'pagar' | 'finalizadas' = 'andamento';
+  selectedListOrigin: 'programadas' | 'andamento' | 'finalizadas' = 'andamento';
   isEditing: boolean = false;
 
+  viagensProgramadas: ViagemItem[] = [];
   viagensAndamento: ViagemItem[] = [];
-  viagensPagar: ViagemItem[] = [];
   viagensFinalizadas: ViagemItem[] = [];
 
   ngOnInit(): void {
@@ -228,6 +276,16 @@ export class DashboardComponent implements OnInit {
             this.cdr.detectChanges();
             event.preventDefault();
             break;
+          } else if (this.modalType === 'VEICULO_PHOTO') {
+            this.novoDocVeiculo.arquivo = pastedFile;
+            this.novoDocVeiculo.nomeArquivo = pastedFile.name;
+            if (!this.novoDocVeiculo.nome.trim()) {
+              this.novoDocVeiculo.nome = 'Documento Colado';
+            }
+            this.activeVeiculoPhotoTab = 'ADICIONAR';
+            this.cdr.detectChanges();
+            event.preventDefault();
+            break;
           } else if (this.modalType === 'MOTORISTA') {
             if (!this.motoristaForm.cnhFile) {
               this.motoristaForm.cnhFile = pastedFile;
@@ -250,6 +308,7 @@ export class DashboardComponent implements OnInit {
     this.carregarMotoristas();
     this.carregarClientes();
     this.carregarFornecedores();
+    this.carregarVeiculos();
   }
 
   toggleTheme(): void {
@@ -306,13 +365,16 @@ export class DashboardComponent implements OnInit {
     this.previousModalType = null;
     this.selectedViagem = null;
     this.selectedMotorista = null;
+    this.selectedVeiculo = null;
     this.activeManageTab = 'CADASTRAR';
     this.activePhotoTab = 'ADICIONAR';
     this.activeMotoristaPhotoTab = 'ADICIONAR';
+    this.activeVeiculoPhotoTab = 'ADICIONAR';
     this.manageSearchTerm = '';
     this.previewImageUrl = null;
     this.isDraggingComprovante = false;
     this.isDraggingMotoristaDoc = false;
+    this.isDraggingVeiculoDoc = false;
     this.isDraggingCnh = false;
     this.isDraggingCrlv = false;
     this.cdr.detectChanges();
@@ -387,8 +449,8 @@ export class DashboardComponent implements OnInit {
     this.isLoading = true;
     this.viagemService.listarTodas().subscribe({
       next: (viagens: Viagem[]) => {
+        this.viagensProgramadas = [];
         this.viagensAndamento = [];
-        this.viagensPagar = [];
         this.viagensFinalizadas = [];
 
         (viagens || []).forEach((v: Viagem) => {
@@ -397,8 +459,8 @@ export class DashboardComponent implements OnInit {
 
           if (st === 'FINALIZADO') {
             this.viagensFinalizadas.push(item);
-          } else if (st === 'A PAGAR') {
-            this.viagensPagar.push(item);
+          } else if (st === 'PROGRAMADO' || st === 'A CONTRATAR' || st === 'CRIADA') {
+            this.viagensProgramadas.push(item);
           } else {
             this.viagensAndamento.push(item);
           }
@@ -435,6 +497,7 @@ export class DashboardComponent implements OnInit {
       cliente: v.cliente,
       origem: origens.length ? origens : ['-'],
       destino: destinos.length ? destinos : ['-'],
+      coletaPrevista: v.dataColetaPrevista || v.data_coleta_prevista || '-',
       placa: v.placa || '-',
       motorista: v.nomeMotorista || v.nome_motorista || 'A Contratar',
       status: v.status,
@@ -442,27 +505,6 @@ export class DashboardComponent implements OnInit {
       fotos: fotos,
       rawViagem: v
     };
-  }
-
-  prosseguirParaPagar(item: ViagemItem): void {
-    if (!item.rawViagem) return;
-    const atualizada: any = { 
-      ...item.rawViagem, 
-      id: item.rawId,
-      status: 'A_PAGAR' 
-    };
-    
-    this.viagemService.salvar(atualizada, true).subscribe({
-      next: () => {
-        this.showPagar = true;
-        this.closeRowActions();
-        this.carregarViagens();
-      },
-      error: (err) => {
-        console.error('Erro ao avançar viagem para A Pagar:', err);
-        alert('Erro ao atualizar status da viagem.');
-      }
-    });
   }
 
   finalizarViagem(item: ViagemItem): void {
@@ -516,6 +558,15 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  trocarAbaVeiculoFoto(aba: 'ADICIONAR' | 'LISTAR', event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.activeVeiculoPhotoTab = aba;
+    this.cdr.detectChanges();
+  }
+
   onComprovanteFileSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
@@ -523,7 +574,7 @@ export class DashboardComponent implements OnInit {
       this.novoComprovante.arquivo = file;
       this.novoComprovante.nomeArquivo = file.name;
       if (!this.novoComprovante.descricao.trim()) {
-        this.novoComprovante.descricao = file.name.replace(/\.[^/.]+$/, '');
+        this.novoComprovante.descricao = file.name.replace(/\.[^/.]+$/, '').toUpperCase();
       }
       this.cdr.detectChanges();
     }
@@ -551,7 +602,7 @@ export class DashboardComponent implements OnInit {
       this.novoComprovante.arquivo = file;
       this.novoComprovante.nomeArquivo = file.name;
       if (!this.novoComprovante.descricao.trim()) {
-        this.novoComprovante.descricao = file.name.replace(/\.[^/.]+$/, '');
+        this.novoComprovante.descricao = file.name.replace(/\.[^/.]+$/, '').toUpperCase();
       }
       this.cdr.detectChanges();
     }
@@ -564,7 +615,7 @@ export class DashboardComponent implements OnInit {
     }
 
     const viagemAtual = this.selectedViagem;
-    const nomeDescricao = this.novoComprovante.descricao.trim();
+    const nomeDescricao = this.novoComprovante.descricao.trim().toUpperCase();
     const arquivoParaEnvio = this.novoComprovante.arquivo;
 
     this.viagemService.uploadComprovante(
@@ -642,6 +693,7 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges(); 
   }
 
+  // ==================== MOTORISTAS ====================
   carregarMotoristas(): void {
     this.motoristaService.listar().subscribe({
       next: (data: Motorista[]) => {
@@ -697,7 +749,7 @@ export class DashboardComponent implements OnInit {
       this.novoDocMotorista.arquivo = file;
       this.novoDocMotorista.nomeArquivo = file.name;
       if (!this.novoDocMotorista.nome.trim()) {
-        this.novoDocMotorista.nome = file.name.replace(/\.[^/.]+$/, '');
+        this.novoDocMotorista.nome = file.name.replace(/\.[^/.]+$/, '').toUpperCase();
       }
       this.cdr.detectChanges();
     }
@@ -725,7 +777,7 @@ export class DashboardComponent implements OnInit {
       this.novoDocMotorista.arquivo = file;
       this.novoDocMotorista.nomeArquivo = file.name;
       if (!this.novoDocMotorista.nome.trim()) {
-        this.novoDocMotorista.nome = file.name.replace(/\.[^/.]+$/, '');
+        this.novoDocMotorista.nome = file.name.replace(/\.[^/.]+$/, '').toUpperCase();
       }
       this.cdr.detectChanges();
     }
@@ -737,7 +789,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    const tipoDoc: string = this.novoDocMotorista.nome.trim() || 'Documento';
+    const tipoDoc: string = this.novoDocMotorista.nome.trim().toUpperCase() || 'DOCUMENTO';
     const arquivoParaEnvio = this.novoDocMotorista.arquivo;
     const motoristaAtual = this.selectedMotorista;
 
@@ -830,9 +882,9 @@ export class DashboardComponent implements OnInit {
 
     const payload: Motorista = {
       id: this.isEditingMotorista ? this.motoristaForm.id : undefined,
-      nome: this.motoristaForm.nome,
-      cpf: this.motoristaForm.cpf,
-      placa: this.motoristaForm.placa,
+      nome: this.motoristaForm.nome.toUpperCase(),
+      cpf: this.motoristaForm.cpf.toUpperCase(),
+      placa: this.motoristaForm.placa.toUpperCase(),
       fornecedor: this.motoristaForm.fornecedorVinculado || 'Sem Agência (Frota Própria)',
       situacao: this.motoristaForm.situacao,
       ativo: this.motoristaForm.situacao === 'ATIVO',
@@ -900,6 +952,234 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  // ==================== VEÍCULOS ====================
+  carregarVeiculos(): void {
+    this.veiculoService.listar().subscribe({
+      next: (data: any[]) => {
+        this.veiculosList = (data || []).map((v: any) => ({
+          id: v.id || 0,
+          placa: v.placa || '',
+          tipoVeiculo: v.tipoVeiculo || 'Truck',
+          tipoCarroceria: v.tipoCarroceria || 'Bau Seco',
+          adicional: v.adicional || '',
+          numeroEixos: v.numeroEixos || '',
+          cubagemBau: v.cubagemBau || '',
+          capacidadePeso: v.capacidadePeso || '',
+          numeroPaletes: v.numeroPaletes || '',
+          anoFabricacao: v.anoFabricacao || '',
+          dataVencimento: v.dataVencimento || '',
+          fornecedor: v.fornecedor || 'Sem Agência (Frota Própria)',
+          numeroAntt: v.numeroAntt || '',
+          tipoRastreador: v.tipoRastreador || '',
+          situacao: v.situacao || 'ATIVO',
+          documentos: (v.documentos || []).map((d: any) => ({
+            id: d.id || 0,
+            descricao: d.descricao || d.nome || '',
+            url: this.sanitizarUrlArquivo(d.url || d.urlArquivo),
+            nomeArquivo: d.nomeArquivo || d.descricao || '',
+            dataEnvio: d.dataEnvio || ''
+          }))
+        }));
+        this.filtrarVeiculos();
+        this.cdr.detectChanges();
+      },
+      error: (err: unknown) => console.error('Erro ao carregar veículos:', err)
+    });
+  }
+
+  filtrarVeiculos(): void {
+    const t = (this.manageSearchTerm || '').toLowerCase().trim();
+    if (!t) {
+      this.filteredVeiculos = [...this.veiculosList];
+      return;
+    }
+    this.filteredVeiculos = this.veiculosList.filter(v =>
+      (v.placa || '').toLowerCase().includes(t) ||
+      (v.tipoVeiculo || '').toLowerCase().includes(t) ||
+      (v.tipoCarroceria || '').toLowerCase().includes(t) ||
+      (v.fornecedor || '').toLowerCase().includes(t)
+    );
+  }
+
+  public getEmptyVeiculo(): VeiculoModel {
+    return {
+      id: 0,
+      placa: '',
+      tipoVeiculo: 'Truck',
+      tipoCarroceria: 'Bau Seco',
+      adicional: '',
+      numeroEixos: '',
+      cubagemBau: '',
+      capacidadePeso: '',
+      numeroPaletes: '',
+      anoFabricacao: '',
+      dataVencimento: '',
+      fornecedor: 'Sem Agência (Frota Própria)',
+      numeroAntt: '',
+      tipoRastreador: '',
+      situacao: 'ATIVO',
+      documentos: []
+    };
+  }
+
+  openGerenciarVeiculos(): void {
+    this.veiculoForm = this.getEmptyVeiculo();
+    this.isEditingVeiculo = false;
+    this.activeManageTab = 'CADASTRAR';
+    this.modalType = 'VEICULO';
+    this.isManageOpen = false;
+    this.filtrarVeiculos();
+    this.cdr.detectChanges();
+  }
+
+  salvarVeiculo(): void {
+    if (!this.veiculoForm.placa.trim()) {
+      alert('Informe a placa do veículo.');
+      return;
+    }
+
+    const payload: Veiculo = {
+      id: this.isEditingVeiculo ? this.veiculoForm.id : undefined,
+      placa: this.veiculoForm.placa.toUpperCase(),
+      tipoVeiculo: this.veiculoForm.tipoVeiculo,
+      tipoCarroceria: this.veiculoForm.tipoCarroceria,
+      adicional: this.veiculoForm.adicional,
+      numeroEixos: this.veiculoForm.numeroEixos,
+      cubagemBau: this.veiculoForm.cubagemBau,
+      capacidadePeso: this.veiculoForm.capacidadePeso,
+      numeroPaletes: this.veiculoForm.numeroPaletes,
+      anoFabricacao: this.veiculoForm.anoFabricacao,
+      dataVencimento: this.veiculoForm.dataVencimento,
+      fornecedor: this.veiculoForm.fornecedor || 'Sem Agência (Frota Própria)',
+      numeroAntt: this.veiculoForm.numeroAntt,
+      tipoRastreador: this.veiculoForm.tipoRastreador,
+      situacao: this.veiculoForm.situacao
+    };
+
+    this.veiculoService.salvar(payload).subscribe({
+      next: () => {
+        this.carregarVeiculos();
+        this.activeManageTab = 'LISTAR';
+        this.cancelarEdicaoVeiculo();
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        alert('Erro ao salvar veículo: ' + (err.error || err.message));
+      }
+    });
+  }
+
+  editarVeiculo(v: VeiculoModel): void {
+    this.veiculoForm = { ...v };
+    this.isEditingVeiculo = true;
+    this.activeManageTab = 'CADASTRAR';
+    this.cdr.detectChanges();
+  }
+
+  excluirVeiculo(id: number): void {
+    this.veiculoService.deletar(id).subscribe({
+      next: () => this.carregarVeiculos(),
+      error: () => alert('Erro ao excluir veículo.')
+    });
+  }
+
+  cancelarEdicaoVeiculo(): void {
+    this.veiculoForm = this.getEmptyVeiculo();
+    this.isEditingVeiculo = false;
+    this.cdr.detectChanges();
+  }
+
+  openVeiculoFotosModal(v: VeiculoModel): void {
+    this.selectedVeiculo = v;
+    this.novoDocVeiculo = { nome: '', descricao: '', arquivo: null, nomeArquivo: '' };
+    this.activeVeiculoPhotoTab = (v.documentos && v.documentos.length > 0) ? 'LISTAR' : 'ADICIONAR';
+    this.modalType = 'VEICULO_PHOTO';
+    this.cdr.detectChanges();
+  }
+
+  onVeiculoDocSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      const file = target.files[0];
+      this.novoDocVeiculo.arquivo = file;
+      this.novoDocVeiculo.nomeArquivo = file.name;
+      if (!this.novoDocVeiculo.nome.trim()) {
+        this.novoDocVeiculo.nome = file.name.replace(/\.[^/.]+$/, '').toUpperCase();
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
+  adicionarDocVeiculo(): void {
+    if (!this.selectedVeiculo || !this.novoDocVeiculo.arquivo) {
+      alert('Selecione um arquivo para adicionar.');
+      return;
+    }
+
+    const tipoDoc: string = this.novoDocVeiculo.nome.trim().toUpperCase() || 'DOCUMENTO';
+    const arquivoParaEnvio = this.novoDocVeiculo.arquivo;
+    const veiculoAtual = this.selectedVeiculo;
+
+    this.veiculoService.uploadDocumento(
+      veiculoAtual.id,
+      tipoDoc,
+      arquivoParaEnvio
+    ).subscribe({
+      next: (docSalvo: any) => {
+        const novoDoc: ComprovanteItem = {
+          id: docSalvo?.id || Date.now(),
+          descricao: docSalvo?.descricao || docSalvo?.nome || tipoDoc,
+          url: this.sanitizarUrlArquivo(docSalvo?.url || docSalvo?.urlArquivo || ''),
+          nomeArquivo: docSalvo?.nomeArquivo || arquivoParaEnvio.name,
+          dataEnvio: docSalvo?.dataEnvio || 'Agora'
+        };
+
+        if (!veiculoAtual.documentos) {
+          veiculoAtual.documentos = [];
+        }
+        veiculoAtual.documentos.unshift(novoDoc);
+
+        const veicNaLista = this.veiculosList.find(v => v.id === veiculoAtual.id);
+        if (veicNaLista) {
+          veicNaLista.documentos = [...veiculoAtual.documentos];
+        }
+
+        this.filtrarVeiculos();
+        this.novoDocVeiculo = { nome: '', descricao: '', arquivo: null, nomeArquivo: '' };
+        this.activeVeiculoPhotoTab = 'LISTAR';
+        this.carregarVeiculos();
+        this.cdr.detectChanges();
+      },
+      error: () => alert('Erro ao fazer upload do documento do veículo.')
+    });
+  }
+
+  removerDocVeiculo(event: Event, id: number): void {
+    event.stopPropagation();
+    if (!this.selectedVeiculo) return;
+
+    const veiculoAtual = this.selectedVeiculo;
+
+    this.veiculoService.deletarDocumento(id).subscribe({
+      next: () => {
+        if (veiculoAtual.documentos) {
+          veiculoAtual.documentos = veiculoAtual.documentos.filter(d => d.id !== id);
+        }
+
+        const veicNaLista = this.veiculosList.find(v => v.id === veiculoAtual.id);
+        if (veicNaLista && veicNaLista.documentos) {
+          veicNaLista.documentos = veicNaLista.documentos.filter(d => d.id !== id);
+        }
+
+        this.filtrarVeiculos();
+        this.carregarVeiculos();
+        this.cdr.detectChanges();
+      },
+      error: () => alert('Erro ao excluir documento do veículo.')
+    });
+  }
+
+  // ==================== CLIENTES ====================
   carregarClientes(): void {
     this.clienteService.listar().subscribe({
       next: (data: Cliente[]) => {
@@ -953,13 +1233,13 @@ export class DashboardComponent implements OnInit {
 
     const payload: Cliente = {
       id: this.isEditingCliente ? this.clienteForm.id : undefined,
-      nome: this.clienteForm.nomeFantasia,
-      nomeFantasia: this.clienteForm.nomeFantasia,
-      razaoSocial: this.clienteForm.razaoSocial,
-      cnpjCpf: this.clienteForm.cnpjCpf,
-      nomeContato: this.clienteForm.nomeContato,
-      telefone: this.clienteForm.telefone,
-      email: this.clienteForm.email,
+      nome: this.clienteForm.nomeFantasia.toUpperCase(),
+      nomeFantasia: this.clienteForm.nomeFantasia.toUpperCase(),
+      razaoSocial: this.clienteForm.razaoSocial.toUpperCase(),
+      cnpjCpf: this.clienteForm.cnpjCpf.toUpperCase(),
+      nomeContato: this.clienteForm.nomeContato.toUpperCase(),
+      telefone: this.clienteForm.telefone.toUpperCase(),
+      email: this.clienteForm.email.toUpperCase(),
       situacao: this.clienteForm.situacao,
       ativo: this.clienteForm.situacao === 'ATIVO',
       obs: this.clienteForm.obs
@@ -996,6 +1276,7 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // ==================== FORNECEDORES ====================
   carregarFornecedores(): void {
     this.fornecedorService.listar().subscribe({
       next: (data: Fornecedor[]) => {
@@ -1049,12 +1330,12 @@ export class DashboardComponent implements OnInit {
 
     const payload: Fornecedor = {
       id: this.isEditingFornecedor ? this.fornecedorForm.id : undefined,
-      nome: this.fornecedorForm.nome,
-      cnpjCpf: this.fornecedorForm.cnpjCpf,
-      nomeContato: this.fornecedorForm.nomeContato,
-      telefone: this.fornecedorForm.telefone,
-      email: this.fornecedorForm.email,
-      chavePix: this.fornecedorForm.chavePix,
+      nome: this.fornecedorForm.nome.toUpperCase(),
+      cnpjCpf: this.fornecedorForm.cnpjCpf.toUpperCase(),
+      nomeContato: this.fornecedorForm.nomeContato.toUpperCase(),
+      telefone: this.fornecedorForm.telefone.toUpperCase(),
+      email: this.fornecedorForm.email.toUpperCase(),
+      chavePix: this.fornecedorForm.chavePix.toUpperCase(),
       situacao: this.fornecedorForm.situacao,
       ativo: this.fornecedorForm.situacao === 'ATIVO',
       obs: this.fornecedorForm.obs
@@ -1091,6 +1372,7 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // ==================== VIAGENS ====================
   addOrigem(): void { this.tripForm.origens.push({ local: '', endereco: '' }); this.cdr.detectChanges(); }
   removeOrigem(index: number): void { if (this.tripForm.origens.length > 1) this.tripForm.origens.splice(index, 1); this.cdr.detectChanges(); }
   addDestino(): void { this.tripForm.destinos.push({ local: '', endereco: '' }); this.cdr.detectChanges(); }
@@ -1125,7 +1407,7 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  openEditarModal(item: ViagemItem, origin: 'andamento' | 'pagar' | 'finalizadas'): void {
+  openEditarModal(item: ViagemItem, origin: 'programadas' | 'andamento' | 'finalizadas'): void {
     this.isEditing = true;
     this.selectedViagem = item;
     this.selectedListOrigin = origin;
@@ -1192,21 +1474,21 @@ export class DashboardComponent implements OnInit {
     }
 
     const origensLocaisArray = (this.tripForm.origens || [])
-      .map(o => (o.local || '').trim())
+      .map(o => (o.local || '').trim().toUpperCase())
       .filter(o => o.length > 0);
     const origensEnderecosArray = (this.tripForm.origens || [])
-      .map(o => (o.endereco || '').trim());
+      .map(o => (o.endereco || '').trim().toUpperCase());
 
     const destinosLocaisArray = (this.tripForm.destinos || [])
-      .map(d => (d.local || '').trim())
+      .map(d => (d.local || '').trim().toUpperCase())
       .filter(d => d.length > 0);
     const destinosEnderecosArray = (this.tripForm.destinos || [])
-      .map(d => (d.endereco || '').trim());
+      .map(d => (d.endereco || '').trim().toUpperCase());
 
-    const strOrigemLocal = origensLocaisArray.join('; ') || 'Origem não informada';
+    const strOrigemLocal = origensLocaisArray.join('; ') || 'ORIGEM NÃO INFORMADA';
     const strOrigemEndereco = origensEnderecosArray.join('; ') || strOrigemLocal;
 
-    const strDestinoLocal = destinosLocaisArray.join('; ') || 'Destino não informado';
+    const strDestinoLocal = destinosLocaisArray.join('; ') || 'DESTINO NÃO INFORMADO';
     const strDestinoEndereco = destinosEnderecosArray.join('; ') || strDestinoLocal;
 
     let motoristaFinal = 'A Contratar';
@@ -1215,14 +1497,14 @@ export class DashboardComponent implements OnInit {
 
     if (this.tripForm.motorista && this.tripForm.motorista.trim() !== '') {
       const motSelected = this.motoristasList.find(m => m.nome.toLowerCase() === this.tripForm.motorista.toLowerCase());
-      motoristaFinal = motSelected ? motSelected.nome : this.tripForm.motorista;
+      motoristaFinal = motSelected ? motSelected.nome : this.tripForm.motorista.toUpperCase();
       placaFinal = motSelected ? motSelected.placa : '-';
       cpfFinal = motSelected ? motSelected.cpf : '';
     }
 
     const payload: any = {
       id: idFinal,
-      cliente: nomeClienteFinal,
+      cliente: nomeClienteFinal.toUpperCase(),
 
       origem: strOrigemLocal,
       origemNome: strOrigemLocal,
@@ -1245,15 +1527,15 @@ export class DashboardComponent implements OnInit {
       fornecedorAgencia: this.tripForm.agencia || 'Sem Agência (Frota Própria)',
       fornecedor_agencia: this.tripForm.agencia || 'Sem Agência (Frota Própria)',
 
-      dataColetaPrevista: this.tripForm.coletaPrevista || '',
-      data_coleta_prevista: this.tripForm.coletaPrevista || '',
-      dataColetaReal: this.tripForm.coletaReal || '',
-      data_coleta_real: this.tripForm.coletaReal || '',
+      dataColetaPrevista: (this.tripForm.coletaPrevista || '').toUpperCase(),
+      data_coleta_prevista: (this.tripForm.coletaPrevista || '').toUpperCase(),
+      dataColetaReal: (this.tripForm.coletaReal || '').toUpperCase(),
+      data_coleta_real: (this.tripForm.coletaReal || '').toUpperCase(),
 
-      dataEntregaPrevista: this.tripForm.entregaPrevista || '',
-      data_entrega_prevista: this.tripForm.entregaPrevista || '',
-      dataEntregaReal: this.tripForm.entregaReal || '',
-      data_entrega_real: this.tripForm.entregaReal || '',
+      dataEntregaPrevista: (this.tripForm.entregaPrevista || '').toUpperCase(),
+      data_entrega_prevista: (this.tripForm.entregaPrevista || '').toUpperCase(),
+      dataEntregaReal: (this.tripForm.entregaReal || '').toUpperCase(),
+      data_entrega_real: (this.tripForm.entregaReal || '').toUpperCase(),
 
       valorAReceber: Number(this.tripForm.valorReceber) || 0,
       valor_a_receber: Number(this.tripForm.valorReceber) || 0,
@@ -1272,11 +1554,11 @@ export class DashboardComponent implements OnInit {
       pagamento_liberado: !!this.tripForm.pagamentoLiberado,
       pagamentoRealizadoStatus: this.tripForm.pagamentoRealizado || 'Não Realizado',
       pagamento_realizado_status: this.tripForm.pagamentoRealizado || 'Não Realizado',
-      dataHoraPagamento: this.tripForm.dataHoraPagada || '',
-      data_hora_pagamento: this.tripForm.dataHoraPagada || '',
+      dataHoraPagamento: (this.tripForm.dataHoraPagada || '').toUpperCase(),
+      data_hora_pagamento: (this.tripForm.dataHoraPagada || '').toUpperCase(),
 
       status: this.tripForm.statusInicial || 'PROGRAMADO',
-      observacao: (this.tripForm.observacao || '').trim()
+      observacao: (this.tripForm.observacao || '').trim().toUpperCase()
     };
 
     this.viagemService.salvar(payload, this.isEditing).subscribe({
@@ -1301,7 +1583,7 @@ export class DashboardComponent implements OnInit {
 
   salvarObs(): void {
     if (this.selectedViagem && this.selectedViagem.rawViagem) {
-      const payload: any = { ...this.selectedViagem.rawViagem, observacao: this.selectedViagem.obs };
+      const payload: any = { ...this.selectedViagem.rawViagem, observacao: (this.selectedViagem.obs || '').toUpperCase() };
       this.viagemService.salvar(payload, true).subscribe({
         next: () => this.carregarViagens(),
         error: () => alert('Erro ao salvar observação.')
@@ -1310,7 +1592,7 @@ export class DashboardComponent implements OnInit {
     this.closeModal();
   }
 
-  openExcluirModal(item: ViagemItem, origin: 'andamento' | 'pagar' | 'finalizadas'): void {
+  openExcluirModal(item: ViagemItem, origin: 'programadas' | 'andamento' | 'finalizadas'): void {
     this.selectedViagem = item;
     this.selectedListOrigin = origin;
     this.modalType = 'DELETE';

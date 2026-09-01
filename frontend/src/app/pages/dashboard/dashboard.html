@@ -34,8 +34,7 @@
       <button type="button" class="sidebar-item disabled">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path
-            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-          </path>
+            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
           <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
           <line x1="12" y1="22.08" x2="12" y2="12"></line>
         </svg>
@@ -43,7 +42,6 @@
       </button>
     </nav>
 
-    <!-- Seção de Banco de Dados & Arquivos -->
     <div class="sidebar-section-title">BANCO DE DADOS & ARQUIVOS</div>
     <div class="sidebar-backup-group">
       <button type="button" class="sidebar-item btn-backup-action" (click)="baixarBackupZip()">
@@ -55,8 +53,7 @@
         <span>Baixar Backup (.zip)</span>
       </button>
 
-      <input #sidebarRestaurarZip type="file" accept=".zip" (change)="onRestaurarBackupSelected($event)"
-        style="display: none;" />
+      <input #sidebarRestaurarZip type="file" accept=".zip" (change)="onRestaurarBackupSelected($event)" style="display: none;" />
       <button type="button" class="sidebar-item btn-backup-action" (click)="sidebarRestaurarZip.click()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -123,15 +120,7 @@
       <div class="dropdown-wrapper">
         <button type="button" class="btn-nav-action" (click)="toggleManageMenu($event)" [class.active]="isManageOpen">
           <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 21v-7"></path>
-            <path d="M4 10V3"></path>
-            <path d="M12 21v-9"></path>
-            <path d="M12 8V3"></path>
-            <path d="M20 21v-5"></path>
-            <path d="M20 12V3"></path>
-            <circle cx="4" cy="14" r="2"></circle>
-            <circle cx="12" cy="8" r="2"></circle>
-            <circle cx="20" cy="16" r="2"></circle>
+            <path d="M4 21v-7"></path><path d="M4 10V3"></path><path d="M12 21v-9"></path><path d="M12 8V3"></path><path d="M20 21v-5"></path><path d="M20 12V3"></path><circle cx="4" cy="14" r="2"></circle><circle cx="12" cy="8" r="2"></circle><circle cx="20" cy="16" r="2"></circle>
           </svg>
           <span>Gerenciar</span>
           <svg class="chevron-icon" [class.rotate]="isManageOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -142,47 +131,31 @@
 
         <div class="dropdown-menu" *ngIf="isManageOpen">
           <button type="button" class="dropdown-item" (click)="openGerenciarClientes()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             <span>Gerenciar Clientes</span>
           </button>
           <button type="button" class="dropdown-item" (click)="openGerenciarFornecedores()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="1" y="3" width="15" height="13"></rect>
-              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-              <circle cx="5.5" cy="18.5" r="2.5"></circle>
-              <circle cx="18.5" cy="18.5" r="2.5"></circle>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
             <span>Gerenciar Fornecedores</span>
           </button>
           <button type="button" class="dropdown-item" (click)="openGerenciarMotoristas()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="8" r="5"></circle>
-              <path d="M20 21a8 8 0 1 0-16 0"></path>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg>
             <span>Gerenciar Motoristas</span>
+          </button>
+          <button type="button" class="dropdown-item" (click)="openGerenciarVeiculos()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <span>Gerenciar Veículos</span>
           </button>
         </div>
       </div>
 
       <button type="button" class="btn-primary-action" (click)="openNovaViagemModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         <span>Nova Viagem</span>
       </button>
 
       <button type="button" class="btn-logout-nav" (click)="logout()" title="Encerrar Sessão">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-          <polyline points="16 17 21 12 16 7"></polyline>
-          <line x1="21" y1="12" x2="9" y2="12"></line>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
         <span>Sair</span>
       </button>
     </div>
@@ -191,14 +164,78 @@
   <!-- Conteúdo Principal -->
   <main class="dashboard-content">
 
-    <!-- 1. VIAGENS EM ANDAMENTO -->
+    <!-- 1. VIAGENS PROGRAMADAS -->
+    <section class="accordion-section">
+      <button type="button" class="accordion-header" (click)="showProgramadas = !showProgramadas">
+        <span class="accordion-title">Viagens Programadas</span>
+        <svg class="accordion-arrow" [class.open]="showProgramadas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+
+      <div class="accordion-collapse" [class.expanded]="showProgramadas">
+        <div class="accordion-inner">
+          <div class="table-container">
+            <table class="cospa-table">
+              <thead>
+                <tr>
+                  <th>VIAGEM</th>
+                  <th>CLIENTE</th>
+                  <th>ORIGEM</th>
+                  <th>DESTINO</th>
+                  <th>COLETA PREVISTA</th>
+                  <th>PLACA</th>
+                  <th>MOTORISTA</th>
+                  <th>STATUS</th>
+                  <th>OBS</th>
+                  <th class="actions-th">AÇÕES</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of viagensProgramadas" [class.row-menu-open]="openedActionMenuId === item.id">
+                  <td class="col-viagem">{{ item.id }}</td>
+                  <td class="col-cliente">{{ item.cliente }}</td>
+                  <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
+                  <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
+                  <td class="col-coleta">{{ item.coletaPrevista }}</td>
+                  <td class="col-placa">{{ item.placa }}</td>
+                  <td class="col-motorista" [class.to-hire]="item.motorista === 'A Contratar'">{{ item.motorista }}</td>
+                  <td class="col-status">
+                    <span class="status-pill" [ngClass]="{
+                      'status-contratar': item.status === 'A CONTRATAR',
+                      'status-programado': item.status === 'PROGRAMADO' || item.status === 'CRIADA'
+                    }">{{ item.status }}</span>
+                  </td>
+                  <td class="col-obs">
+                    <button *ngIf="item.obs && item.obs !== '-'" type="button" class="btn-obs" (click)="openObsModal(item)">
+                      {{ (item.obs.length > 9) ? (item.obs | slice:0:8) + '...' : item.obs }}
+                    </button>
+                    <span *ngIf="!item.obs || item.obs === '-'" class="dash-text">-</span>
+                  </td>
+                  <td class="col-acoes">
+                    <div class="row-dropdown-wrapper">
+                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)" [class.active]="openedActionMenuId === item.id">
+                        <span>Ações</span>
+                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </button>
+                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
+                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
+                        <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'programadas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
+                        <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'programadas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. VIAGENS EM ANDAMENTO -->
     <section class="accordion-section">
       <button type="button" class="accordion-header" (click)="showAndamento = !showAndamento">
         <span class="accordion-title">Viagens em Andamento</span>
-        <svg class="accordion-arrow" [class.open]="showAndamento" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2.5">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
+        <svg class="accordion-arrow" [class.open]="showAndamento" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
 
       <div class="accordion-collapse" [class.expanded]="showAndamento">
@@ -211,6 +248,7 @@
                   <th>CLIENTE</th>
                   <th>ORIGEM</th>
                   <th>DESTINO</th>
+                  <th>COLETA PREVISTA</th>
                   <th>PLACA</th>
                   <th>MOTORISTA</th>
                   <th>STATUS</th>
@@ -222,170 +260,41 @@
                 <tr *ngFor="let item of viagensAndamento" [class.row-menu-open]="openedActionMenuId === item.id">
                   <td class="col-viagem">{{ item.id }}</td>
                   <td class="col-cliente">{{ item.cliente }}</td>
-                  <td class="col-multiline">
-                    <div *ngFor="let orig of item.origem">{{ orig }}</div>
-                  </td>
-                  <td class="col-multiline">
-                    <div *ngFor="let dest of item.destino">{{ dest }}</div>
-                  </td>
+                  <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
+                  <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
+                  <td class="col-coleta">{{ item.coletaPrevista }}</td>
                   <td class="col-placa">{{ item.placa }}</td>
                   <td class="col-motorista" [class.to-hire]="item.motorista === 'A Contratar'">{{ item.motorista }}</td>
                   <td class="col-status">
                     <span class="status-pill" [ngClass]="{
-                      'status-contratar': item.status === 'A CONTRATAR',
-                      'status-programado': item.status === 'PROGRAMADO',
                       'status-carregamento': item.status === 'AG CARREGAMENTO' || item.status === 'CARREGAMENTO',
                       'status-rota': item.status === 'EM ROTA',
                       'status-doc': item.status === 'AG DOCUMENTAÇÃO',
-                      'status-descarga': item.status === 'AG DESCARGA' || item.status === 'DESCARGA'
+                      'status-descarga': item.status === 'AG DESCARGA' || item.status === 'DESCARGA',
+                      'status-pagar': item.status === 'A PAGAR'
                     }">{{ item.status }}</span>
                   </td>
                   <td class="col-obs">
-                    <button *ngIf="item.obs && item.obs !== '-'" type="button" class="btn-obs"
-                      (click)="openObsModal(item)">
+                    <button *ngIf="item.obs && item.obs !== '-'" type="button" class="btn-obs" (click)="openObsModal(item)">
                       {{ (item.obs.length > 9) ? (item.obs | slice:0:8) + '...' : item.obs }}
                     </button>
                     <span *ngIf="!item.obs || item.obs === '-'" class="dash-text">-</span>
                   </td>
                   <td class="col-acoes">
                     <div class="row-dropdown-wrapper">
-                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)"
-                        [class.active]="openedActionMenuId === item.id">
+                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)" [class.active]="openedActionMenuId === item.id">
                         <span>Ações</span>
-                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24"
-                          fill="none" stroke="currentColor" stroke-width="2">
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
+                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                       </button>
-                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id"
-                        (click)="$event.stopPropagation()">
-                        <button type="button" class="row-menu-item item-prosseguir" (click)="prosseguirParaPagar(item)">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                          </svg>
-                          <span>Avançar para A Pagar</span>
-                        </button>
-
-                        <div class="row-menu-divider"></div>
-
-                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
-                            </path>
-                            <circle cx="12" cy="13" r="4"></circle>
-                          </svg><span>Ver Foto</span></button>
-                        <button type="button" class="row-menu-item item-alterar"
-                          (click)="openEditarModal(item, 'andamento')"><svg viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                          </svg><span>Alterar</span></button>
-                        <button type="button" class="row-menu-item item-excluir"
-                          (click)="openExcluirModal(item, 'andamento')"><svg viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
-                            </path>
-                          </svg><span>Excluir</span></button>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. VIAGENS A PAGAR -->
-    <section class="accordion-section">
-      <button type="button" class="accordion-header" (click)="showPagar = !showPagar">
-        <span class="accordion-title">Viagens a Pagar</span>
-        <svg class="accordion-arrow" [class.open]="showPagar" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2.5">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </button>
-
-      <div class="accordion-collapse" [class.expanded]="showPagar">
-        <div class="accordion-inner">
-          <div class="table-container">
-            <table class="cospa-table">
-              <thead>
-                <tr>
-                  <th>VIAGEM</th>
-                  <th>CLIENTE</th>
-                  <th>ORIGEM</th>
-                  <th>DESTINO</th>
-                  <th>PLACA</th>
-                  <th>MOTORISTA</th>
-                  <th>STATUS</th>
-                  <th>OBS</th>
-                  <th class="actions-th">AÇÕES</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let item of viagensPagar" [class.row-menu-open]="openedActionMenuId === item.id">
-                  <td class="col-viagem">{{ item.id }}</td>
-                  <td class="col-cliente">{{ item.cliente }}</td>
-                  <td class="col-multiline">
-                    <div *ngFor="let orig of item.origem">{{ orig }}</div>
-                  </td>
-                  <td class="col-multiline">
-                    <div *ngFor="let dest of item.destino">{{ dest }}</div>
-                  </td>
-                  <td class="col-placa">{{ item.placa }}</td>
-                  <td class="col-motorista">{{ item.motorista }}</td>
-                  <td class="col-status"><span class="status-pill status-pagar">{{ item.status }}</span></td>
-                  <td class="col-obs">
-                    <button *ngIf="item.obs && item.obs !== '-'" type="button" class="btn-obs"
-                      (click)="openObsModal(item)">
-                      {{ (item.obs.length > 9) ? (item.obs | slice:0:8) + '...' : item.obs }}
-                    </button>
-                    <span *ngIf="!item.obs || item.obs === '-'" class="dash-text">-</span>
-                  </td>
-                  <td class="col-acoes">
-                    <div class="row-dropdown-wrapper">
-                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)"
-                        [class.active]="openedActionMenuId === item.id">
-                        <span>Ações</span>
-                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24"
-                          fill="none" stroke="currentColor" stroke-width="2">
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      </button>
-                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id"
-                        (click)="$event.stopPropagation()">
+                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
                         <button type="button" class="row-menu-item item-finalizar" (click)="finalizarViagem(item)">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                          </svg>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
                           <span>Finalizar Viagem</span>
                         </button>
-
                         <div class="row-menu-divider"></div>
-
-                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
-                            </path>
-                            <circle cx="12" cy="13" r="4"></circle>
-                          </svg><span>Ver Foto</span></button>
-                        <button type="button" class="row-menu-item item-alterar"
-                          (click)="openEditarModal(item, 'pagar')"><svg viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                          </svg><span>Alterar</span></button>
-                        <button type="button" class="row-menu-item item-excluir"
-                          (click)="openExcluirModal(item, 'pagar')"><svg viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
-                            </path>
-                          </svg><span>Excluir</span></button>
+                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
+                        <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'andamento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
+                        <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'andamento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
                       </div>
                     </div>
                   </td>
@@ -401,10 +310,7 @@
     <section class="accordion-section">
       <button type="button" class="accordion-header" (click)="showFinalizadas = !showFinalizadas">
         <span class="accordion-title">Viagens Finalizadas</span>
-        <svg class="accordion-arrow" [class.open]="showFinalizadas" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
+        <svg class="accordion-arrow" [class.open]="showFinalizadas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
 
       <div class="accordion-collapse" [class.expanded]="showFinalizadas">
@@ -417,6 +323,7 @@
                   <th>CLIENTE</th>
                   <th>ORIGEM</th>
                   <th>DESTINO</th>
+                  <th>COLETA PREVISTA</th>
                   <th>PLACA</th>
                   <th>MOTORISTA</th>
                   <th>STATUS</th>
@@ -428,54 +335,29 @@
                 <tr *ngFor="let item of viagensFinalizadas" [class.row-menu-open]="openedActionMenuId === item.id">
                   <td class="col-viagem">{{ item.id }}</td>
                   <td class="col-cliente">{{ item.cliente }}</td>
-                  <td class="col-multiline">
-                    <div *ngFor="let orig of item.origem">{{ orig }}</div>
-                  </td>
-                  <td class="col-multiline">
-                    <div *ngFor="let dest of item.destino">{{ dest }}</div>
-                  </td>
+                  <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
+                  <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
+                  <td class="col-coleta">{{ item.coletaPrevista }}</td>
                   <td class="col-placa">{{ item.placa }}</td>
                   <td class="col-motorista">{{ item.motorista }}</td>
                   <td class="col-status"><span class="status-pill status-finalizado">{{ item.status }}</span></td>
                   <td class="col-obs">
-                    <button *ngIf="item.obs && item.obs !== '-'" type="button" class="btn-obs"
-                      (click)="openObsModal(item)">
+                    <button *ngIf="item.obs && item.obs !== '-'" type="button" class="btn-obs" (click)="openObsModal(item)">
                       {{ (item.obs.length > 9) ? (item.obs | slice:0:8) + '...' : item.obs }}
                     </button>
                     <span *ngIf="!item.obs || item.obs === '-'" class="dash-text">-</span>
                   </td>
                   <td class="col-acoes">
                     <div class="row-dropdown-wrapper">
-                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)"
-                        [class.active]="openedActionMenuId === item.id">
+                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)" [class.active]="openedActionMenuId === item.id">
                         <span>Ações</span>
-                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24"
-                          fill="none" stroke="currentColor" stroke-width="2">
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
+                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                       </button>
-                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id"
-                        (click)="$event.stopPropagation()">
-                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
-                            </path>
-                            <circle cx="12" cy="13" r="4"></circle>
-                          </svg><span>Ver Foto</span></button>
-                        <button type="button" class="row-menu-item item-alterar"
-                          (click)="openEditarModal(item, 'finalizadas')"><svg viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                          </svg><span>Alterar</span></button>
+                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
+                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
+                        <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'finalizadas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
                         <div class="row-menu-divider"></div>
-                        <button type="button" class="row-menu-item item-excluir"
-                          (click)="openExcluirModal(item, 'finalizadas')"><svg viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
-                            </path>
-                          </svg><span>Excluir</span></button>
+                        <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'finalizadas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
                       </div>
                     </div>
                   </td>
@@ -488,7 +370,7 @@
     </section>
   </main>
 
-  <!-- ==================== MODAL: COMPROVANTES DA VIAGEM ==================== -->
+  <!-- MODAL: COMPROVANTES DA VIAGEM -->
   <div class="cospa-modal-overlay" *ngIf="modalType === 'PHOTO' && !previewImageUrl" (click)="closeModal()">
     <div class="cospa-modal-box modal-photo-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">
@@ -497,8 +379,7 @@
       </div>
 
       <div class="modal-subtabs">
-        <button type="button" [class.active]="activePhotoTab === 'ADICIONAR'"
-          (click)="trocarAbaFoto('ADICIONAR', $event)">
+        <button type="button" [class.active]="activePhotoTab === 'ADICIONAR'" (click)="trocarAbaFoto('ADICIONAR', $event)">
           + Adicionar Comprovante
         </button>
         <button type="button" [class.active]="activePhotoTab === 'LISTAR'" (click)="trocarAbaFoto('LISTAR', $event)">
@@ -511,74 +392,38 @@
           <div class="comprovante-form-row">
             <div class="f-group desc-group">
               <label>Descrição do Comprovante</label>
-              <input type="text" [(ngModel)]="novoComprovante.descricao"
-                placeholder="Ex: Canhoto Assinado, Manifesto, etc." />
+              <input type="text" [(ngModel)]="novoComprovante.descricao" placeholder="Ex: CANHOTO ASSINADO, MANIFESTO, ETC." />
             </div>
 
             <div class="f-group file-group">
               <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
-              <div class="comprovante-dropzone" [class.drag-over]="isDraggingComprovante"
-                (click)="fileInputComp.click()" (dragover)="onComprovanteDragOver($event)"
-                (dragleave)="onComprovanteDragLeave($event)" (drop)="onComprovanteDrop($event)">
-                <input #fileInputComp type="file" (change)="onComprovanteFileSelected($event)" style="display: none;"
-                  accept="image/*,.pdf" />
-                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="17 8 12 3 7 8"></polyline>
-                  <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
+              <div class="comprovante-dropzone" [class.drag-over]="isDraggingComprovante" (click)="fileInputComp.click()" (dragover)="onComprovanteDragOver($event)" (dragleave)="onComprovanteDragLeave($event)" (drop)="onComprovanteDrop($event)">
+                <input #fileInputComp type="file" (change)="onComprovanteFileSelected($event)" style="display: none;" accept="image/*,.pdf" />
+                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                 <span>{{ novoComprovante.nomeArquivo || 'Clique, arraste ou use Ctrl+V' }}</span>
               </div>
             </div>
           </div>
 
           <div class="modal-actions-right">
-            <button type="button" class="btn-pri-cospa" (click)="adicionarComprovante()">
-              Adicionar à Lista
-            </button>
+            <button type="button" class="btn-pri-cospa" (click)="adicionarComprovante()">Adicionar à Lista</button>
           </div>
         </div>
 
         <div *ngIf="activePhotoTab === 'LISTAR'" class="modal-pane-compact">
           <div class="photo-gallery" *ngIf="selectedViagem?.fotos?.length">
-            <div class="comprovante-card" *ngFor="let f of selectedViagem?.fotos" (click)="abrirPreviewFoto(f.url)"
-              title="Clique para ver o arquivo">
-
-              <!-- Imagem -->
+            <div class="comprovante-card" *ngFor="let f of selectedViagem?.fotos" (click)="abrirPreviewFoto(f.url)" title="Clique para ver o arquivo">
               <div class="comp-img-wrapper" *ngIf="!isPdf(f.url)">
                 <img [src]="f.url" alt="Comprovante" />
-                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, f.url)"
-                  title="Abrir em nova aba">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                  </svg>
-                </button>
-                <button type="button" class="btn-del-photo" (click)="removerComprovante($event, f.id)"
-                  title="Excluir">✕</button>
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, f.url)" title="Abrir em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerComprovante($event, f.id)" title="Excluir">✕</button>
               </div>
 
-              <!-- PDF -->
               <div class="comp-pdf-wrapper" *ngIf="isPdf(f.url)">
-                <svg class="pdf-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
+                <svg class="pdf-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                 <span class="pdf-badge">DOCUMENTO PDF</span>
-                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, f.url)"
-                  title="Abrir PDF em nova aba">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                  </svg>
-                </button>
-                <button type="button" class="btn-del-photo" (click)="removerComprovante($event, f.id)"
-                  title="Excluir">✕</button>
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, f.url)" title="Abrir PDF em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerComprovante($event, f.id)" title="Excluir">✕</button>
               </div>
 
               <div class="comp-info-footer">
@@ -605,12 +450,10 @@
       </div>
 
       <div class="modal-subtabs">
-        <button type="button" [class.active]="activeMotoristaPhotoTab === 'ADICIONAR'"
-          (click)="trocarAbaMotoristaFoto('ADICIONAR', $event)">
+        <button type="button" [class.active]="activeMotoristaPhotoTab === 'ADICIONAR'" (click)="trocarAbaMotoristaFoto('ADICIONAR', $event)">
           + Adicionar Documento
         </button>
-        <button type="button" [class.active]="activeMotoristaPhotoTab === 'LISTAR'"
-          (click)="trocarAbaMotoristaFoto('LISTAR', $event)">
+        <button type="button" [class.active]="activeMotoristaPhotoTab === 'LISTAR'" (click)="trocarAbaMotoristaFoto('LISTAR', $event)">
           Documentos Cadastrados ({{ selectedMotorista?.documentos?.length || 0 }})
         </button>
       </div>
@@ -619,71 +462,37 @@
         <div *ngIf="activeMotoristaPhotoTab === 'ADICIONAR'" class="modal-pane-compact">
           <div class="f-group">
             <label>Nome / Tipo do Documento</label>
-            <input type="text" [(ngModel)]="novoDocMotorista.nome"
-              placeholder="Digite o nome livremente (Ex: CNH, ANTT, CRLV 2026)" />
+            <input type="text" [(ngModel)]="novoDocMotorista.nome" placeholder="DIGITE O NOME (EX: CNH, ANTT, CRLV 2026)" />
           </div>
 
           <div class="f-group">
             <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
-            <div class="comprovante-dropzone" [class.drag-over]="isDraggingMotoristaDoc"
-              (click)="fileInputMotorista.click()" (dragover)="onMotoristaDocDragOver($event)"
-              (dragleave)="onMotoristaDocDragLeave($event)" (drop)="onMotoristaDocDrop($event)">
-              <input #fileInputMotorista type="file" (change)="onMotoristaDocSelected($event)" style="display: none;"
-                accept="image/*,.pdf" />
-              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
-              </svg>
+            <div class="comprovante-dropzone" [class.drag-over]="isDraggingMotoristaDoc" (click)="fileInputMotorista.click()" (dragover)="onMotoristaDocDragOver($event)" (dragleave)="onMotoristaDocDragLeave($event)" (drop)="onMotoristaDocDrop($event)">
+              <input #fileInputMotorista type="file" (change)="onMotoristaDocSelected($event)" style="display: none;" accept="image/*,.pdf" />
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
               <span>{{ novoDocMotorista.nomeArquivo || 'Clique, arraste o arquivo (PDF/Imagem) ou use Ctrl+V' }}</span>
             </div>
           </div>
 
           <div class="modal-actions-right">
-            <button type="button" class="btn-pri-cospa" (click)="adicionarDocMotorista()">
-              Adicionar Documento
-            </button>
+            <button type="button" class="btn-pri-cospa" (click)="adicionarDocMotorista()">Adicionar Documento</button>
           </div>
         </div>
 
         <div *ngIf="activeMotoristaPhotoTab === 'LISTAR'" class="modal-pane-compact">
           <div class="photo-gallery" *ngIf="selectedMotorista?.documentos?.length">
-            <div class="comprovante-card" *ngFor="let doc of selectedMotorista?.documentos"
-              (click)="abrirPreviewFoto(doc.url)" title="Clique para ver o arquivo">
-
+            <div class="comprovante-card" *ngFor="let doc of selectedMotorista?.documentos" (click)="abrirPreviewFoto(doc.url)" title="Clique para ver o arquivo">
               <div class="comp-img-wrapper" *ngIf="!isPdf(doc.url)">
                 <img [src]="doc.url" alt="Documento Motorista" />
-                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)"
-                  title="Abrir em nova aba">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                  </svg>
-                </button>
-                <button type="button" class="btn-del-photo" (click)="removerDocMotorista($event, doc.id)"
-                  title="Excluir">✕</button>
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerDocMotorista($event, doc.id)" title="Excluir">✕</button>
               </div>
 
               <div class="comp-pdf-wrapper" *ngIf="isPdf(doc.url)">
-                <svg class="pdf-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
+                <svg class="pdf-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                 <span class="pdf-badge">DOCUMENTO PDF</span>
-                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)"
-                  title="Abrir PDF em nova aba">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                  </svg>
-                </button>
-                <button type="button" class="btn-del-photo" (click)="removerDocMotorista($event, doc.id)"
-                  title="Excluir">✕</button>
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir PDF em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerDocMotorista($event, doc.id)" title="Excluir">✕</button>
               </div>
 
               <div class="comp-info-footer">
@@ -701,14 +510,82 @@
     </div>
   </div>
 
+  <!-- MODAL: DOCUMENTOS / FOTOS DO VEÍCULO -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'VEICULO_PHOTO' && !previewImageUrl" (click)="closeModal()">
+    <div class="cospa-modal-box modal-photo-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Documentos e Fotos: {{ selectedVeiculo?.placa }}</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeVeiculoPhotoTab === 'ADICIONAR'" (click)="trocarAbaVeiculoFoto('ADICIONAR', $event)">
+          + Adicionar Documento
+        </button>
+        <button type="button" [class.active]="activeVeiculoPhotoTab === 'LISTAR'" (click)="trocarAbaVeiculoFoto('LISTAR', $event)">
+          Documentos Cadastrados ({{ selectedVeiculo?.documentos?.length || 0 }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <div *ngIf="activeVeiculoPhotoTab === 'ADICIONAR'" class="modal-pane-compact">
+          <div class="f-group">
+            <label>Nome / Tipo do Documento</label>
+            <input type="text" [(ngModel)]="novoDocVeiculo.nome" placeholder="DIGITE O NOME (EX: CRLV, ANTT, LAUDO, FOTO BAÚ)" />
+          </div>
+
+          <div class="f-group">
+            <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
+            <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoDoc" (click)="fileInputVeiculo.click()" (dragover)="$event.preventDefault(); isDraggingVeiculoDoc = true;" (dragleave)="$event.preventDefault(); isDraggingVeiculoDoc = false;" (drop)="$event.preventDefault(); isDraggingVeiculoDoc = false;">
+              <input #fileInputVeiculo type="file" (change)="onVeiculoDocSelected($event)" style="display: none;" accept="image/*,.pdf" />
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span>{{ novoDocVeiculo.nomeArquivo || 'Clique ou arraste o arquivo (PDF/Imagem)' }}</span>
+            </div>
+          </div>
+
+          <div class="modal-actions-right">
+            <button type="button" class="btn-pri-cospa" (click)="adicionarDocVeiculo()">Adicionar Documento</button>
+          </div>
+        </div>
+
+        <div *ngIf="activeVeiculoPhotoTab === 'LISTAR'" class="modal-pane-compact">
+          <div class="photo-gallery" *ngIf="selectedVeiculo?.documentos?.length">
+            <div class="comprovante-card" *ngFor="let doc of selectedVeiculo?.documentos" (click)="abrirPreviewFoto(doc.url)" title="Clique para ver o arquivo">
+              <div class="comp-img-wrapper" *ngIf="!isPdf(doc.url)">
+                <img [src]="doc.url" alt="Documento Veículo" />
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerDocVeiculo($event, doc.id)" title="Excluir">✕</button>
+              </div>
+
+              <div class="comp-pdf-wrapper" *ngIf="isPdf(doc.url)">
+                <svg class="pdf-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span class="pdf-badge">DOCUMENTO PDF</span>
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir PDF em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerDocVeiculo($event, doc.id)" title="Excluir">✕</button>
+              </div>
+
+              <div class="comp-info-footer">
+                <strong>{{ doc.descricao }}</strong>
+                <span>{{ doc.nomeArquivo }} • {{ doc.dataEnvio }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-photos" *ngIf="!selectedVeiculo?.documentos?.length">
+            <p>Nenhum documento ou foto anexado para este veículo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- LIGHTBOX APENAS PARA FOTOS -->
   <div class="lightbox-overlay" *ngIf="previewImageUrl" (click)="fecharPreviewFoto()">
     <div class="lightbox-content" (click)="$event.stopPropagation()">
       <button type="button" class="btn-close-lightbox" (click)="fecharPreviewFoto()">✕</button>
       <img [src]="previewImageUrl" alt="Visualização em Tela Cheia" />
       <div class="lightbox-actions">
-        <button type="button" class="btn-pri-cospa" (click)="abrirImagemNovaAba($event, previewImageUrl)">Abrir Imagem
-          em Nova Aba</button>
+        <button type="button" class="btn-pri-cospa" (click)="abrirImagemNovaAba($event, previewImageUrl)">Abrir Imagem em Nova Aba</button>
       </div>
     </div>
   </div>
@@ -724,8 +601,7 @@
       <form (ngSubmit)="salvarViagemForm()" (keydown.enter)="$event.preventDefault()" class="modal-trip-scroll">
         <div class="f-group">
           <label>Nº da Viagem (ID) *</label>
-          <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="Ex: 30, 105, 6844751"
-            [disabled]="isEditing" required />
+          <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="EX: 30, 105, 6844751" [disabled]="isEditing" required />
         </div>
 
         <div class="f-group">
@@ -735,8 +611,7 @@
               <option value="">Selecione um Cliente cadastrado...</option>
               <option *ngFor="let c of clientesList" [value]="c.nomeFantasia">{{ c.nomeFantasia }}</option>
             </select>
-            <input type="text" [(ngModel)]="tripForm.clienteManual" name="clienteManual"
-              placeholder="Ou digite o nome do cliente" />
+            <input type="text" [(ngModel)]="tripForm.clienteManual" name="clienteManual" placeholder="OU DIGITE O NOME DO CLIENTE" />
           </div>
         </div>
 
@@ -745,11 +620,11 @@
             <label>Origem / Coleta</label>
             <div class="dynamic-point-group" *ngFor="let orig of tripForm.origens; let i = index">
               <div class="input-with-action">
-                <input type="text" [(ngModel)]="orig.local" [name]="'orig_local_' + i" placeholder="Ponto de Origem" />
+                <input type="text" [(ngModel)]="orig.local" [name]="'orig_local_' + i" placeholder="PONTO DE ORIGEM" />
                 <button type="button" class="btn-add-point" (click)="addOrigem()" *ngIf="i === 0">+</button>
                 <button type="button" class="btn-rem-point" (click)="removeOrigem(i)" *ngIf="i > 0">✕</button>
               </div>
-              <input type="text" [(ngModel)]="orig.endereco" [name]="'orig_end_' + i" placeholder="Rua da Coleta" />
+              <input type="text" [(ngModel)]="orig.endereco" [name]="'orig_end_' + i" placeholder="RUA DA COLETA" />
             </div>
           </div>
 
@@ -757,11 +632,11 @@
             <label>Destino / Entrega</label>
             <div class="dynamic-point-group" *ngFor="let dest of tripForm.destinos; let j = index">
               <div class="input-with-action">
-                <input type="text" [(ngModel)]="dest.local" [name]="'dest_local_' + j" placeholder="Ponto de Destino" />
+                <input type="text" [(ngModel)]="dest.local" [name]="'dest_local_' + j" placeholder="PONTO DE DESTINO" />
                 <button type="button" class="btn-add-point" (click)="addDestino()" *ngIf="j === 0">+</button>
                 <button type="button" class="btn-rem-point" (click)="removeDestino(j)" *ngIf="j > 0">✕</button>
               </div>
-              <input type="text" [(ngModel)]="dest.endereco" [name]="'dest_end_' + j" placeholder="Rua da Entrega" />
+              <input type="text" [(ngModel)]="dest.endereco" [name]="'dest_end_' + j" placeholder="RUA DA ENTREGA" />
             </div>
           </div>
         </div>
@@ -787,20 +662,18 @@
         <div class="form-row-2">
           <div class="f-group">
             <label>Coleta Prevista</label>
-            <input type="text" [(ngModel)]="tripForm.coletaPrevista" name="coletaPrevista"
-              placeholder="Ex: 13/08/2026 14:00" />
+            <input type="text" [(ngModel)]="tripForm.coletaPrevista" name="coletaPrevista" placeholder="EX: 13/08/2026 14:00" />
           </div>
           <div class="f-group">
             <label>Coleta Real</label>
-            <input type="text" [(ngModel)]="tripForm.coletaReal" name="coletaReal" placeholder="Ex: 13/08/2026 14:30" />
+            <input type="text" [(ngModel)]="tripForm.coletaReal" name="coletaReal" placeholder="EX: 13/08/2026 14:30" />
           </div>
         </div>
 
         <div class="form-row-2">
           <div class="f-group">
             <label>Entrega Prevista</label>
-            <input type="text" [(ngModel)]="tripForm.entregaPrevista" name="entregaPrevista"
-              placeholder="Ex: 14/08/2026 10:00" />
+            <input type="text" [(ngModel)]="tripForm.entregaPrevista" name="entregaPrevista" placeholder="EX: 14/08/2026 10:00" />
           </div>
           <div class="f-group">
             <label>Entrega Real</label>
@@ -811,41 +684,35 @@
         <div class="form-row-2">
           <div class="f-group">
             <label>Valor a Receber (R$)</label>
-            <input type="number" [(ngModel)]="tripForm.valorReceber" name="valorReceber" placeholder="0,00"
-              step="0.01" />
+            <input type="number" [(ngModel)]="tripForm.valorReceber" name="valorReceber" placeholder="0,00" step="0.01" />
           </div>
           <div class="f-group">
             <label>Adicional a Receber (R$)</label>
-            <input type="number" [(ngModel)]="tripForm.adicionalReceber" name="adicionalReceber" placeholder="0,00"
-              step="0.01" />
+            <input type="number" [(ngModel)]="tripForm.adicionalReceber" name="adicionalReceber" placeholder="0,00" step="0.01" />
           </div>
         </div>
 
         <div class="form-row-2">
           <div class="f-group">
             <label>Valor a Pagar Motorista (R$)</label>
-            <input type="number" [(ngModel)]="tripForm.valorPagarMotorista" name="valorPagarMotorista"
-              placeholder="0,00" step="0.01" />
+            <input type="number" [(ngModel)]="tripForm.valorPagarMotorista" name="valorPagarMotorista" placeholder="0,00" step="0.01" />
           </div>
           <div class="f-group">
             <label>Adicional a Pagar Motorista (R$)</label>
-            <input type="number" [(ngModel)]="tripForm.adicionalPagarMotorista" name="adicionalPagarMotorista"
-              placeholder="0,00" step="0.01" />
+            <input type="number" [(ngModel)]="tripForm.adicionalPagarMotorista" name="adicionalPagarMotorista" placeholder="0,00" step="0.01" />
           </div>
         </div>
 
         <div class="f-group">
           <label>Valor Adicional da Agência (R$)</label>
-          <input type="number" [(ngModel)]="tripForm.valorAdicionalAgencia" name="valorAdicionalAgencia"
-            placeholder="0,00" step="0.01" />
+          <input type="number" [(ngModel)]="tripForm.valorAdicionalAgencia" name="valorAdicionalAgencia" placeholder="0,00" step="0.01" />
         </div>
 
         <div class="form-row-2">
           <div class="f-group">
             <label>Liberação</label>
             <div class="checkbox-container">
-              <input type="checkbox" id="liberadoCheck" [(ngModel)]="tripForm.pagamentoLiberado"
-                name="pagamentoLiberado" />
+              <input type="checkbox" id="liberadoCheck" [(ngModel)]="tripForm.pagamentoLiberado" name="pagamentoLiberado" />
               <label for="liberadoCheck">Pagamento Liberado?</label>
             </div>
           </div>
@@ -861,15 +728,14 @@
 
         <div class="f-group">
           <label>Hora / Data Pagada</label>
-          <input type="text" [(ngModel)]="tripForm.dataHoraPagada" name="dataHoraPagada"
-            placeholder="Ex: 14/08/2026 15:45" />
+          <input type="text" [(ngModel)]="tripForm.dataHoraPagada" name="dataHoraPagada" placeholder="EX: 14/08/2026 15:45" />
         </div>
 
         <div class="f-group">
           <label>Status Inicial</label>
           <select [(ngModel)]="tripForm.statusInicial" name="statusInicial">
-            <option value="A CONTRATAR">A CONTRATAR</option>
             <option value="PROGRAMADO">PROGRAMADO</option>
+            <option value="A CONTRATAR">A CONTRATAR</option>
             <option value="AG CARREGAMENTO">AG CARREGAMENTO</option>
             <option value="CARREGAMENTO">CARREGAMENTO</option>
             <option value="EM ROTA">EM ROTA</option>
@@ -903,12 +769,10 @@
       </div>
 
       <div class="modal-subtabs">
-        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'"
-          (click)="trocarAbaGerenciar('CADASTRAR', $event)">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
           {{ isEditingFornecedor ? 'Editar Fornecedor' : '+ Cadastrar Novo' }}
         </button>
-        <button type="button" [class.active]="activeManageTab === 'LISTAR'"
-          (click)="trocarAbaGerenciar('LISTAR', $event)">
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
           Gerenciar Cadastrados ({{ fornecedoresList.length }})
         </button>
       </div>
@@ -916,64 +780,49 @@
       <div class="modal-body-container">
         <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarFornecedor()" class="modal-pane-content">
           <div class="form-row-3">
-            <input type="text" [(ngModel)]="fornecedorForm.nome" name="nome" placeholder="Nome do Fornecedor / Agência"
-              required />
+            <input type="text" [(ngModel)]="fornecedorForm.nome" name="nome" placeholder="NOME DO FORNECEDOR / AGÊNCIA" required />
             <input type="text" [(ngModel)]="fornecedorForm.cnpjCpf" name="cnpjCpf" placeholder="CNPJ / CPF" />
-            <input type="text" [(ngModel)]="fornecedorForm.nomeContato" name="nomeContato"
-              placeholder="Nome de Contato" />
+            <input type="text" [(ngModel)]="fornecedorForm.nomeContato" name="nomeContato" placeholder="NOME DE CONTATO" />
           </div>
 
           <div class="form-row-4">
-            <input type="text" [(ngModel)]="fornecedorForm.telefone" name="telefone"
-              placeholder="Telefone / WhatsApp" />
-            <input type="email" [(ngModel)]="fornecedorForm.email" name="email" placeholder="E-mail" />
-            <input type="text" [(ngModel)]="fornecedorForm.chavePix" name="chavePix" placeholder="Chave PIX" />
+            <input type="text" [(ngModel)]="fornecedorForm.telefone" name="telefone" placeholder="TELEFONE / WHATSAPP" />
+            <input type="email" [(ngModel)]="fornecedorForm.email" name="email" placeholder="E-MAIL" />
+            <input type="text" [(ngModel)]="fornecedorForm.chavePix" name="chavePix" placeholder="CHAVE PIX" />
             <select [(ngModel)]="fornecedorForm.situacao" name="situacao">
               <option value="ATIVO">Situação: ATIVO</option>
               <option value="INATIVO">Situação: INATIVO</option>
             </select>
           </div>
 
-          <textarea rows="3" [(ngModel)]="fornecedorForm.obs" name="obs"
-            placeholder="Observações adicionais..."></textarea>
+          <textarea rows="3" [(ngModel)]="fornecedorForm.obs" name="obs" placeholder="OBSERVAÇÕES ADICIONAIS..."></textarea>
 
           <div class="modal-actions-right">
-            <button *ngIf="isEditingFornecedor" type="button" class="btn-sec-cospa"
-              (click)="cancelarEdicaoFornecedor()">Cancelar Edição</button>
-            <button type="submit" class="btn-pri-cospa">{{ isEditingFornecedor ? 'Salvar Alterações' : 'Cadastrar
-              Fornecedor' }}</button>
+            <button *ngIf="isEditingFornecedor" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoFornecedor()">Cancelar Edição</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingFornecedor ? 'Salvar Alterações' : 'Cadastrar Fornecedor' }}</button>
           </div>
         </form>
 
         <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
           <div class="manage-search-bar">
-            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarFornecedores()"
-              placeholder="Buscar por fornecedor, CNPJ ou contato..." />
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarFornecedores()" placeholder="Buscar por fornecedor, CNPJ ou contato..." />
           </div>
           <div class="crud-items-list">
             <div class="crud-item-card" *ngFor="let f of filteredFornecedores">
               <div class="crud-item-info">
                 <div class="crud-title-row">
                   <h4>{{ f.nome }}</h4>
-                  <span class="badge-status" [class.badge-active]="f.situacao === 'ATIVO'"
-                    [class.badge-inactive]="f.situacao === 'INATIVO'">{{ f.situacao }}</span>
+                  <span class="badge-status" [class.badge-active]="f.situacao === 'ATIVO'" [class.badge-inactive]="f.situacao === 'INATIVO'">{{ f.situacao }}</span>
                 </div>
-                <p class="crud-subtext">{{ f.cnpjCpf }} • Contato: {{ f.nomeContato || '-' }} • {{ f.telefone || '-' }}
-                </p>
+                <p class="crud-subtext">{{ f.cnpjCpf }} • Contato: {{ f.nomeContato || '-' }} • {{ f.telefone || '-' }}</p>
               </div>
               <div class="crud-item-actions">
                 <button type="button" class="btn-edit-inline" (click)="editarFornecedor(f)" title="Editar">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                   <span>Editar</span>
                 </button>
                 <button type="button" class="btn-del-inline" (click)="excluirFornecedor(f.id)" title="Excluir">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 </button>
               </div>
             </div>
@@ -992,12 +841,10 @@
       </div>
 
       <div class="modal-subtabs">
-        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'"
-          (click)="trocarAbaGerenciar('CADASTRAR', $event)">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
           {{ isEditingCliente ? 'Editar Cliente' : '+ Cadastrar Novo' }}
         </button>
-        <button type="button" [class.active]="activeManageTab === 'LISTAR'"
-          (click)="trocarAbaGerenciar('LISTAR', $event)">
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
           Gerenciar Cadastrados ({{ clientesList.length }})
         </button>
       </div>
@@ -1005,36 +852,32 @@
       <div class="modal-body-container">
         <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarCliente()" class="modal-pane-content">
           <div class="form-row-3">
-            <input type="text" [(ngModel)]="clienteForm.nomeFantasia" name="nomeFantasia"
-              placeholder="Nome Fantasia / Identificação" required />
-            <input type="text" [(ngModel)]="clienteForm.razaoSocial" name="razaoSocial" placeholder="Razão Social" />
+            <input type="text" [(ngModel)]="clienteForm.nomeFantasia" name="nomeFantasia" placeholder="NOME FANTASIA / IDENTIFICAÇÃO" required />
+            <input type="text" [(ngModel)]="clienteForm.razaoSocial" name="razaoSocial" placeholder="RAZÃO SOCIAL" />
             <input type="text" [(ngModel)]="clienteForm.cnpjCpf" name="cnpjCpf" placeholder="CNPJ / CPF" />
           </div>
 
           <div class="form-row-3-fixed">
-            <input type="text" [(ngModel)]="clienteForm.nomeContato" name="nomeContato" placeholder="Nome do Contato" />
-            <input type="text" [(ngModel)]="clienteForm.telefone" name="telefone" placeholder="Telefone" />
-            <input type="email" [(ngModel)]="clienteForm.email" name="email" placeholder="E-mail" />
+            <input type="text" [(ngModel)]="clienteForm.nomeContato" name="nomeContato" placeholder="NOME DO CONTATO" />
+            <input type="text" [(ngModel)]="clienteForm.telefone" name="telefone" placeholder="TELEFONE" />
+            <input type="email" [(ngModel)]="clienteForm.email" name="email" placeholder="E-MAIL" />
             <select [(ngModel)]="clienteForm.situacao" name="situacao">
               <option value="ATIVO">Situação: ATIVO</option>
               <option value="INATIVO">Situação: INATIVO</option>
             </select>
           </div>
 
-          <textarea rows="3" [(ngModel)]="clienteForm.obs" name="obs" placeholder="Observações do cliente..."></textarea>
+          <textarea rows="3" [(ngModel)]="clienteForm.obs" name="obs" placeholder="OBSERVAÇÕES DO CLIENTE..."></textarea>
 
           <div class="modal-actions-right">
-            <button *ngIf="isEditingCliente" type="button" class="btn-sec-cospa"
-              (click)="cancelarEdicaoCliente()">Cancelar Edição</button>
-            <button type="submit" class="btn-pri-cospa">{{ isEditingCliente ? 'Salvar Alterações' : 'Cadastrar Cliente'
-              }}</button>
+            <button *ngIf="isEditingCliente" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoCliente()">Cancelar Edição</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingCliente ? 'Salvar Alterações' : 'Cadastrar Cliente' }}</button>
           </div>
         </form>
 
         <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
           <div class="manage-search-bar">
-            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarClientes()"
-              placeholder="Buscar por cliente, razão social ou CNPJ..." />
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarClientes()" placeholder="Buscar por cliente, razão social ou CNPJ..." />
           </div>
 
           <div class="crud-items-list">
@@ -1042,24 +885,17 @@
               <div class="crud-item-info">
                 <div class="crud-title-row">
                   <h4>{{ c.nomeFantasia }}</h4>
-                  <span class="badge-status" [class.badge-active]="c.situacao === 'ATIVO'"
-                    [class.badge-inactive]="c.situacao === 'INATIVO'">{{ c.situacao }}</span>
+                  <span class="badge-status" [class.badge-active]="c.situacao === 'ATIVO'" [class.badge-inactive]="c.situacao === 'INATIVO'">{{ c.situacao }}</span>
                 </div>
                 <p class="crud-subtext">{{ c.razaoSocial }} • {{ c.cnpjCpf }} • Contato: {{ c.nomeContato || '-' }}</p>
               </div>
               <div class="crud-item-actions">
                 <button type="button" class="btn-edit-inline" (click)="editarCliente(c)" title="Editar">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                   <span>Editar</span>
                 </button>
                 <button type="button" class="btn-del-inline" (click)="excluirCliente(c.id)" title="Excluir">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 </button>
               </div>
             </div>
@@ -1078,12 +914,10 @@
       </div>
 
       <div class="modal-subtabs">
-        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'"
-          (click)="trocarAbaGerenciar('CADASTRAR', $event)">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
           {{ isEditingMotorista ? 'Editar Motorista' : '+ Cadastrar Novo' }}
         </button>
-        <button type="button" [class.active]="activeManageTab === 'LISTAR'"
-          (click)="trocarAbaGerenciar('LISTAR', $event)">
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
           Gerenciar Cadastrados ({{ motoristasList.length }})
         </button>
       </div>
@@ -1091,9 +925,9 @@
       <div class="modal-body-container">
         <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarMotorista()" class="modal-pane-content">
           <div class="form-row-3">
-            <input type="text" [(ngModel)]="motoristaForm.nome" name="nome" placeholder="Nome do Motorista" required />
+            <input type="text" [(ngModel)]="motoristaForm.nome" name="nome" placeholder="NOME DO MOTORISTA" required />
             <input type="text" [(ngModel)]="motoristaForm.cpf" name="cpf" placeholder="CPF" />
-            <input type="text" [(ngModel)]="motoristaForm.placa" name="placa" placeholder="Placa" />
+            <input type="text" [(ngModel)]="motoristaForm.placa" name="placa" placeholder="PLACA" />
           </div>
 
           <div class="form-row-2">
@@ -1109,41 +943,31 @@
             </select>
           </div>
 
-          <textarea rows="3" [(ngModel)]="motoristaForm.informacoesAdicionais" name="info"
-            placeholder="Informações Adicionais..."></textarea>
+          <textarea rows="3" [(ngModel)]="motoristaForm.informacoesAdicionais" name="info" placeholder="INFORMAÇÕES ADICIONAIS..."></textarea>
 
           <div class="upload-dropzone-row">
-            <div class="dropzone-box" [class.drag-over]="isDraggingCnh" (click)="cnhInput.click()"
-              (dragover)="$event.preventDefault(); isDraggingCnh = true;"
-              (dragleave)="$event.preventDefault(); isDraggingCnh = false;" (drop)="onCnhDrop($event)">
-              <input #cnhInput type="file" (change)="onFileSelected($event, 'CNH')" style="display: none;"
-                accept="image/*,.pdf" />
+            <div class="dropzone-box" [class.drag-over]="isDraggingCnh" (click)="cnhInput.click()" (dragover)="$event.preventDefault(); isDraggingCnh = true;" (dragleave)="$event.preventDefault(); isDraggingCnh = false;" (drop)="onCnhDrop($event)">
+              <input #cnhInput type="file" (change)="onFileSelected($event, 'CNH')" style="display: none;" accept="image/*,.pdf" />
               <span class="dropzone-label">Anexar CNH (Arraste, Clique ou Cole)</span>
               <p class="dropzone-text">{{ motoristaForm.cnhPreviewName || 'Arraste a CNH ou use Ctrl+V' }}</p>
             </div>
 
-            <div class="dropzone-box" [class.drag-over]="isDraggingCrlv" (click)="crlvInput.click()"
-              (dragover)="$event.preventDefault(); isDraggingCrlv = true;"
-              (dragleave)="$event.preventDefault(); isDraggingCrlv = false;" (drop)="onCrlvDrop($event)">
-              <input #crlvInput type="file" (change)="onFileSelected($event, 'CRLV')" style="display: none;"
-                accept="image/*,.pdf" />
+            <div class="dropzone-box" [class.drag-over]="isDraggingCrlv" (click)="crlvInput.click()" (dragover)="$event.preventDefault(); isDraggingCrlv = true;" (dragleave)="$event.preventDefault(); isDraggingCrlv = false;" (drop)="onCrlvDrop($event)">
+              <input #crlvInput type="file" (change)="onFileSelected($event, 'CRLV')" style="display: none;" accept="image/*,.pdf" />
               <span class="dropzone-label">Anexar CRLV (Arraste, Clique ou Cole)</span>
               <p class="dropzone-text">{{ motoristaForm.crlvPreviewName || 'Arraste o CRLV ou use Ctrl+V' }}</p>
             </div>
           </div>
 
           <div class="modal-actions-right">
-            <button *ngIf="isEditingMotorista" type="button" class="btn-sec-cospa"
-              (click)="cancelarEdicaoMotorista()">Cancelar Edição</button>
-            <button type="submit" class="btn-pri-cospa">{{ isEditingMotorista ? 'Salvar Alterações' : 'Cadastrar
-              Motorista' }}</button>
+            <button *ngIf="isEditingMotorista" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoMotorista()">Cancelar Edição</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingMotorista ? 'Salvar Alterações' : 'Cadastrar Motorista' }}</button>
           </div>
         </form>
 
         <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
           <div class="manage-search-bar">
-            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarMotoristas()"
-              placeholder="Buscar por motorista, placa ou CPF..." />
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarMotoristas()" placeholder="Buscar por motorista, placa ou CPF..." />
           </div>
 
           <div class="crud-items-list">
@@ -1151,38 +975,236 @@
               <div class="crud-item-info">
                 <div class="crud-title-row">
                   <h4>{{ m.nome }}</h4>
-                  <span class="badge-status" [class.badge-active]="m.situacao === 'ATIVO'"
-                    [class.badge-inactive]="m.situacao === 'INATIVO'">{{ m.situacao }}</span>
+                  <span class="badge-status" [class.badge-active]="m.situacao === 'ATIVO'" [class.badge-inactive]="m.situacao === 'INATIVO'">{{ m.situacao }}</span>
                 </div>
-                <p class="crud-subtext">CPF: {{ m.cpf }} • Placa: <strong>{{ m.placa }}</strong> • Vínculo: {{
-                  m.fornecedorVinculado }}</p>
+                <p class="crud-subtext">CPF: {{ m.cpf }} • Placa: <strong>{{ m.placa }}</strong> • Vínculo: {{ m.fornecedorVinculado }}</p>
               </div>
               <div class="crud-item-actions">
-                <button type="button" class="btn-photo-inline" (click)="openMotoristaFotosModal(m)"
-                  title="Ver CNH, CRLV e Comprovantes">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                    <circle cx="12" cy="13" r="4"></circle>
-                  </svg>
+                <button type="button" class="btn-photo-inline" (click)="openMotoristaFotosModal(m)" title="Ver CNH, CRLV e Comprovantes">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                   <span>Documentos</span>
                 </button>
 
                 <button type="button" class="btn-edit-inline" (click)="editarMotorista(m)" title="Editar">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                   <span>Editar</span>
                 </button>
 
                 <button type="button" class="btn-del-inline" (click)="excluirMotorista(m.id)" title="Excluir">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GERENCIAR VEÍCULOS -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'VEICULO'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Gerenciar Veículos</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
+          {{ isEditingVeiculo ? 'Editar Veículo' : '+ Cadastrar Novo' }}
+        </button>
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
+          Gerenciar Cadastrados ({{ veiculosList.length }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarVeiculo()" class="modal-pane-content">
+          <div class="form-row-3">
+            <div class="f-group">
+              <label>Placa *</label>
+              <input type="text" [(ngModel)]="veiculoForm.placa" name="placa" placeholder="EX: ABC1D23" required />
+            </div>
+            <div class="f-group">
+              <label>Tipo de Veículo *</label>
+              <select [(ngModel)]="veiculoForm.tipoVeiculo" name="tipoVeiculo" required>
+                <option *ngFor="let opt of tiposVeiculosOpcoes" [value]="opt">{{ opt }}</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Tipo de Carroceria</label>
+              <select [(ngModel)]="veiculoForm.tipoCarroceria" name="tipoCarroceria">
+                <option *ngFor="let opt of tiposCarroceriaOpcoes" [value]="opt">{{ opt }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row-4">
+            <div class="f-group">
+              <label>Adicional</label>
+              <select [(ngModel)]="veiculoForm.adicional" name="adicional">
+                <option value="">Nenhum</option>
+                <option value="Delivery">Delivery</option>
+                <option value="Rodagem dupla">Rodagem dupla</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Nº Eixos</label>
+              <input type="text" [(ngModel)]="veiculoForm.numeroEixos" name="numeroEixos" placeholder="EX: 2, 3, 4" />
+            </div>
+            <div class="f-group">
+              <label>Cubagem Baú</label>
+              <input type="text" [(ngModel)]="veiculoForm.cubagemBau" name="cubagemBau" placeholder="EX: 45 M³" />
+            </div>
+            <div class="f-group">
+              <label>Capacidade Peso</label>
+              <input type="text" [(ngModel)]="veiculoForm.capacidadePeso" name="capacidadePeso" placeholder="EX: 14.000 KG" />
+            </div>
+          </div>
+
+          <div class="form-row-4">
+            <div class="f-group">
+              <label>Nº Paletes</label>
+              <input type="text" [(ngModel)]="veiculoForm.numeroPaletes" name="numeroPaletes" placeholder="EX: 12 PALETES" />
+            </div>
+            <div class="f-group">
+              <label>Ano Fabricação</label>
+              <input type="text" [(ngModel)]="veiculoForm.anoFabricacao" name="anoFabricacao" placeholder="EX: 2022" />
+            </div>
+            <div class="f-group">
+              <label>Data de Vencimento</label>
+              <input type="text" [(ngModel)]="veiculoForm.dataVencimento" name="dataVencimento" placeholder="EX: 15/12/2026" />
+            </div>
+            <div class="f-group">
+              <label>Situação</label>
+              <select [(ngModel)]="veiculoForm.situacao" name="situacao">
+                <option value="ATIVO">Situação: ATIVO</option>
+                <option value="INATIVO">Situação: INATIVO</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row-3">
+            <div class="f-group">
+              <label>Fornecedor / Agência</label>
+              <select [(ngModel)]="veiculoForm.fornecedor" name="fornecedor">
+                <option value="Sem Agência (Frota Própria)">Sem Agência (Frota Própria)</option>
+                <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Nº ANTT</label>
+              <input type="text" [(ngModel)]="veiculoForm.numeroAntt" name="numeroAntt" placeholder="EX: 12345678" />
+            </div>
+            <div class="f-group">
+              <label>Tipo de Rastreador</label>
+              <input type="text" [(ngModel)]="veiculoForm.tipoRastreador" name="tipoRastreador" placeholder="EX: AUTOTRAC, OMNILINK" />
+            </div>
+          </div>
+
+          <div class="modal-actions-right">
+            <button *ngIf="isEditingVeiculo" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoVeiculo()">Cancelar Edição</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingVeiculo ? 'Salvar Alterações' : 'Cadastrar Veículo' }}</button>
+          </div>
+        </form>
+
+        <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
+          <div class="manage-search-bar">
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarVeiculos()" placeholder="Buscar por placa, tipo de veículo, carroceria ou fornecedor..." />
+          </div>
+
+          <div class="crud-items-list">
+            <div class="crud-item-card" *ngFor="let v of filteredVeiculos">
+              <div class="crud-item-info">
+                <div class="crud-title-row">
+                  <h4>{{ v.placa }}</h4>
+                  <span class="badge-status" [class.badge-active]="v.situacao === 'ATIVO'" [class.badge-inactive]="v.situacao === 'INATIVO'">{{ v.situacao }}</span>
+                </div>
+                <p class="crud-subtext">{{ v.tipoVeiculo }} • {{ v.tipoCarroceria }} • Vínculo: <strong>{{ v.fornecedor }}</strong> • Cap: {{ v.capacidadePeso || '-' }}</p>
+              </div>
+              <div class="crud-item-actions">
+                <button type="button" class="btn-photo-inline" (click)="openVeiculoFotosModal(v)" title="Ver Documentos e Fotos">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <span>Documentos</span>
+                </button>
+                <button type="button" class="btn-edit-inline" (click)="editarVeiculo(v)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Editar</span>
+                </button>
+                <button type="button" class="btn-del-inline" (click)="excluirVeiculo(v.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DOCUMENTOS / FOTOS DO VEÍCULO -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'VEICULO_PHOTO' && !previewImageUrl" (click)="closeModal()">
+    <div class="cospa-modal-box modal-photo-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Documentos e Fotos: {{ selectedVeiculo?.placa }}</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeVeiculoPhotoTab === 'ADICIONAR'" (click)="trocarAbaVeiculoFoto('ADICIONAR', $event)">
+          + Adicionar Documento
+        </button>
+        <button type="button" [class.active]="activeVeiculoPhotoTab === 'LISTAR'" (click)="trocarAbaVeiculoFoto('LISTAR', $event)">
+          Documentos Cadastrados ({{ selectedVeiculo?.documentos?.length || 0 }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <div *ngIf="activeVeiculoPhotoTab === 'ADICIONAR'" class="modal-pane-compact">
+          <div class="f-group">
+            <label>Nome / Tipo do Documento</label>
+            <input type="text" [(ngModel)]="novoDocVeiculo.nome" placeholder="DIGITE O NOME (EX: CRLV, ANTT, LAUDO, FOTO BAÚ)" />
+          </div>
+
+          <div class="f-group">
+            <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
+            <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoDoc" (click)="fileInputVeiculo.click()" (dragover)="$event.preventDefault(); isDraggingVeiculoDoc = true;" (dragleave)="$event.preventDefault(); isDraggingVeiculoDoc = false;" (drop)="$event.preventDefault(); isDraggingVeiculoDoc = false;">
+              <input #fileInputVeiculo type="file" (change)="onVeiculoDocSelected($event)" style="display: none;" accept="image/*,.pdf" />
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span>{{ novoDocVeiculo.nomeArquivo || 'Clique ou arraste o arquivo (PDF/Imagem)' }}</span>
+            </div>
+          </div>
+
+          <div class="modal-actions-right">
+            <button type="button" class="btn-pri-cospa" (click)="adicionarDocVeiculo()">Adicionar Documento</button>
+          </div>
+        </div>
+
+        <div *ngIf="activeVeiculoPhotoTab === 'LISTAR'" class="modal-pane-compact">
+          <div class="photo-gallery" *ngIf="selectedVeiculo?.documentos?.length">
+            <div class="comprovante-card" *ngFor="let doc of selectedVeiculo?.documentos" (click)="abrirPreviewFoto(doc.url)" title="Clique para ver o arquivo">
+              <div class="comp-img-wrapper" *ngIf="!isPdf(doc.url)">
+                <img [src]="doc.url" alt="Documento Veículo" />
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerDocVeiculo($event, doc.id)" title="Excluir">✕</button>
+              </div>
+
+              <div class="comp-pdf-wrapper" *ngIf="isPdf(doc.url)">
+                <svg class="pdf-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span class="pdf-badge">DOCUMENTO PDF</span>
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir PDF em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerDocVeiculo($event, doc.id)" title="Excluir">✕</button>
+              </div>
+
+              <div class="comp-info-footer">
+                <strong>{{ doc.descricao }}</strong>
+                <span>{{ doc.nomeArquivo }} • {{ doc.dataEnvio }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-photos" *ngIf="!selectedVeiculo?.documentos?.length">
+            <p>Nenhum documento ou foto anexado para este veículo.</p>
           </div>
         </div>
       </div>

@@ -1,4 +1,3 @@
-// backend/src/main/java/com/cospa/api/model/Motorista.java
 package com.cospa.api.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -51,6 +50,14 @@ public class Motorista {
     @JsonManagedReference
     private List<MotoristaDocumento> documentos = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "motorista_veiculo",
+            joinColumns = @JoinColumn(name = "motorista_id"),
+            inverseJoinColumns = @JoinColumn(name = "veiculo_id")
+    )
+    private List<Veiculo> veiculos = new ArrayList<>();
+
     public Motorista() {}
 
     public Long getId() { return id; }
@@ -91,4 +98,7 @@ public class Motorista {
 
     public List<MotoristaDocumento> getDocumentos() { return documentos; }
     public void setDocumentos(List<MotoristaDocumento> documentos) { this.documentos = documentos; }
+
+    public List<Veiculo> getVeiculos() { return veiculos; }
+    public void setVeiculos(List<Veiculo> veiculos) { this.veiculos = veiculos; }
 }

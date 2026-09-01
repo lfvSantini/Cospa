@@ -1,5 +1,6 @@
 package com.cospa.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ public class Motorista {
             joinColumns = @JoinColumn(name = "motorista_id"),
             inverseJoinColumns = @JoinColumn(name = "veiculo_id")
     )
+    @JsonIgnoreProperties("motoristas")
     private List<Veiculo> veiculos = new ArrayList<>();
 
     public Motorista() {}

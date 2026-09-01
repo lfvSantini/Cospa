@@ -32,7 +32,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults()) // Habilita o CORS nativo do Spring Security usando o Bean corsConfigurationSource
+                .cors(Customizer.withDefaults())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
@@ -44,7 +44,12 @@ public class SecurityConfig {
                             "/swagger-ui.html",
                             "/uploads/**",
                             "/error",
-                            "/api/admin/backup/**"
+                            "/api/admin/backup/**",
+                            "/api/veiculos/**",
+                            "/api/motoristas/**",
+                            "/api/clientes/**",
+                            "/api/fornecedores/**",
+                            "/api/viagens/**"
                     ).permitAll();
                     req.requestMatchers("/auth/**", "/api/auth/**").permitAll();
                     req.anyRequest().authenticated();
@@ -83,12 +88,8 @@ public class SecurityConfig {
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", sourceCorsConfig(config));
+        source.registerCorsConfiguration("/**", config);
         return source;
-    }
-
-    private CorsConfiguration sourceCorsConfig(CorsConfiguration config) {
-        return config;
     }
 
     @Bean

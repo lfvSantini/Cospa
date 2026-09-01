@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Veiculo } from '../models/veiculo.model';
 import { environment } from '../../../environments/environment';
@@ -11,6 +11,10 @@ export class VeiculoService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/veiculos`;
 
+  private headers = new HttpHeaders({
+    'Content-Type': 'application/json'
+  });
+
   listar(): Observable<Veiculo[]> {
     return this.http.get<Veiculo[]>(this.apiUrl);
   }
@@ -19,11 +23,11 @@ export class VeiculoService {
     return this.http.get<Veiculo>(`${this.apiUrl}/${id}`);
   }
 
-  salvar(veiculo: Veiculo): Observable<Veiculo> {
+  salvar(veiculo: any): Observable<any> {
     if (veiculo.id) {
-      return this.http.put<Veiculo>(`${this.apiUrl}/${veiculo.id}`, veiculo);
+      return this.http.put<any>(`${this.apiUrl}/${veiculo.id}`, veiculo, { headers: this.headers });
     }
-    return this.http.post<Veiculo>(this.apiUrl, veiculo);
+    return this.http.post<any>(this.apiUrl, veiculo, { headers: this.headers });
   }
 
   deletar(id: number): Observable<void> {

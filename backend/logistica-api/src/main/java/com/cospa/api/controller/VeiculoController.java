@@ -113,7 +113,7 @@ public class VeiculoController {
 
             String placaFormatada = placa.toUpperCase();
             if (repository.findByPlaca(placaFormatada).isPresent()) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Placa já cadastrada no sistema.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Placa " + placaFormatada + " já cadastrada no sistema.");
             }
 
             Veiculo veiculo = new Veiculo();

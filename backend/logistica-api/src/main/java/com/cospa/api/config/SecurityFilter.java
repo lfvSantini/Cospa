@@ -30,14 +30,14 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Libera imediatamente requisições OPTIONS de preflight para evitar quebra de CORS
+        // Intercepta e responde o preflight de CORS imediatamente com status 200
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            filterChain.doFilter(request, response);
+            response.setStatus(HttpServletResponse.SC_OK);
             return;
         }
 
         var uri = request.getRequestURI();
-        // Não valida token em rotas públicas
+        // Não valida token em rotas públicas ou endpoints de autenticação
         if (uri.contains("/auth") || uri.contains("/uploads/") || uri.contains("/swagger-ui") || uri.contains("/v3/api-docs") || uri.equals("/") || uri.equals("/health")) {
             filterChain.doFilter(request, response);
             return;
@@ -61,7 +61,6 @@ public class SecurityFilter extends OncePerRequestFilter {
                     }
                 }
             } catch (Exception e) {
-                // Token inválido ou expirado: limpa contexto
                 SecurityContextHolder.clearContext();
             }
         }

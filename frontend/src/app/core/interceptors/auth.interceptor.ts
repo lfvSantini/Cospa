@@ -1,10 +1,7 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // Busca a chave padronizada ou a chave fallback
   const token = localStorage.getItem('cospa_token') || localStorage.getItem('token');
-
-  // Ignora rotas de autenticação independentemente de ter prefixo /api ou não
   const isAuthRoute = req.url.includes('/auth/login') || req.url.includes('/auth/registrar');
 
   const isValidToken = !!token && token !== 'undefined' && token !== 'null' && token.trim().length > 0;

@@ -44,7 +44,9 @@ public class SecurityConfig {
                             "/swagger-ui.html",
                             "/uploads/**",
                             "/error",
+                            "/auth",
                             "/auth/**",
+                            "/api/auth",
                             "/api/auth/**",
                             "/api/admin/backup/**",
                             "/api/veiculos",
@@ -60,7 +62,7 @@ public class SecurityConfig {
                     ).permitAll();
                     req.anyRequest().authenticated();
                 })
-                .addFilterBefore(new CorsFilter(corsConfigurationSource()), org.springframework.web.filter.CorsFilter.class)
+                .addFilterBefore(new CorsFilter(corsConfigurationSource()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

@@ -14,7 +14,11 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/viagens")
-@CrossOrigin(origins = "*")
+@CrossOrigin(
+        origins = "*",
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS}
+)
 public class ViagemController {
 
     @Autowired

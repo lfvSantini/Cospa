@@ -449,7 +449,7 @@ export class DashboardComponent implements OnInit {
       status: 'A_PAGAR' 
     };
     
-    this.viagemService.salvar(atualizada).subscribe({
+    this.viagemService.salvar(atualizada, true).subscribe({
       next: () => {
         this.showPagar = true;
         this.closeRowActions();
@@ -470,7 +470,7 @@ export class DashboardComponent implements OnInit {
       status: 'FINALIZADO' 
     };
     
-    this.viagemService.salvar(atualizada).subscribe({
+    this.viagemService.salvar(atualizada, true).subscribe({
       next: () => {
         this.showFinalizadas = true;
         this.closeRowActions();
@@ -1219,7 +1219,7 @@ export class DashboardComponent implements OnInit {
       observacao: (this.tripForm.observacao || '').trim()
     };
 
-    this.viagemService.salvar(payload).subscribe({
+    this.viagemService.salvar(payload, this.isEditing).subscribe({
       next: () => {
         this.carregarViagens();
         this.closeModal();
@@ -1257,7 +1257,7 @@ export class DashboardComponent implements OnInit {
   salvarObs(): void {
     if (this.selectedViagem && this.selectedViagem.rawViagem) {
       const payload: any = { ...this.selectedViagem.rawViagem, observacao: this.selectedViagem.obs };
-      this.viagemService.salvar(payload).subscribe({
+      this.viagemService.salvar(payload, true).subscribe({
         next: () => this.carregarViagens(),
         error: () => alert('Erro ao salvar observação.')
       });

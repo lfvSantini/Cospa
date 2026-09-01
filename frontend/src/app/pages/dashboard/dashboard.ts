@@ -142,14 +142,17 @@ export class DashboardComponent implements OnInit {
   selectedMotorista: MotoristaModel | null = null;
 
   fornecedoresList: FornecedorModel[] = [];
+  filteredFornecedores: FornecedorModel[] = [];
   fornecedorForm: FornecedorModel = this.getEmptyFornecedor();
   isEditingFornecedor: boolean = false;
 
   clientesList: ClienteModel[] = [];
+  filteredClientes: ClienteModel[] = [];
   clienteForm: ClienteModel = this.getEmptyCliente();
   isEditingCliente: boolean = false;
 
   motoristasList: MotoristaModel[] = [];
+  filteredMotoristas: MotoristaModel[] = [];
   motoristaForm: MotoristaModel = this.getEmptyMotorista();
   isEditingMotorista: boolean = false;
 
@@ -658,10 +661,25 @@ export class DashboardComponent implements OnInit {
             dataEnvio: d.dataEnvio || ''
           }))
         }));
+        this.filtrarMotoristas();
         this.cdr.detectChanges();
       },
       error: (err: unknown) => console.error('Erro ao carregar motoristas:', err)
     });
+  }
+
+  filtrarMotoristas(): void {
+    const t = (this.manageSearchTerm || '').toLowerCase().trim();
+    if (!t) {
+      this.filteredMotoristas = [...this.motoristasList];
+      return;
+    }
+    this.filteredMotoristas = this.motoristasList.filter(m =>
+      (m.nome || '').toLowerCase().includes(t) ||
+      (m.placa || '').toLowerCase().includes(t) ||
+      (m.cpf || '').toLowerCase().includes(t) ||
+      (m.fornecedorVinculado || '').toLowerCase().includes(t)
+    );
   }
 
   openMotoristaFotosModal(m: MotoristaModel): void {
@@ -747,6 +765,7 @@ export class DashboardComponent implements OnInit {
           motNaLista.documentos = [...motoristaAtual.documentos];
         }
 
+        this.filtrarMotoristas();
         this.novoDocMotorista = { nome: '', descricao: '', arquivo: null, nomeArquivo: '' };
         this.activeMotoristaPhotoTab = 'LISTAR';
         this.carregarMotoristas();
@@ -773,6 +792,7 @@ export class DashboardComponent implements OnInit {
           motNaLista.documentos = motNaLista.documentos.filter(d => d.id !== id);
         }
 
+        this.filtrarMotoristas();
         this.carregarMotoristas();
         this.cdr.detectChanges();
       },
@@ -801,6 +821,7 @@ export class DashboardComponent implements OnInit {
     this.activeManageTab = 'CADASTRAR';
     this.modalType = 'MOTORISTA';
     this.isManageOpen = false;
+    this.filtrarMotoristas();
     this.cdr.detectChanges();
   }
 
@@ -893,10 +914,24 @@ export class DashboardComponent implements OnInit {
           situacao: (c.situacao === 'INATIVO' || c.ativo === false) ? 'INATIVO' : 'ATIVO',
           obs: c.obs || c.observacoes || ''
         }));
+        this.filtrarClientes();
         this.cdr.detectChanges();
       },
       error: (err: unknown) => console.error('Erro ao carregar clientes:', err)
     });
+  }
+
+  filtrarClientes(): void {
+    const t = (this.manageSearchTerm || '').toLowerCase().trim();
+    if (!t) {
+      this.filteredClientes = [...this.clientesList];
+      return;
+    }
+    this.filteredClientes = this.clientesList.filter(c =>
+      (c.nomeFantasia || '').toLowerCase().includes(t) ||
+      (c.razaoSocial || '').toLowerCase().includes(t) ||
+      (c.cnpjCpf || '').toLowerCase().includes(t)
+    );
   }
 
   public getEmptyCliente(): ClienteModel {
@@ -909,6 +944,7 @@ export class DashboardComponent implements OnInit {
     this.activeManageTab = 'CADASTRAR';
     this.modalType = 'CLIENTE';
     this.isManageOpen = false;
+    this.filtrarClientes();
     this.cdr.detectChanges();
   }
 
@@ -974,10 +1010,24 @@ export class DashboardComponent implements OnInit {
           situacao: (f.situacao === 'INATIVO' || f.ativo === false) ? 'INATIVO' : 'ATIVO',
           obs: f.obs || f.observacoes || ''
         }));
+        this.filtrarFornecedores();
         this.cdr.detectChanges();
       },
       error: (err: unknown) => console.error('Erro ao carregar fornecedores:', err)
     });
+  }
+
+  filtrarFornecedores(): void {
+    const t = (this.manageSearchTerm || '').toLowerCase().trim();
+    if (!t) {
+      this.filteredFornecedores = [...this.fornecedoresList];
+      return;
+    }
+    this.filteredFornecedores = this.fornecedoresList.filter(f =>
+      (f.nome || '').toLowerCase().includes(t) ||
+      (f.cnpjCpf || '').toLowerCase().includes(t) ||
+      (f.nomeContato || '').toLowerCase().includes(t)
+    );
   }
 
   public getEmptyFornecedor(): FornecedorModel {
@@ -990,6 +1040,7 @@ export class DashboardComponent implements OnInit {
     this.activeManageTab = 'CADASTRAR';
     this.modalType = 'FORNECEDOR';
     this.isManageOpen = false;
+    this.filtrarFornecedores();
     this.cdr.detectChanges();
   }
 
@@ -1239,37 +1290,6 @@ export class DashboardComponent implements OnInit {
         alert('Erro ao salvar viagem: ' + msg);
       }
     });
-  }
-
-  get filteredFornecedores(): FornecedorModel[] {
-    const t = (this.manageSearchTerm || '').toLowerCase().trim();
-    if (!t) return this.fornecedoresList;
-    return this.fornecedoresList.filter(f => 
-      (f.nome || '').toLowerCase().includes(t) || 
-      (f.cnpjCpf || '').toLowerCase().includes(t) || 
-      (f.nomeContato || '').toLowerCase().includes(t)
-    );
-  }
-
-  get filteredClientes(): ClienteModel[] {
-    const t = (this.manageSearchTerm || '').toLowerCase().trim();
-    if (!t) return this.clientesList;
-    return this.clientesList.filter(c => 
-      (c.nomeFantasia || '').toLowerCase().includes(t) || 
-      (c.razaoSocial || '').toLowerCase().includes(t) || 
-      (c.cnpjCpf || '').toLowerCase().includes(t)
-    );
-  }
-
-  get filteredMotoristas(): MotoristaModel[] {
-    const t = (this.manageSearchTerm || '').toLowerCase().trim();
-    if (!t) return this.motoristasList;
-    return this.motoristasList.filter(m => 
-      (m.nome || '').toLowerCase().includes(t) || 
-      (m.placa || '').toLowerCase().includes(t) || 
-      (m.cpf || '').toLowerCase().includes(t) ||
-      (m.fornecedorVinculado || '').toLowerCase().includes(t)
-    );
   }
 
   openObsModal(item: ViagemItem): void {

@@ -1,5 +1,6 @@
 package com.cospa.api.controller;
 
+import com.cospa.api.dto.VeiculoDTO;
 import com.cospa.api.model.Motorista;
 import com.cospa.api.model.Veiculo;
 import com.cospa.api.model.VeiculoDocumento;
@@ -95,32 +96,32 @@ public class VeiculoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<?> cadastrar(@RequestBody Veiculo veiculo) {
+    public ResponseEntity<?> cadastrar(@RequestBody VeiculoDTO dto) {
         try {
-            if (veiculo.getPlaca() == null || veiculo.getPlaca().trim().isBlank()) {
+            if (dto.getPlaca() == null || dto.getPlaca().trim().isBlank()) {
                 return ResponseEntity.badRequest().body("A placa do veículo é obrigatória.");
             }
 
-            String placaFormatada = veiculo.getPlaca().trim().toUpperCase();
+            String placaFormatada = dto.getPlaca().trim().toUpperCase();
             if (repository.findByPlaca(placaFormatada).isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Placa já cadastrada no sistema.");
             }
 
-            veiculo.setId(null);
+            Veiculo veiculo = new Veiculo();
             veiculo.setPlaca(placaFormatada);
-            veiculo.setTipoVeiculo(veiculo.getTipoVeiculo() != null ? veiculo.getTipoVeiculo().trim() : "Truck");
-            veiculo.setTipoCarroceria(veiculo.getTipoCarroceria() != null ? veiculo.getTipoCarroceria().trim() : "");
-            veiculo.setAdicional(veiculo.getAdicional() != null ? veiculo.getAdicional().trim() : "");
-            veiculo.setNumeroEixos(veiculo.getNumeroEixos() != null ? veiculo.getNumeroEixos().trim() : "");
-            veiculo.setCubagemBau(veiculo.getCubagemBau() != null ? veiculo.getCubagemBau().trim() : "");
-            veiculo.setCapacidadePeso(veiculo.getCapacidadePeso() != null ? veiculo.getCapacidadePeso().trim() : "");
-            veiculo.setNumeroPaletes(veiculo.getNumeroPaletes() != null ? veiculo.getNumeroPaletes().trim() : "");
-            veiculo.setAnoFabricacao(veiculo.getAnoFabricacao() != null ? veiculo.getAnoFabricacao().trim() : "");
-            veiculo.setDataVencimento(veiculo.getDataVencimento() != null ? veiculo.getDataVencimento().trim() : "");
-            veiculo.setFornecedor(veiculo.getFornecedor() != null && !veiculo.getFornecedor().isBlank() ? veiculo.getFornecedor().trim() : "Sem Agência (Frota Própria)");
-            veiculo.setNumeroAntt(veiculo.getNumeroAntt() != null ? veiculo.getNumeroAntt().trim() : "");
-            veiculo.setTipoRastreador(veiculo.getTipoRastreador() != null ? veiculo.getTipoRastreador().trim() : "");
-            veiculo.setSituacao(veiculo.getSituacao() != null && !veiculo.getSituacao().isBlank() ? veiculo.getSituacao().trim() : "ATIVO");
+            veiculo.setTipoVeiculo(dto.getTipoVeiculo() != null && !dto.getTipoVeiculo().isBlank() ? dto.getTipoVeiculo().trim() : "Truck");
+            veiculo.setTipoCarroceria(dto.getTipoCarroceria() != null ? dto.getTipoCarroceria().trim() : "Bau Seco");
+            veiculo.setAdicional(dto.getAdicional() != null ? dto.getAdicional().trim() : "");
+            veiculo.setNumeroEixos(dto.getNumeroEixos() != null ? dto.getNumeroEixos().trim() : "");
+            veiculo.setCubagemBau(dto.getCubagemBau() != null ? dto.getCubagemBau().trim() : "");
+            veiculo.setCapacidadePeso(dto.getCapacidadePeso() != null ? dto.getCapacidadePeso().trim() : "");
+            veiculo.setNumeroPaletes(dto.getNumeroPaletes() != null ? dto.getNumeroPaletes().trim() : "");
+            veiculo.setAnoFabricacao(dto.getAnoFabricacao() != null ? dto.getAnoFabricacao().trim() : "");
+            veiculo.setDataVencimento(dto.getDataVencimento() != null ? dto.getDataVencimento().trim() : "");
+            veiculo.setFornecedor(dto.getFornecedor() != null && !dto.getFornecedor().isBlank() ? dto.getFornecedor().trim() : "Sem Agência (Frota Própria)");
+            veiculo.setNumeroAntt(dto.getNumeroAntt() != null ? dto.getNumeroAntt().trim() : "");
+            veiculo.setTipoRastreador(dto.getTipoRastreador() != null ? dto.getTipoRastreador().trim() : "");
+            veiculo.setSituacao(dto.getSituacao() != null && !dto.getSituacao().isBlank() ? dto.getSituacao().trim() : "ATIVO");
 
             Veiculo salvo = repository.save(veiculo);
             return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
@@ -133,10 +134,10 @@ public class VeiculoController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Veiculo veiculoAtualizado) {
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody VeiculoDTO dto) {
         return repository.findById(id).map(veiculo -> {
-            if (veiculoAtualizado.getPlaca() != null) {
-                String placaFormatada = veiculoAtualizado.getPlaca().trim().toUpperCase();
+            if (dto.getPlaca() != null) {
+                String placaFormatada = dto.getPlaca().trim().toUpperCase();
                 repository.findByPlaca(placaFormatada).ifPresent(outro -> {
                     if (!outro.getId().equals(id)) {
                         throw new IllegalArgumentException("Placa já vinculada a outro veículo.");
@@ -144,19 +145,19 @@ public class VeiculoController {
                 });
                 veiculo.setPlaca(placaFormatada);
             }
-            veiculo.setTipoVeiculo(veiculoAtualizado.getTipoVeiculo());
-            veiculo.setTipoCarroceria(veiculoAtualizado.getTipoCarroceria());
-            veiculo.setAdicional(veiculoAtualizado.getAdicional());
-            veiculo.setNumeroEixos(veiculoAtualizado.getNumeroEixos());
-            veiculo.setCubagemBau(veiculoAtualizado.getCubagemBau());
-            veiculo.setCapacidadePeso(veiculoAtualizado.getCapacidadePeso());
-            veiculo.setNumeroPaletes(veiculoAtualizado.getNumeroPaletes());
-            veiculo.setAnoFabricacao(veiculoAtualizado.getAnoFabricacao());
-            veiculo.setDataVencimento(veiculoAtualizado.getDataVencimento());
-            veiculo.setFornecedor(veiculoAtualizado.getFornecedor());
-            veiculo.setNumeroAntt(veiculoAtualizado.getNumeroAntt());
-            veiculo.setTipoRastreador(veiculoAtualizado.getTipoRastreador());
-            veiculo.setSituacao(veiculoAtualizado.getSituacao() != null ? veiculoAtualizado.getSituacao() : "ATIVO");
+            veiculo.setTipoVeiculo(dto.getTipoVeiculo());
+            veiculo.setTipoCarroceria(dto.getTipoCarroceria());
+            veiculo.setAdicional(dto.getAdicional());
+            veiculo.setNumeroEixos(dto.getNumeroEixos());
+            veiculo.setCubagemBau(dto.getCubagemBau());
+            veiculo.setCapacidadePeso(dto.getCapacidadePeso());
+            veiculo.setNumeroPaletes(dto.getNumeroPaletes());
+            veiculo.setAnoFabricacao(dto.getAnoFabricacao());
+            veiculo.setDataVencimento(dto.getDataVencimento());
+            veiculo.setFornecedor(dto.getFornecedor());
+            veiculo.setNumeroAntt(dto.getNumeroAntt());
+            veiculo.setTipoRastreador(dto.getTipoRastreador());
+            veiculo.setSituacao(dto.getSituacao() != null ? dto.getSituacao() : "ATIVO");
             return ResponseEntity.ok(repository.save(veiculo));
         }).orElse(ResponseEntity.notFound().build());
     }

@@ -1040,7 +1040,7 @@ export class DashboardComponent implements OnInit {
 
     const payload: Veiculo = {
       id: this.isEditingVeiculo ? this.veiculoForm.id : undefined,
-      placa: this.veiculoForm.placa.toUpperCase(),
+      placa: this.veiculoForm.placa.toUpperCase().trim(),
       tipoVeiculo: this.veiculoForm.tipoVeiculo,
       tipoCarroceria: this.veiculoForm.tipoCarroceria,
       adicional: this.veiculoForm.adicional,
@@ -1064,7 +1064,9 @@ export class DashboardComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err: any) => {
-        alert('Erro ao salvar veículo: ' + (err.error || err.message));
+        console.error('Erro detalhado ao salvar veículo:', err);
+        const msg = err.error?.message || err.error?.error || err.error?.reason || (typeof err.error === 'string' ? err.error : (err.message || 'Erro ao processar dados no servidor.'));
+        alert('Erro ao salvar veículo: ' + msg);
       }
     });
   }

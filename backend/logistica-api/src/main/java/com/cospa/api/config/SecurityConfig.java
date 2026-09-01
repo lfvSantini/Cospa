@@ -45,10 +45,15 @@ public class SecurityConfig {
                             "/uploads/**",
                             "/error",
                             "/api/admin/backup/**",
+                            "/api/veiculos",
                             "/api/veiculos/**",
+                            "/api/motoristas",
                             "/api/motoristas/**",
+                            "/api/clientes",
                             "/api/clientes/**",
+                            "/api/fornecedores",
                             "/api/fornecedores/**",
+                            "/api/viagens",
                             "/api/viagens/**"
                     ).permitAll();
                     req.requestMatchers("/auth/**", "/api/auth/**").permitAll();

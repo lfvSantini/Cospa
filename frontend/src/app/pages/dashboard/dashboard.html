@@ -143,7 +143,7 @@
             <span>Gerenciar Motoristas</span>
           </button>
           <button type="button" class="dropdown-item" (click)="openGerenciarVeiculos()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
             <span>Gerenciar Veículos</span>
           </button>
         </div>
@@ -399,7 +399,7 @@
               <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
               <div class="comprovante-dropzone" [class.drag-over]="isDraggingComprovante" (click)="fileInputComp.click()" (dragover)="onComprovanteDragOver($event)" (dragleave)="onComprovanteDragLeave($event)" (drop)="onComprovanteDrop($event)">
                 <input #fileInputComp type="file" (change)="onComprovanteFileSelected($event)" style="display: none;" accept="image/*,.pdf" />
-                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 <span>{{ novoComprovante.nomeArquivo || 'Clique, arraste ou use Ctrl+V' }}</span>
               </div>
             </div>
@@ -422,7 +422,7 @@
               <div class="comp-pdf-wrapper" *ngIf="isPdf(f.url)">
                 <svg class="pdf-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                 <span class="pdf-badge">DOCUMENTO PDF</span>
-                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, f.url)" title="Abrir PDF em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, docUrl(f.url))" title="Abrir PDF em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
                 <button type="button" class="btn-del-photo" (click)="removerComprovante($event, f.id)" title="Excluir">✕</button>
               </div>
 
@@ -462,7 +462,7 @@
         <div *ngIf="activeMotoristaPhotoTab === 'ADICIONAR'" class="modal-pane-compact">
           <div class="f-group">
             <label>Nome / Tipo do Documento</label>
-            <input type="text" [(ngModel)]="novoDocMotorista.nome" placeholder="DIGITE O NOME (EX: CNH, ANTT, CRLV 2026)" />
+            <input type="text" [(ngModel)]="novoDocMotorista.nome" placeholder="DIGITE O NOME (EX: CNH, COMPROVANTE DE RESIDÊNCIA)" />
           </div>
 
           <div class="f-group">
@@ -503,7 +503,7 @@
           </div>
 
           <div class="empty-photos" *ngIf="!selectedMotorista?.documentos?.length">
-            <p>Nenhum documento ou foto anexado para este motorista.</p>
+            <p>Nenhum documento anexado para este motorista.</p>
           </div>
         </div>
       </div>
@@ -641,13 +641,23 @@
           </div>
         </div>
 
-        <div class="form-row-2">
+        <!-- SELEÇÃO INDEPENDENTE DE MOTORISTA, VEÍCULO E FORNECEDOR -->
+        <div class="form-row-3">
           <div class="f-group">
             <label>Motorista</label>
             <select [(ngModel)]="tripForm.motorista" name="motorista">
               <option value="">Sem Motorista (A Contratar)</option>
               <option *ngFor="let m of motoristasList" [value]="m.nome">
-                {{ m.nome }} ({{ m.placa }})
+                {{ m.nome }}
+              </option>
+            </select>
+          </div>
+          <div class="f-group">
+            <label>Veículo / Placa</label>
+            <select [(ngModel)]="tripForm.placa" name="placa">
+              <option value="">Sem Veículo Vinculado</option>
+              <option *ngFor="let v of veiculosList" [value]="v.placa">
+                {{ v.placa }} - {{ v.tipoVeiculo }} ({{ v.tipoCarroceria }})
               </option>
             </select>
           </div>
@@ -905,7 +915,7 @@
     </div>
   </div>
 
-  <!-- GERENCIAR MOTORISTAS -->
+  <!-- GERENCIAR MOTORISTAS (SEM O CAMPO DE PLACA FIXO) -->
   <div class="cospa-modal-overlay" *ngIf="modalType === 'MOTORISTA'" (click)="closeModal()">
     <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">
@@ -924,10 +934,9 @@
 
       <div class="modal-body-container">
         <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarMotorista()" class="modal-pane-content">
-          <div class="form-row-3">
+          <div class="form-row-2">
             <input type="text" [(ngModel)]="motoristaForm.nome" name="nome" placeholder="NOME DO MOTORISTA" required />
             <input type="text" [(ngModel)]="motoristaForm.cpf" name="cpf" placeholder="CPF" />
-            <input type="text" [(ngModel)]="motoristaForm.placa" name="placa" placeholder="PLACA" />
           </div>
 
           <div class="form-row-2">
@@ -951,12 +960,6 @@
               <span class="dropzone-label">Anexar CNH (Arraste, Clique ou Cole)</span>
               <p class="dropzone-text">{{ motoristaForm.cnhPreviewName || 'Arraste a CNH ou use Ctrl+V' }}</p>
             </div>
-
-            <div class="dropzone-box" [class.drag-over]="isDraggingCrlv" (click)="crlvInput.click()" (dragover)="$event.preventDefault(); isDraggingCrlv = true;" (dragleave)="$event.preventDefault(); isDraggingCrlv = false;" (drop)="onCrlvDrop($event)">
-              <input #crlvInput type="file" (change)="onFileSelected($event, 'CRLV')" style="display: none;" accept="image/*,.pdf" />
-              <span class="dropzone-label">Anexar CRLV (Arraste, Clique ou Cole)</span>
-              <p class="dropzone-text">{{ motoristaForm.crlvPreviewName || 'Arraste o CRLV ou use Ctrl+V' }}</p>
-            </div>
           </div>
 
           <div class="modal-actions-right">
@@ -967,7 +970,7 @@
 
         <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
           <div class="manage-search-bar">
-            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarMotoristas()" placeholder="Buscar por motorista, placa ou CPF..." />
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarMotoristas()" placeholder="Buscar por motorista ou CPF..." />
           </div>
 
           <div class="crud-items-list">
@@ -977,10 +980,10 @@
                   <h4>{{ m.nome }}</h4>
                   <span class="badge-status" [class.badge-active]="m.situacao === 'ATIVO'" [class.badge-inactive]="m.situacao === 'INATIVO'">{{ m.situacao }}</span>
                 </div>
-                <p class="crud-subtext">CPF: {{ m.cpf }} • Placa: <strong>{{ m.placa }}</strong> • Vínculo: {{ m.fornecedorVinculado }}</p>
+                <p class="crud-subtext">CPF: {{ m.cpf || '-' }} • Vínculo: <strong>{{ m.fornecedorVinculado }}</strong></p>
               </div>
               <div class="crud-item-actions">
-                <button type="button" class="btn-photo-inline" (click)="openMotoristaFotosModal(m)" title="Ver CNH, CRLV e Comprovantes">
+                <button type="button" class="btn-photo-inline" (click)="openMotoristaFotosModal(m)" title="Ver CNH e Comprovantes">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                   <span>Documentos</span>
                 </button>

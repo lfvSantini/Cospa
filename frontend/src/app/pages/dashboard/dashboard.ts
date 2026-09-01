@@ -74,14 +74,12 @@ export interface MotoristaModel {
   id: number;
   nome: string;
   cpf: string;
-  placa: string;
+  placa?: string;
   fornecedorVinculado: string;
   situacao: 'ATIVO' | 'INATIVO';
   informacoesAdicionais?: string;
   cnhFile?: File | null;
-  crlvFile?: File | null;
   cnhPreviewName?: string;
-  crlvPreviewName?: string;
   documentos?: ComprovanteItem[];
 }
 
@@ -149,7 +147,6 @@ export class DashboardComponent implements OnInit {
   isDraggingMotoristaDoc: boolean = false;
   isDraggingVeiculoDoc: boolean = false;
   isDraggingCnh: boolean = false;
-  isDraggingCrlv: boolean = false;
 
   novoComprovante = {
     descricao: '',
@@ -211,6 +208,7 @@ export class DashboardComponent implements OnInit {
     origens: [{ local: '', endereco: '' }] as PontoRota[],
     destinos: [{ local: '', endereco: '' }] as PontoRota[],
     motorista: '',
+    placa: '',
     agencia: 'Sem Agência (Frota Própria)',
     coletaPrevista: '',
     coletaReal: '',
@@ -287,13 +285,8 @@ export class DashboardComponent implements OnInit {
             event.preventDefault();
             break;
           } else if (this.modalType === 'MOTORISTA') {
-            if (!this.motoristaForm.cnhFile) {
-              this.motoristaForm.cnhFile = pastedFile;
-              this.motoristaForm.cnhPreviewName = pastedFile.name;
-            } else {
-              this.motoristaForm.crlvFile = pastedFile;
-              this.motoristaForm.crlvPreviewName = pastedFile.name;
-            }
+            this.motoristaForm.cnhFile = pastedFile;
+            this.motoristaForm.cnhPreviewName = pastedFile.name;
             this.cdr.detectChanges();
             event.preventDefault();
             break;
@@ -376,7 +369,6 @@ export class DashboardComponent implements OnInit {
     this.isDraggingMotoristaDoc = false;
     this.isDraggingVeiculoDoc = false;
     this.isDraggingCnh = false;
-    this.isDraggingCrlv = false;
     this.cdr.detectChanges();
   }
 
@@ -443,6 +435,10 @@ export class DashboardComponent implements OnInit {
       fullUrl = `${baseDomain}/${cleanPath}`;
     }
     return fullUrl.replace(/\/uploads\/+uploads\//g, '/uploads/');
+  }
+
+  docUrl(url: string | null | undefined): string {
+    return this.sanitizarUrlArquivo(url);
   }
 
   carregarViagens(): void {
@@ -701,7 +697,6 @@ export class DashboardComponent implements OnInit {
           id: m.id || 0,
           nome: m.nome,
           cpf: m.cpf || '',
-          placa: m.placa,
           fornecedorVinculado: m.fornecedor || 'Sem Agência (Frota Própria)',
           situacao: (m.situacao === 'INATIVO' || m.ativo === false) ? 'INATIVO' : 'ATIVO',
           informacoesAdicionais: m.informacoesAdicionais || m.observacoes || '',
@@ -728,7 +723,6 @@ export class DashboardComponent implements OnInit {
     }
     this.filteredMotoristas = this.motoristasList.filter(m =>
       (m.nome || '').toLowerCase().includes(t) ||
-      (m.placa || '').toLowerCase().includes(t) ||
       (m.cpf || '').toLowerCase().includes(t) ||
       (m.fornecedorVinculado || '').toLowerCase().includes(t)
     );
@@ -857,12 +851,10 @@ export class DashboardComponent implements OnInit {
       id: 0, 
       nome: '', 
       cpf: '', 
-      placa: '', 
       fornecedorVinculado: '', 
       situacao: 'ATIVO', 
       informacoesAdicionais: '', 
       cnhPreviewName: '', 
-      crlvPreviewName: '', 
       documentos: [] 
     };
   }
@@ -880,11 +872,10 @@ export class DashboardComponent implements OnInit {
   salvarMotorista(): void {
     if (!this.motoristaForm.nome.trim()) return;
 
-    const payload: Motorista = {
+    const payload: any = {
       id: this.isEditingMotorista ? this.motoristaForm.id : undefined,
       nome: this.motoristaForm.nome.toUpperCase(),
       cpf: this.motoristaForm.cpf.toUpperCase(),
-      placa: this.motoristaForm.placa.toUpperCase(),
       fornecedor: this.motoristaForm.fornecedorVinculado || 'Sem Agência (Frota Própria)',
       situacao: this.motoristaForm.situacao,
       ativo: this.motoristaForm.situacao === 'ATIVO',
@@ -895,9 +886,6 @@ export class DashboardComponent implements OnInit {
       next: (motSalvo: Motorista) => {
         if (this.motoristaForm.cnhFile && motSalvo.id) {
           this.motoristaService.uploadDocumento(motSalvo.id, 'CNH', this.motoristaForm.cnhFile).subscribe();
-        }
-        if (this.motoristaForm.crlvFile && motSalvo.id) {
-          this.motoristaService.uploadDocumento(motSalvo.id, 'CRLV', this.motoristaForm.crlvFile).subscribe();
         }
         this.carregarMotoristas();
         this.activeManageTab = 'LISTAR';
@@ -936,18 +924,6 @@ export class DashboardComponent implements OnInit {
       const file = event.dataTransfer.files[0];
       this.motoristaForm.cnhFile = file;
       this.motoristaForm.cnhPreviewName = file.name;
-      this.cdr.detectChanges();
-    }
-  }
-
-  onCrlvDrop(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDraggingCrlv = false;
-    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
-      const file = event.dataTransfer.files[0];
-      this.motoristaForm.crlvFile = file;
-      this.motoristaForm.crlvPreviewName = file.name;
       this.cdr.detectChanges();
     }
   }
@@ -1389,6 +1365,7 @@ export class DashboardComponent implements OnInit {
       origens: [{ local: '', endereco: '' }],
       destinos: [{ local: '', endereco: '' }],
       motorista: '',
+      placa: '',
       agencia: 'Sem Agência (Frota Própria)',
       coletaPrevista: '',
       coletaReal: '',
@@ -1435,6 +1412,7 @@ export class DashboardComponent implements OnInit {
       origens: origensMapeadas.length > 0 ? origensMapeadas : [{ local: '', endereco: '' }],
       destinos: destinosMapeados.length > 0 ? destinosMapeados : [{ local: '', endereco: '' }],
       motorista: item.motorista === 'A Contratar' ? '' : item.motorista,
+      placa: item.placa === '-' ? '' : item.placa,
       agencia: raw?.fornecedorAgencia || raw?.fornecedor_agencia || 'Sem Agência (Frota Própria)',
       coletaPrevista: (raw?.dataColetaPrevista || raw?.data_coleta_prevista || '') === 'A confirmar' ? '' : (raw?.dataColetaPrevista || raw?.data_coleta_prevista || ''),
       coletaReal: (raw?.dataColetaReal || raw?.data_coleta_real || '') === 'A confirmar' ? '' : (raw?.dataColetaReal || raw?.data_coleta_real || ''),
@@ -1494,15 +1472,15 @@ export class DashboardComponent implements OnInit {
     const strDestinoEndereco = destinosEnderecosArray.join('; ') || strDestinoLocal;
 
     let motoristaFinal = 'A Contratar';
-    let placaFinal = '-';
     let cpfFinal = '';
 
     if (this.tripForm.motorista && this.tripForm.motorista.trim() !== '') {
       const motSelected = this.motoristasList.find(m => m.nome.toLowerCase() === this.tripForm.motorista.toLowerCase());
       motoristaFinal = motSelected ? motSelected.nome : this.tripForm.motorista.toUpperCase();
-      placaFinal = motSelected ? motSelected.placa : '-';
-      cpfFinal = motSelected ? motSelected.cpf : '';
+      cpfFinal = motSelected ? (motSelected.cpf || '') : '';
     }
+
+    const placaFinal = (this.tripForm.placa || '').trim().toUpperCase() || '-';
 
     const payload: any = {
       id: idFinal,
@@ -1614,17 +1592,12 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: Event, tipo: 'CNH' | 'CRLV'): void {
+  onFileSelected(event: Event, tipo: 'CNH'): void {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
       const file = target.files[0];
-      if (tipo === 'CNH') {
-        this.motoristaForm.cnhFile = file;
-        this.motoristaForm.cnhPreviewName = file.name;
-      } else {
-        this.motoristaForm.crlvFile = file;
-        this.motoristaForm.crlvPreviewName = file.name;
-      }
+      this.motoristaForm.cnhFile = file;
+      this.motoristaForm.cnhPreviewName = file.name;
       this.cdr.detectChanges();
     }
   }

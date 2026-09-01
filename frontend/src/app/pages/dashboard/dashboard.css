@@ -61,13 +61,11 @@
   --btn-logout-hover: #dc2626;
 }
 
-/* Força texto em maiúsculo automaticamente nos inputs */
 input[type="text"],
 textarea {
   text-transform: uppercase;
 }
 
-/* Sidebar & Navbar */
 .sidebar-backdrop {
   position: fixed;
   inset: 0;
@@ -225,7 +223,6 @@ textarea {
   stroke: var(--text-muted);
 }
 
-/* Navbar */
 .navbar {
   position: sticky;
   top: 0;
@@ -351,7 +348,6 @@ textarea {
   stroke: #60a5fa;
 }
 
-/* Dropdown Navbar Gerenciar */
 .dropdown-wrapper {
   position: relative;
 }
@@ -475,7 +471,6 @@ textarea {
   height: 15px;
 }
 
-/* Dashboard Content */
 .dashboard-content {
   flex: 1;
   padding: 2.5rem 2.5rem 6rem 2.5rem;
@@ -561,7 +556,6 @@ textarea {
   transform: translateY(0);
 }
 
-/* Tabela e Empilhamento */
 .table-container {
   background-color: var(--bg-table-card);
   border: 1px solid var(--border-nav);
@@ -619,7 +613,6 @@ textarea {
   border-bottom: none;
 }
 
-/* Dropup inteligente nas últimas linhas */
 .cospa-table tbody tr:last-child .row-dropdown-menu,
 .cospa-table tbody tr:nth-last-child(2) .row-dropdown-menu {
   top: auto !important;
@@ -627,17 +620,16 @@ textarea {
   box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.85) !important;
 }
 
-/* 10 Colunas Padronizadas */
-.cospa-table th:nth-child(1), .cospa-table td:nth-child(1) { width: 6%; }  /* Viagem */
-.cospa-table th:nth-child(2), .cospa-table td:nth-child(2) { width: 12%; } /* Cliente */
-.cospa-table th:nth-child(3), .cospa-table td:nth-child(3) { width: 13%; } /* Origem */
-.cospa-table th:nth-child(4), .cospa-table td:nth-child(4) { width: 14%; } /* Destino */
-.cospa-table th:nth-child(5), .cospa-table td:nth-child(5) { width: 11%; } /* Coleta Prevista */
-.cospa-table th:nth-child(6), .cospa-table td:nth-child(6) { width: 8%; }  /* Placa */
-.cospa-table th:nth-child(7), .cospa-table td:nth-child(7) { width: 14%; } /* Motorista */
-.cospa-table th:nth-child(8), .cospa-table td:nth-child(8) { width: 9%; }  /* Status */
-.cospa-table th:nth-child(9), .cospa-table td:nth-child(9) { width: 5%; }  /* Obs */
-.cospa-table th:nth-child(10), .cospa-table td:nth-child(10) { width: 8%; } /* Ações */
+.cospa-table th:nth-child(1), .cospa-table td:nth-child(1) { width: 6%; }
+.cospa-table th:nth-child(2), .cospa-table td:nth-child(2) { width: 12%; }
+.cospa-table th:nth-child(3), .cospa-table td:nth-child(3) { width: 13%; }
+.cospa-table th:nth-child(4), .cospa-table td:nth-child(4) { width: 14%; }
+.cospa-table th:nth-child(5), .cospa-table td:nth-child(5) { width: 11%; }
+.cospa-table th:nth-child(6), .cospa-table td:nth-child(6) { width: 8%; }
+.cospa-table th:nth-child(7), .cospa-table td:nth-child(7) { width: 14%; }
+.cospa-table th:nth-child(8), .cospa-table td:nth-child(8) { width: 9%; }
+.cospa-table th:nth-child(9), .cospa-table td:nth-child(9) { width: 5%; }
+.cospa-table th:nth-child(10), .cospa-table td:nth-child(10) { width: 8%; }
 
 .col-viagem {
   font-weight: 700;
@@ -684,7 +676,6 @@ textarea {
   white-space: nowrap;
 }
 
-/* Status Pills */
 .status-pill {
   display: inline-block;
   padding: 4px 8px;
@@ -912,7 +903,6 @@ textarea {
   margin: 3px 0;
 }
 
-/* Modais */
 .cospa-modal-overlay {
   position: fixed;
   top: 0;
@@ -1328,7 +1318,6 @@ textarea {
   color: var(--text-muted);
 }
 
-/* Lightbox Isolado */
 .lightbox-overlay {
   position: fixed;
   inset: 0;
@@ -1628,7 +1617,7 @@ textarea {
 
 .upload-dropzone-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 1rem;
   margin-top: 0.25rem;
 }

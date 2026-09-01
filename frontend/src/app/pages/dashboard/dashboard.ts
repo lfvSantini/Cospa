@@ -1032,28 +1032,28 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  salvarVeiculo(): void {
+salvarVeiculo(): void {
     if (!this.veiculoForm.placa.trim()) {
       alert('Informe a placa do veículo.');
       return;
     }
 
-    const payload: Veiculo = {
+    const payload: any = {
       id: this.isEditingVeiculo ? this.veiculoForm.id : undefined,
       placa: this.veiculoForm.placa.toUpperCase().trim(),
-      tipoVeiculo: this.veiculoForm.tipoVeiculo,
-      tipoCarroceria: this.veiculoForm.tipoCarroceria,
-      adicional: this.veiculoForm.adicional,
-      numeroEixos: this.veiculoForm.numeroEixos,
-      cubagemBau: this.veiculoForm.cubagemBau,
-      capacidadePeso: this.veiculoForm.capacidadePeso,
-      numeroPaletes: this.veiculoForm.numeroPaletes,
-      anoFabricacao: this.veiculoForm.anoFabricacao,
-      dataVencimento: this.veiculoForm.dataVencimento,
+      tipoVeiculo: this.veiculoForm.tipoVeiculo || 'Truck',
+      tipoCarroceria: this.veiculoForm.tipoCarroceria || 'Bau Seco',
+      adicional: this.veiculoForm.adicional || '',
+      numeroEixos: this.veiculoForm.numeroEixos || '',
+      cubagemBau: this.veiculoForm.cubagemBau || '',
+      capacidadePeso: this.veiculoForm.capacidadePeso || '',
+      numeroPaletes: this.veiculoForm.numeroPaletes || '',
+      anoFabricacao: this.veiculoForm.anoFabricacao || '',
+      dataVencimento: this.veiculoForm.dataVencimento || '',
       fornecedor: this.veiculoForm.fornecedor || 'Sem Agência (Frota Própria)',
-      numeroAntt: this.veiculoForm.numeroAntt,
-      tipoRastreador: this.veiculoForm.tipoRastreador,
-      situacao: this.veiculoForm.situacao
+      numeroAntt: this.veiculoForm.numeroAntt || '',
+      tipoRastreador: this.veiculoForm.tipoRastreador || '',
+      situacao: this.veiculoForm.situacao || 'ATIVO'
     };
 
     this.veiculoService.salvar(payload).subscribe({

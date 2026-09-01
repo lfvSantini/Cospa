@@ -3,18 +3,11 @@ package com.cospa.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "veiculos")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Veiculo {
 
     @Id
@@ -60,17 +53,67 @@ public class Veiculo {
     @Column(name = "tipo_rastreador", length = 100)
     private String tipoRastreador;
 
-    @Builder.Default
     @Column(length = 20)
     private String situacao = "ATIVO";
 
     @OneToMany(mappedBy = "veiculo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
-    @Builder.Default
     private List<VeiculoDocumento> documentos = new ArrayList<>();
 
     @ManyToMany(mappedBy = "veiculos", fetch = FetchType.LAZY)
     @JsonIgnore
-    @Builder.Default
     private List<Motorista> motoristas = new ArrayList<>();
+
+    public Veiculo() {}
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getPlaca() { return placa; }
+    public void setPlaca(String placa) { this.placa = placa; }
+
+    public String getTipoVeiculo() { return tipoVeiculo; }
+    public void setTipoVeiculo(String tipoVeiculo) { this.tipoVeiculo = tipoVeiculo; }
+
+    public String getTipoCarroceria() { return tipoCarroceria; }
+    public void setTipoCarroceria(String tipoCarroceria) { this.tipoCarroceria = tipoCarroceria; }
+
+    public String getAdicional() { return adicional; }
+    public void setAdicional(String adicional) { this.adicional = adicional; }
+
+    public String getNumeroEixos() { return numeroEixos; }
+    public void setNumeroEixos(String numeroEixos) { this.numeroEixos = numeroEixos; }
+
+    public String getCubagemBau() { return cubagemBau; }
+    public void setCubagemBau(String cubagemBau) { this.cubagemBau = cubagemBau; }
+
+    public String getCapacidadePeso() { return capacidadePeso; }
+    public void setCapacidadePeso(String capacidadePeso) { this.capacidadePeso = capacidadePeso; }
+
+    public String getNumeroPaletes() { return numeroPaletes; }
+    public void setNumeroPaletes(String numeroPaletes) { this.numeroPaletes = numeroPaletes; }
+
+    public String getAnoFabricacao() { return anoFabricacao; }
+    public void setAnoFabricacao(String anoFabricacao) { this.anoFabricacao = anoFabricacao; }
+
+    public String getDataVencimento() { return dataVencimento; }
+    public void setDataVencimento(String dataVencimento) { this.dataVencimento = dataVencimento; }
+
+    public String getFornecedor() { return fornecedor; }
+    public void setFornecedor(String fornecedor) { this.fornecedor = fornecedor; }
+
+    public String getNumeroAntt() { return numeroAntt; }
+    public void setNumeroAntt(String numeroAntt) { this.numeroAntt = numeroAntt; }
+
+    public String getTipoRastreador() { return tipoRastreador; }
+    public void setTipoRastreador(String tipoRastreador) { this.tipoRastreador = tipoRastreador; }
+
+    public String getSituacao() { return situacao; }
+    public void setSituacao(String situacao) { this.situacao = situacao; }
+
+    public List<VeiculoDocumento> getDocumentos() { return documentos; }
+    public void setDocumentos(List<VeiculoDocumento> documentos) { this.documentos = documentos; }
+
+    public List<Motorista> getMotoristas() { return motoristas; }
+    public void setMotoristas(List<Motorista> motoristas) { this.motoristas = motoristas; }
 }

@@ -5,8 +5,11 @@ import com.cospa.api.model.MotoristaDocumento;
 import com.cospa.api.repository.MotoristaDocumentoRepository;
 import com.cospa.api.repository.MotoristaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,16 +32,22 @@ public class MotoristaController {
     @Autowired
     private MotoristaDocumentoRepository motoristaDocumentoRepository;
 
-    private final Path uploadDir = Paths.get("uploads");
+    @Value("${app.upload.dir:/app/uploads}")
+    private String uploadDirConfig;
 
-    public MotoristaController() {
-        try {
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
+    private Path getUploadPath() {
+        Path path = Paths.get(uploadDirConfig).toAbsolutePath().normalize();
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                path = Paths.get(System.getProperty("user.dir"), "uploads").toAbsolutePath().normalize();
+                try {
+                    Files.createDirectories(path);
+                } catch (IOException ignored) {}
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        return path;
     }
 
     @GetMapping
@@ -82,46 +91,54 @@ public class MotoristaController {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/{id}/documentos")
+    @PostMapping(value = "/{id}/documentos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Transactional
     public ResponseEntity<?> uploadDocumento(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file,
-            @RequestParam("tipo") String tipo) {
+            @RequestParam(value = "tipo", required = false) String tipo,
+            @RequestParam(value = "nome", required = false) String nome,
+            @RequestParam(value = "descricao", required = false) String descricao) {
 
         return repository.findById(id).map(motorista -> {
-            if (file.isEmpty()) {
+            if (file == null || file.isEmpty()) {
                 return ResponseEntity.badRequest().body("Arquivo vazio.");
             }
 
             try {
+                String tipoDocFinal = (tipo != null && !tipo.isBlank()) ? tipo :
+                        (nome != null && !nome.isBlank()) ? nome :
+                                (descricao != null && !descricao.isBlank()) ? descricao : "Documento";
+
                 String extensao = "";
                 String nomeOriginal = file.getOriginalFilename();
                 if (nomeOriginal != null && nomeOriginal.contains(".")) {
                     extensao = nomeOriginal.substring(nomeOriginal.lastIndexOf("."));
                 }
 
-                String nomeArquivo = "motorista_" + id + "_" + tipo.toLowerCase() + "_" + UUID.randomUUID().toString().substring(0, 8) + extensao;
-                Path destino = uploadDir.resolve(nomeArquivo);
+                String nomeArquivo = "motorista_" + id + "_" + UUID.randomUUID().toString().substring(0, 8) + extensao;
+                Path uploadFolder = getUploadPath();
+                Path destino = uploadFolder.resolve(nomeArquivo).normalize();
+
                 Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
 
                 String urlRelativa = "/uploads/" + nomeArquivo;
 
-                if ("CNH".equalsIgnoreCase(tipo)) {
+                if ("CNH".equalsIgnoreCase(tipoDocFinal)) {
                     motorista.setUrlCnh(urlRelativa);
-                } else if ("CRLV".equalsIgnoreCase(tipo)) {
+                } else if ("CRLV".equalsIgnoreCase(tipoDocFinal)) {
                     motorista.setUrlCrlv(urlRelativa);
-                } else if ("COMP_ENDERECO".equalsIgnoreCase(tipo)) {
+                } else if ("COMP_ENDERECO".equalsIgnoreCase(tipoDocFinal)) {
                     motorista.setUrlCompEndereco(urlRelativa);
                 }
 
-                // Salva também na lista genérica de documentos do motorista
-                MotoristaDocumento doc = new MotoristaDocumento(tipo, urlRelativa, nomeOriginal, motorista);
+                MotoristaDocumento doc = new MotoristaDocumento(tipoDocFinal, urlRelativa, nomeOriginal != null ? nomeOriginal : nomeArquivo, motorista);
                 motoristaDocumentoRepository.save(doc);
 
                 repository.save(motorista);
-                return ResponseEntity.ok(motorista);
+                return ResponseEntity.ok(doc);
             } catch (IOException e) {
-                return ResponseEntity.internalServerError().body("Erro ao salvar arquivo.");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar arquivo: " + e.getMessage());
             }
         }).orElse(ResponseEntity.notFound().build());
     }
@@ -131,18 +148,23 @@ public class MotoristaController {
         return ResponseEntity.ok(motoristaDocumentoRepository.findByMotoristaId(id));
     }
 
-    @PostMapping("/{id}/documentos-extras")
+    @PostMapping(value = "/{id}/documentos-extras", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Transactional
     public ResponseEntity<?> uploadDocumentoExtra(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file,
-            @RequestParam("nome") String nome) {
+            @RequestParam(value = "nome", required = false) String nome,
+            @RequestParam(value = "tipo", required = false) String tipo) {
 
         return repository.findById(id).map(motorista -> {
-            if (file.isEmpty()) {
+            if (file == null || file.isEmpty()) {
                 return ResponseEntity.badRequest().body("Arquivo vazio.");
             }
 
             try {
+                String nomeDocFinal = (nome != null && !nome.isBlank()) ? nome :
+                        (tipo != null && !tipo.isBlank()) ? tipo : "Documento Extra";
+
                 String extensao = "";
                 String nomeOriginal = file.getOriginalFilename();
                 if (nomeOriginal != null && nomeOriginal.contains(".")) {
@@ -150,27 +172,37 @@ public class MotoristaController {
                 }
 
                 String nomeArquivo = "doc_extra_motorista_" + id + "_" + UUID.randomUUID().toString().substring(0, 8) + extensao;
-                Path destino = uploadDir.resolve(nomeArquivo);
+                Path uploadFolder = getUploadPath();
+                Path destino = uploadFolder.resolve(nomeArquivo).normalize();
+
                 Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
 
                 String urlRelativa = "/uploads/" + nomeArquivo;
 
-                MotoristaDocumento docExtra = new MotoristaDocumento(nome, urlRelativa, nomeOriginal != null ? nomeOriginal : nome, motorista);
+                MotoristaDocumento docExtra = new MotoristaDocumento(nomeDocFinal, urlRelativa, nomeOriginal != null ? nomeOriginal : nomeDocFinal, motorista);
                 motoristaDocumentoRepository.save(docExtra);
 
                 return ResponseEntity.ok(docExtra);
             } catch (IOException e) {
-                return ResponseEntity.internalServerError().body("Erro ao salvar arquivo.");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar arquivo: " + e.getMessage());
             }
         }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/documentos-extras/{docId}")
+    @Transactional
     public ResponseEntity<Void> deletarDocumentoExtra(@PathVariable Long docId) {
-        if (motoristaDocumentoRepository.existsById(docId)) {
-            motoristaDocumentoRepository.deleteById(docId);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        return motoristaDocumentoRepository.findById(docId).map(doc -> {
+            try {
+                if (doc.getUrl() != null) {
+                    String nomeArquivo = doc.getUrl().substring(doc.getUrl().lastIndexOf('/') + 1);
+                    Path arquivoFisico = getUploadPath().resolve(nomeArquivo);
+                    Files.deleteIfExists(arquivoFisico);
+                }
+            } catch (Exception ignored) {}
+
+            motoristaDocumentoRepository.delete(doc);
+            return ResponseEntity.noContent().<Void>build();
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

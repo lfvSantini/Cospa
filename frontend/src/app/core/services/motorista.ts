@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
 import { Motorista } from '../models/motorista.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -30,14 +30,17 @@ export class MotoristaService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  uploadDocumento(id: number, tipo: string, arquivo: File): Observable<any> {
+  uploadDocumento(motoristaId: number, tipo: string, file: File): Observable<any> {
     const formData = new FormData();
+    formData.append('file', file);
     formData.append('tipo', tipo);
-    formData.append('arquivo', arquivo);
-    return this.http.post<any>(`${this.apiUrl}/${id}/documentos`, formData);
+    formData.append('nome', tipo);
+    formData.append('descricao', tipo);
+
+    return this.http.post<any>(`${this.apiUrl}/${motoristaId}/documentos`, formData);
   }
 
-  deletarDocumentoExtra(documentoId: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/documentos/${documentoId}`);
+  deletarDocumentoExtra(docId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/documentos-extras/${docId}`);
   }
 }

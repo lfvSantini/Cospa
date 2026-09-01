@@ -4,6 +4,8 @@ import com.cospa.api.model.Motorista;
 import com.cospa.api.model.MotoristaDocumento;
 import com.cospa.api.repository.MotoristaDocumentoRepository;
 import com.cospa.api.repository.MotoristaRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,8 @@ import java.util.UUID;
 @RequestMapping("/api/motoristas")
 @CrossOrigin(origins = "*")
 public class MotoristaController {
+
+    private static final Logger log = LoggerFactory.getLogger(MotoristaController.class);
 
     @Autowired
     private MotoristaRepository repository;
@@ -102,6 +106,8 @@ public class MotoristaController {
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "descricao", required = false) String descricao) {
 
+        log.info("Recebendo upload de documento para o motorista ID: {}", id);
+
         return repository.findById(id).map(motorista -> {
             if (file == null || file.isEmpty()) {
                 return ResponseEntity.badRequest().body("Arquivo vazio.");
@@ -149,13 +155,17 @@ public class MotoristaController {
                 MotoristaDocumento salvo = motoristaDocumentoRepository.save(doc);
                 repository.save(motorista);
 
+                log.info("Documento {} salvo com sucesso para o motorista {}", salvo.getId(), id);
                 return ResponseEntity.ok(salvo);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Erro critico no upload de documento do motorista {}: ", id, e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body("Erro ao processar documento: " + e.getMessage());
             }
-        }).orElse(ResponseEntity.notFound().build());
+        }).orElseGet(() -> {
+            log.warn("Motorista ID {} nao encontrado para upload de documento", id);
+            return ResponseEntity.notFound().build();
+        });
     }
 
     @GetMapping("/{id}/documentos-extras")

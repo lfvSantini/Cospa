@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -103,7 +104,6 @@ public class VeiculoController {
     }
 
     @PostMapping
-    @Transactional
     public ResponseEntity<?> cadastrar(@RequestBody Map<String, Object> payload) {
         try {
             String placa = getMapString(payload, "placa", "");
@@ -134,6 +134,8 @@ public class VeiculoController {
 
             Veiculo salvo = repository.save(veiculo);
             return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Placa já existente no banco de dados.");
         } catch (Exception e) {
             log.error("Erro ao cadastrar veiculo: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -142,7 +144,6 @@ public class VeiculoController {
     }
 
     @PutMapping("/{id}")
-    @Transactional
     public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
         return repository.findById(id).map(veiculo -> {
             String placa = getMapString(payload, "placa", "");
@@ -173,7 +174,6 @@ public class VeiculoController {
     }
 
     @PostMapping(value = "/{id}/documentos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Transactional
     public ResponseEntity<?> uploadDocumento(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file,
@@ -230,7 +230,6 @@ public class VeiculoController {
     }
 
     @DeleteMapping("/documentos/{docId}")
-    @Transactional
     public ResponseEntity<Void> deletarDocumento(@PathVariable Long docId) {
         return veiculoDocumentoRepository.findById(docId).map(doc -> {
             try {
@@ -247,7 +246,6 @@ public class VeiculoController {
     }
 
     @PostMapping("/{veiculoId}/motoristas/{motoristaId}")
-    @Transactional
     public ResponseEntity<?> vincularMotorista(@PathVariable Long veiculoId, @PathVariable Long motoristaId) {
         return repository.findById(veiculoId).map(veiculo -> {
             return motoristaRepository.findById(motoristaId).map(motorista -> {
@@ -261,7 +259,6 @@ public class VeiculoController {
     }
 
     @DeleteMapping("/{veiculoId}/motoristas/{motoristaId}")
-    @Transactional
     public ResponseEntity<Void> desvincularMotorista(@PathVariable Long veiculoId, @PathVariable Long motoristaId) {
         return repository.findById(veiculoId).map(veiculo -> {
             return motoristaRepository.findById(motoristaId).map(motorista -> {
@@ -273,7 +270,6 @@ public class VeiculoController {
     }
 
     @DeleteMapping("/{id}")
-    @Transactional
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);

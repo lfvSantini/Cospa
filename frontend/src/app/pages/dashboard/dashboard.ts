@@ -1032,7 +1032,7 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-salvarVeiculo(): void {
+  salvarVeiculo(): void {
     if (!this.veiculoForm.placa.trim()) {
       alert('Informe a placa do veículo.');
       return;

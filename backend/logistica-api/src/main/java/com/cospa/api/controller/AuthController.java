@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(
+        originPatterns = {"https://*.pages.dev", "https://cospa-de9.pages.dev", "http://localhost:*", "http://127.0.0.1:*"},
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS},
+        allowCredentials = "true"
+)
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;

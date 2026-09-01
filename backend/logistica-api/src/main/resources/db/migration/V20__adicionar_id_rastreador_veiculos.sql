@@ -1,1 +1,1 @@
-ALTER TABLE veiculos ADD COLUMN IF NOT EXISTS id_rastreador VARCHAR(100) NULL;
+ALTER TABLE veiculos ADD COLUMN id_rastreador VARCHAR(100) NULL;

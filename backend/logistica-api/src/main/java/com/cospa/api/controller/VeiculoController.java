@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -66,11 +65,19 @@ public class VeiculoController {
     }
 
     @GetMapping
+    @Transactional(readOnly = true)
     public ResponseEntity<List<Veiculo>> listarTodos() {
-        return ResponseEntity.ok(repository.findAll());
+        try {
+            List<Veiculo> veiculos = repository.findAll();
+            return ResponseEntity.ok(veiculos);
+        } catch (Exception e) {
+            log.error("Erro ao listar veiculos: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/{id}")
+    @Transactional(readOnly = true)
     public ResponseEntity<Veiculo> buscarPorId(@PathVariable Long id) {
         return repository.findById(id)
                 .map(ResponseEntity::ok)
@@ -86,6 +93,7 @@ public class VeiculoController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<?> cadastrar(@RequestBody Veiculo veiculo) {
         try {
             if (veiculo.getPlaca() != null) {
@@ -107,6 +115,7 @@ public class VeiculoController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Veiculo veiculoAtualizado) {
         return repository.findById(id).map(veiculo -> {
             if (veiculoAtualizado.getPlaca() != null) {
@@ -236,6 +245,7 @@ public class VeiculoController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);

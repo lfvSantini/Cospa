@@ -56,7 +56,7 @@ public class Veiculo {
     @Column(length = 20)
     private String situacao = "ATIVO";
 
-    @OneToMany(mappedBy = "veiculo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "veiculo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<VeiculoDocumento> documentos = new ArrayList<>();
 

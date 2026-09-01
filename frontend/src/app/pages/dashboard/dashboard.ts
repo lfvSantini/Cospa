@@ -332,36 +332,35 @@ export class DashboardComponent implements OnInit {
 
   onRestaurarBackupSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
-    if (!target.files || target.files.length > 0) {
-      if (!target.files || target.files.length === 0) return;
-      const file = target.files[0];
-      if (!file.name.endsWith('.zip')) {
-        alert('Por favor, selecione um arquivo no formato .zip');
-        return;
-      }
+    if (!target.files || target.files.length === 0) return;
 
-      if (!confirm('Deseja restaurar este backup completo? As fotos e o banco de dados serão atualizados com o conteúdo do .zip.')) {
-        target.value = '';
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      this.http.post(`${environment.apiUrl}/admin/backup/restaurar-zip`, formData, { responseType: 'text' })
-        .subscribe({
-          next: (res) => {
-            alert(res);
-            this.carregarTodosDados();
-            target.value = '';
-            this.closeSidebar();
-          },
-          error: (err) => {
-            alert('Erro ao restaurar backup: ' + (err.error || err.message));
-            target.value = '';
-          }
-        });
+    const file = target.files[0];
+    if (!file.name.endsWith('.zip')) {
+      alert('Por favor, selecione um arquivo no formato .zip');
+      return;
     }
+
+    if (!confirm('Deseja restaurar este backup completo? As fotos e o banco de dados serão atualizados com o conteúdo do .zip.')) {
+      target.value = '';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.http.post(`${environment.apiUrl}/admin/backup/restaurar-zip`, formData, { responseType: 'text' })
+      .subscribe({
+        next: (res) => {
+          alert(res);
+          this.carregarTodosDados();
+          target.value = '';
+          this.closeSidebar();
+        },
+        error: (err) => {
+          alert('Erro ao restaurar backup: ' + (err.error || err.message));
+          target.value = '';
+        }
+      });
   }
 
   public isPdf(url: string | null | undefined): boolean {
@@ -712,16 +711,36 @@ export class DashboardComponent implements OnInit {
     }
 
     const tipoDoc: string = this.novoDocMotorista.nome.trim() || 'Documento';
+    const arquivoParaEnvio = this.novoDocMotorista.arquivo;
+    const motoristaAtual = this.selectedMotorista;
 
     this.motoristaService.uploadDocumento(
-      this.selectedMotorista.id,
+      motoristaAtual.id,
       tipoDoc,
-      this.novoDocMotorista.arquivo
+      arquivoParaEnvio
     ).subscribe({
-      next: () => {
-        this.carregarMotoristas();
+      next: (docSalvo: any) => {
+        const novoDoc: ComprovanteItem = {
+          id: docSalvo?.id || Date.now(),
+          descricao: docSalvo?.descricao || docSalvo?.nome || tipoDoc,
+          url: this.sanitizarUrlArquivo(docSalvo?.url || docSalvo?.urlArquivo || ''),
+          nomeArquivo: docSalvo?.nomeArquivo || arquivoParaEnvio.name,
+          dataEnvio: docSalvo?.dataEnvio || 'Agora'
+        };
+
+        if (!motoristaAtual.documentos) {
+          motoristaAtual.documentos = [];
+        }
+        motoristaAtual.documentos.unshift(novoDoc);
+
+        const motNaLista = this.motoristasList.find(m => m.id === motoristaAtual.id);
+        if (motNaLista) {
+          motNaLista.documentos = [...motoristaAtual.documentos];
+        }
+
         this.novoDocMotorista = { nome: '', descricao: '', arquivo: null, nomeArquivo: '' };
         this.activeMotoristaPhotoTab = 'LISTAR';
+        this.carregarMotoristas();
         this.cdr.detectChanges();
       },
       error: () => alert('Erro ao fazer upload do documento do motorista.')
@@ -730,8 +749,24 @@ export class DashboardComponent implements OnInit {
 
   removerDocMotorista(event: Event, id: number): void {
     event.stopPropagation();
+    if (!this.selectedMotorista) return;
+
+    const motoristaAtual = this.selectedMotorista;
+
     this.motoristaService.deletarDocumentoExtra(id).subscribe({
-      next: () => this.carregarMotoristas(),
+      next: () => {
+        if (motoristaAtual.documentos) {
+          motoristaAtual.documentos = motoristaAtual.documentos.filter(d => d.id !== id);
+        }
+
+        const motNaLista = this.motoristasList.find(m => m.id === motoristaAtual.id);
+        if (motNaLista && motNaLista.documentos) {
+          motNaLista.documentos = motNaLista.documentos.filter(d => d.id !== id);
+        }
+
+        this.carregarMotoristas();
+        this.cdr.detectChanges();
+      },
       error: () => alert('Erro ao excluir documento.')
     });
   }

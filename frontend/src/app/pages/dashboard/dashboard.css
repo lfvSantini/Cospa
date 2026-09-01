@@ -473,8 +473,8 @@ textarea {
 
 .dashboard-content {
   flex: 1;
-  padding: 2.5rem 2.5rem 6rem 2.5rem;
-  max-width: 1650px;
+  padding: 2.5rem 1.5rem 6rem 1.5rem;
+  max-width: 98vw;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;

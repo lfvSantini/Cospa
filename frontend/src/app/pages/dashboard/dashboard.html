@@ -18,7 +18,7 @@
       <button type="button" class="sidebar-item active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="1" y="3" width="15" height="13"></rect>
-          <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
           <circle cx="5.5" cy="18.5" r="2.5"></circle>
           <circle cx="18.5" cy="18.5" r="2.5"></circle>
         </svg>
@@ -57,7 +57,7 @@
       <button type="button" class="sidebar-item btn-backup-action" (click)="sidebarRestaurarZip.click()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
+          <polyline points="17 8 12 3 7 8"></polyline>
           <line x1="12" y1="3" x2="12" y2="15"></line>
         </svg>
         <span>Restaurar Backup (.zip)</span>
@@ -99,7 +99,7 @@
             <svg *ngIf="!isDarkMode" class="theme-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
               stroke-width="2">
               <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="12" x2="12" y2="3"></line>
               <line x1="12" y1="21" x2="12" y2="23"></line>
               <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
               <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
@@ -135,7 +135,7 @@
             <span>Gerenciar Clientes</span>
           </button>
           <button type="button" class="dropdown-item" (click)="openGerenciarFornecedores()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
             <span>Gerenciar Fornecedores</span>
           </button>
           <button type="button" class="dropdown-item" (click)="openGerenciarMotoristas()">
@@ -405,7 +405,7 @@
               <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
               <div class="comprovante-dropzone" [class.drag-over]="isDraggingComprovante" (click)="fileInputComp.click()" (dragover)="onComprovanteDragOver($event)" (dragleave)="onComprovanteDragLeave($event)" (drop)="onComprovanteDrop($event)">
                 <input #fileInputComp type="file" (change)="onComprovanteFileSelected($event)" style="display: none;" accept="image/*,.pdf" />
-                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                 <span>{{ novoComprovante.nomeArquivo || 'Clique, arraste ou use Ctrl+V' }}</span>
               </div>
             </div>
@@ -579,6 +579,397 @@
 
           <div class="empty-photos" *ngIf="!selectedVeiculo?.documentos?.length">
             <p>Nenhum documento ou foto anexado para este veículo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GERENCIAR FORNECEDORES -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'FORNECEDOR'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Gerenciar Fornecedores</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
+          {{ isEditingFornecedor ? 'Editar Fornecedor' : '+ Cadastrar Novo' }}
+        </button>
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
+          Gerenciar Cadastrados ({{ fornecedoresList.length }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarFornecedor()" class="modal-pane-content">
+          <div class="form-row-3">
+            <input type="text" [(ngModel)]="fornecedorForm.nome" name="nome" placeholder="NOME DO FORNECEDOR" required />
+            <input type="text" [(ngModel)]="fornecedorForm.cnpjCpf" name="cnpjCpf" placeholder="CNPJ / CPF" />
+            <input type="text" [(ngModel)]="fornecedorForm.nomeContato" name="nomeContato" placeholder="NOME DE CONTATO" />
+          </div>
+
+          <div class="form-row-4">
+            <input type="text" [(ngModel)]="fornecedorForm.telefone" name="telefone" placeholder="TELEFONE / WHATSAPP" />
+            <input type="email" [(ngModel)]="fornecedorForm.email" name="email" placeholder="E-MAIL" />
+            <input type="text" [(ngModel)]="fornecedorForm.chavePix" name="chavePix" placeholder="CHAVE PIX" />
+            <select [(ngModel)]="fornecedorForm.situacao" name="situacao">
+              <option value="ATIVO">Situação: ATIVO</option>
+              <option value="INATIVO">Situação: INATIVO</option>
+            </select>
+          </div>
+
+          <textarea rows="3" [(ngModel)]="fornecedorForm.obs" name="obs" placeholder="OBSERVAÇÕES ADICIONAIS..."></textarea>
+
+          <div class="modal-actions-right">
+            <button *ngIf="isEditingFornecedor" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoFornecedor()">Cancelar Edição</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingFornecedor ? 'Salvar Alterações' : 'Cadastrar Fornecedor' }}</button>
+          </div>
+        </form>
+
+        <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
+          <div class="manage-search-bar">
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarFornecedores()" placeholder="Buscar por fornecedor, CNPJ ou contato..." />
+          </div>
+          <div class="crud-items-list">
+            <div class="crud-item-card" *ngFor="let f of filteredFornecedores">
+              <div class="crud-item-info">
+                <div class="crud-title-row">
+                  <h4>{{ f.nome }}</h4>
+                  <span class="badge-status" [class.badge-active]="f.situacao === 'ATIVO'" [class.badge-inactive]="f.situacao === 'INATIVO'">{{ f.situacao }}</span>
+                </div>
+                <p class="crud-subtext">{{ f.cnpjCpf }} • Contato: {{ f.nomeContato || '-' }} • {{ f.telefone || '-' }}</p>
+              </div>
+              <div class="crud-item-actions">
+                <button type="button" class="btn-edit-inline" (click)="editarFornecedor(f)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Editar</span>
+                </button>
+                <button type="button" class="btn-del-inline" (click)="excluirFornecedor(f.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GERENCIAR CLIENTES -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'CLIENTE'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Gerenciar Clientes</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
+          {{ isEditingCliente ? 'Editar Cliente' : '+ Cadastrar Novo' }}
+        </button>
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
+          Gerenciar Cadastrados ({{ clientesList.length }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarCliente()" class="modal-pane-content">
+          <div class="form-row-3">
+            <input type="text" [(ngModel)]="clienteForm.nomeFantasia" name="nomeFantasia" placeholder="NOME FANTASIA / IDENTIFICAÇÃO" required />
+            <input type="text" [(ngModel)]="clienteForm.razaoSocial" name="razaoSocial" placeholder="RAZÃO SOCIAL" />
+            <input type="text" [(ngModel)]="clienteForm.cnpjCpf" name="cnpjCpf" placeholder="CNPJ / CPF" />
+          </div>
+
+          <div class="form-row-3-fixed">
+            <input type="text" [(ngModel)]="clienteForm.nomeContato" name="nomeContato" placeholder="NOME DO CONTATO" />
+            <input type="text" [(ngModel)]="clienteForm.telefone" name="telefone" placeholder="TELEFONE" />
+            <input type="email" [(ngModel)]="clienteForm.email" name="email" placeholder="E-MAIL" />
+            <select [(ngModel)]="clienteForm.situacao" name="situacao">
+              <option value="ATIVO">Situação: ATIVO</option>
+              <option value="INATIVO">Situação: INATIVO</option>
+            </select>
+          </div>
+
+          <textarea rows="3" [(ngModel)]="clienteForm.obs" name="obs" placeholder="OBSERVAÇÕES DO CLIENTE..."></textarea>
+
+          <div class="modal-actions-right">
+            <button *ngIf="isEditingCliente" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoCliente()">Cancelar Edição</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingCliente ? 'Salvar Alterações' : 'Cadastrar Cliente' }}</button>
+          </div>
+        </form>
+
+        <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
+          <div class="manage-search-bar">
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarClientes()" placeholder="Buscar por cliente, razão social ou CNPJ..." />
+          </div>
+
+          <div class="crud-items-list">
+            <div class="crud-item-card" *ngFor="let c of filteredClientes">
+              <div class="crud-item-info">
+                <div class="crud-title-row">
+                  <h4>{{ c.nomeFantasia }}</h4>
+                  <span class="badge-status" [class.badge-active]="c.situacao === 'ATIVO'" [class.badge-inactive]="c.situacao === 'INATIVO'">{{ c.situacao }}</span>
+                </div>
+                <p class="crud-subtext">{{ c.razaoSocial }} • {{ c.cnpjCpf }} • Contato: {{ c.nomeContato || '-' }}</p>
+              </div>
+              <div class="crud-item-actions">
+                <button type="button" class="btn-edit-inline" (click)="editarCliente(c)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Editar</span>
+                </button>
+                <button type="button" class="btn-del-inline" (click)="excluirCliente(c.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GERENCIAR MOTORISTAS -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'MOTORISTA'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Gerenciar Motoristas</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
+          {{ isEditingMotorista ? 'Editar Motorista' : '+ Cadastrar Novo' }}
+        </button>
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
+          Gerenciar Cadastrados ({{ motoristasList.length }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarMotorista()" class="modal-pane-content">
+          <div class="form-row-2">
+            <input type="text" [(ngModel)]="motoristaForm.nome" name="nome" placeholder="NOME DO MOTORISTA" required />
+            <input type="text" [(ngModel)]="motoristaForm.cpf" name="cpf" placeholder="CPF" />
+          </div>
+
+          <div class="form-row-2">
+            <select [(ngModel)]="motoristaForm.fornecedorVinculado" name="fornecedor">
+              <option value="" disabled selected>Selecione o Fornecedor</option>
+              <option value="Frota Própria">Frota Própria</option>
+              <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+            </select>
+
+            <select [(ngModel)]="motoristaForm.situacao" name="situacao">
+              <option value="ATIVO">Situação: ATIVO</option>
+              <option value="INATIVO">Situação: INATIVO</option>
+            </select>
+          </div>
+
+          <textarea rows="3" [(ngModel)]="motoristaForm.informacoesAdicionais" name="info" placeholder="INFORMAÇÕES ADICIONAIS..."></textarea>
+
+          <div class="upload-dropzone-row">
+            <div class="dropzone-box" [class.drag-over]="isDraggingCnh" (click)="cnhInput.click()" (dragover)="$event.preventDefault(); isDraggingCnh = true;" (dragleave)="$event.preventDefault(); isDraggingCnh = false;" (drop)="onCnhDrop($event)">
+              <input #cnhInput type="file" (change)="onFileSelected($event, 'CNH')" style="display: none;" accept="image/*,.pdf" />
+              <span class="dropzone-label">Anexar CNH (Arraste, Clique ou Cole)</span>
+              <p class="dropzone-text">{{ motoristaForm.cnhPreviewName || 'Arraste a CNH ou use Ctrl+V' }}</p>
+            </div>
+          </div>
+
+          <div class="modal-actions-right">
+            <button *ngIf="isEditingMotorista" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoMotorista()">Cancelar Edição</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingMotorista ? 'Salvar Alterações' : 'Cadastrar Motorista' }}</button>
+          </div>
+        </form>
+
+        <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
+          <div class="manage-search-bar">
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarMotoristas()" placeholder="Buscar por motorista ou CPF..." />
+          </div>
+
+          <div class="crud-items-list">
+            <div class="crud-item-card" *ngFor="let m of filteredMotoristas">
+              <div class="crud-item-info">
+                <div class="crud-title-row">
+                  <h4>{{ m.nome }}</h4>
+                  <span class="badge-status" [class.badge-active]="m.situacao === 'ATIVO'" [class.badge-inactive]="m.situacao === 'INATIVO'">{{ m.situacao }}</span>
+                </div>
+                <p class="crud-subtext">CPF: {{ m.cpf || '-' }} • Vínculo: <strong>{{ m.fornecedorVinculado }}</strong></p>
+              </div>
+              <div class="crud-item-actions">
+                <button type="button" class="btn-photo-inline" (click)="openMotoristaFotosModal(m)" title="Ver CNH e Documentos">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <span>Documentos</span>
+                </button>
+
+                <button type="button" class="btn-edit-inline" (click)="editarMotorista(m)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Editar</span>
+                </button>
+
+                <button type="button" class="btn-del-inline" (click)="excluirMotorista(m.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GERENCIAR VEÍCULOS (NOVO GRID COM ID RASTREADOR E ANEXAR CRLV) -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'VEICULO'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Gerenciar Veículos</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
+          {{ isEditingVeiculo ? 'Editar Veículo' : '+ Cadastrar Novo' }}
+        </button>
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
+          Gerenciar Cadastrados ({{ veiculosList.length }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarVeiculo()" class="modal-pane-content">
+          <!-- Linha 1 (4 Colunas): Placa + Tipo Veículo + Tipo Carroceria + Adicional -->
+          <div class="form-row-4">
+            <div class="f-group">
+              <label>Placa *</label>
+              <input type="text" [(ngModel)]="veiculoForm.placa" name="placa" placeholder="EX: ABC1D23" required />
+            </div>
+            <div class="f-group">
+              <label>Tipo de Veículo *</label>
+              <select [(ngModel)]="veiculoForm.tipoVeiculo" name="tipoVeiculo" required>
+                <option *ngFor="let opt of tiposVeiculosOpcoes" [value]="opt">{{ opt }}</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Tipo de Carroceria</label>
+              <select [(ngModel)]="veiculoForm.tipoCarroceria" name="tipoCarroceria">
+                <option *ngFor="let opt of tiposCarroceriaOpcoes" [value]="opt">{{ opt }}</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Adicional</label>
+              <select [(ngModel)]="veiculoForm.adicional" name="adicional">
+                <option value="">Nenhum</option>
+                <option value="Delivery">Delivery</option>
+                <option value="Rodagem dupla">Rodagem dupla</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Linha 2 (4 Colunas): Nº Eixos + Cubagem + Capacidade Peso + Nº Paletes -->
+          <div class="form-row-4">
+            <div class="f-group">
+              <label>Nº Eixos</label>
+              <input type="text" [(ngModel)]="veiculoForm.numeroEixos" name="numeroEixos" placeholder="EX: 2, 3, 4" />
+            </div>
+            <div class="f-group">
+              <label>Cubagem Baú</label>
+              <input type="text" [(ngModel)]="veiculoForm.cubagemBau" name="cubagemBau" placeholder="EX: 45 M³" />
+            </div>
+            <div class="f-group">
+              <label>Capacidade Peso</label>
+              <input type="text" [(ngModel)]="veiculoForm.capacidadePeso" name="capacidadePeso" placeholder="EX: 14.000 KG" />
+            </div>
+            <div class="f-group">
+              <label>Nº Paletes</label>
+              <input type="text" [(ngModel)]="veiculoForm.numeroPaletes" name="numeroPaletes" placeholder="EX: 12 PALETES" />
+            </div>
+          </div>
+
+          <!-- Linha 3 (4 Colunas): Ano Fabr. + Data Vencimento + Situação + Fornecedor -->
+          <div class="form-row-4">
+            <div class="f-group">
+              <label>Ano Fabricação</label>
+              <input type="text" [(ngModel)]="veiculoForm.anoFabricacao" name="anoFabricacao" placeholder="EX: 2022" />
+            </div>
+            <div class="f-group">
+              <label>Data de Vencimento</label>
+              <input type="text" [(ngModel)]="veiculoForm.dataVencimento" name="dataVencimento" placeholder="EX: 15/12/2026" />
+            </div>
+            <div class="f-group">
+              <label>Situação</label>
+              <select [(ngModel)]="veiculoForm.situacao" name="situacao">
+                <option value="ATIVO">Situação: ATIVO</option>
+                <option value="INATIVO">Situação: INATIVO</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Fornecedor</label>
+              <select [(ngModel)]="veiculoForm.fornecedor" name="fornecedor">
+                <option value="Frota Própria">Frota Própria</option>
+                <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Linha 4 (4 Colunas): Nº ANTT + Tipo de Rastreador + Id Rastreador + Dropzone CRLV -->
+          <div class="form-row-4">
+            <div class="f-group">
+              <label>Nº ANTT</label>
+              <input type="text" [(ngModel)]="veiculoForm.numeroAntt" name="numeroAntt" placeholder="EX: 12345678" />
+            </div>
+            <div class="f-group">
+              <label>Tipo de Rastreador</label>
+              <input type="text" [(ngModel)]="veiculoForm.tipoRastreador" name="tipoRastreador" placeholder="EX: AUTOTRAC, OMNILINK" />
+            </div>
+            <div class="f-group">
+              <label>Id Rastreador (Nº de Série)</label>
+              <input type="text" [(ngModel)]="veiculoForm.idRastreador" name="idRastreador" placeholder="EX: ID / SÉRIE 98412" />
+            </div>
+            <div class="f-group">
+              <label>Anexar CRLV</label>
+              <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoCrlv" (click)="crlvVeiculoInput.click()" (dragover)="$event.preventDefault(); isDraggingVeiculoCrlv = true;" (dragleave)="$event.preventDefault(); isDraggingVeiculoCrlv = false;" (drop)="onVeiculoCrlvDrop($event)">
+                <input #crlvVeiculoInput type="file" (change)="onFileSelected($event, 'CRLV')" style="display: none;" accept="image/*,.pdf" />
+                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>{{ veiculoForm.crlvPreviewName || 'Anexar CRLV' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions-right">
+            <button *ngIf="isEditingVeiculo" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoVeiculo()">Cancelar Edição</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingVeiculo ? 'Salvar Alterações' : 'Cadastrar Veículo' }}</button>
+          </div>
+        </form>
+
+        <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
+          <div class="manage-search-bar">
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarVeiculos()" placeholder="Buscar por placa, ID rastreador, tipo de veículo ou fornecedor..." />
+          </div>
+
+          <div class="crud-items-list">
+            <div class="crud-item-card" *ngFor="let v of filteredVeiculos">
+              <div class="crud-item-info">
+                <div class="crud-title-row">
+                  <h4>{{ v.placa }}</h4>
+                  <span class="badge-status" [class.badge-active]="v.situacao === 'ATIVO'" [class.badge-inactive]="v.situacao === 'INATIVO'">{{ v.situacao }}</span>
+                </div>
+                <p class="crud-subtext">{{ v.tipoVeiculo }} • {{ v.tipoCarroceria }} • Fornecedor: <strong>{{ v.fornecedor }}</strong> • Rastreador: {{ v.tipoRastreador || '-' }} (ID: {{ v.idRastreador || '-' }})</p>
+              </div>
+              <div class="crud-item-actions">
+                <button type="button" class="btn-photo-inline" (click)="openVeiculoFotosModal(v)" title="Ver Documentos e Fotos">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <span>Documentos</span>
+                </button>
+                <button type="button" class="btn-edit-inline" (click)="editarVeiculo(v)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Editar</span>
+                </button>
+                <button type="button" class="btn-del-inline" (click)="excluirVeiculo(v.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

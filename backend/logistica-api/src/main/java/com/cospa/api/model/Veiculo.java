@@ -56,6 +56,9 @@ public class Veiculo {
     @Column(length = 20)
     private String situacao = "ATIVO";
 
+    @Column(name = "motorista", length = 255)
+    private String motorista = "";
+
     @OneToMany(mappedBy = "veiculo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("veiculo")
     private List<VeiculoDocumento> documentos = new ArrayList<>();
@@ -110,6 +113,9 @@ public class Veiculo {
 
     public String getSituacao() { return situacao; }
     public void setSituacao(String situacao) { this.situacao = situacao; }
+
+    public String getMotorista() { return motorista; }
+    public void setMotorista(String motorista) { this.motorista = motorista; }
 
     public List<VeiculoDocumento> getDocumentos() { return documentos != null ? documentos : new ArrayList<>(); }
     public void setDocumentos(List<VeiculoDocumento> documentos) { this.documentos = documentos; }

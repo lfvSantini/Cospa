@@ -18,6 +18,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,11 +42,11 @@ public class MotoristaController {
         if (!Files.exists(path)) {
             try {
                 Files.createDirectories(path);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 path = Paths.get(System.getProperty("user.dir"), "uploads").toAbsolutePath().normalize();
                 try {
                     Files.createDirectories(path);
-                } catch (IOException ignored) {}
+                } catch (Exception ignored) {}
             }
         }
         return path;
@@ -132,13 +134,26 @@ public class MotoristaController {
                     motorista.setUrlCompEndereco(urlRelativa);
                 }
 
-                MotoristaDocumento doc = new MotoristaDocumento(tipoDocFinal, urlRelativa, nomeOriginal != null ? nomeOriginal : nomeArquivo, motorista);
-                motoristaDocumentoRepository.save(doc);
+                MotoristaDocumento doc = new MotoristaDocumento();
+                doc.setDescricao(tipoDocFinal);
+                doc.setUrl(urlRelativa);
+                doc.setNomeArquivo(nomeOriginal != null ? nomeOriginal : nomeArquivo);
+                doc.setDataEnvio(LocalDateTime.now());
+                doc.setMotorista(motorista);
 
+                if (motorista.getDocumentos() == null) {
+                    motorista.setDocumentos(new ArrayList<>());
+                }
+                motorista.getDocumentos().add(doc);
+
+                MotoristaDocumento salvo = motoristaDocumentoRepository.save(doc);
                 repository.save(motorista);
-                return ResponseEntity.ok(doc);
-            } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar arquivo: " + e.getMessage());
+
+                return ResponseEntity.ok(salvo);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Erro ao processar documento: " + e.getMessage());
             }
         }).orElse(ResponseEntity.notFound().build());
     }
@@ -156,37 +171,7 @@ public class MotoristaController {
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "tipo", required = false) String tipo) {
 
-        return repository.findById(id).map(motorista -> {
-            if (file == null || file.isEmpty()) {
-                return ResponseEntity.badRequest().body("Arquivo vazio.");
-            }
-
-            try {
-                String nomeDocFinal = (nome != null && !nome.isBlank()) ? nome :
-                        (tipo != null && !tipo.isBlank()) ? tipo : "Documento Extra";
-
-                String extensao = "";
-                String nomeOriginal = file.getOriginalFilename();
-                if (nomeOriginal != null && nomeOriginal.contains(".")) {
-                    extensao = nomeOriginal.substring(nomeOriginal.lastIndexOf("."));
-                }
-
-                String nomeArquivo = "doc_extra_motorista_" + id + "_" + UUID.randomUUID().toString().substring(0, 8) + extensao;
-                Path uploadFolder = getUploadPath();
-                Path destino = uploadFolder.resolve(nomeArquivo).normalize();
-
-                Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
-
-                String urlRelativa = "/uploads/" + nomeArquivo;
-
-                MotoristaDocumento docExtra = new MotoristaDocumento(nomeDocFinal, urlRelativa, nomeOriginal != null ? nomeOriginal : nomeDocFinal, motorista);
-                motoristaDocumentoRepository.save(docExtra);
-
-                return ResponseEntity.ok(docExtra);
-            } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar arquivo: " + e.getMessage());
-            }
-        }).orElse(ResponseEntity.notFound().build());
+        return uploadDocumento(id, file, tipo, nome, null);
     }
 
     @DeleteMapping("/documentos-extras/{docId}")

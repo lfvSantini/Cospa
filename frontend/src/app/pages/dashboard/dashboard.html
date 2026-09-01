@@ -13,7 +13,7 @@
     <div class="sidebar-section-title">MÓDULOS</div>
     <nav class="sidebar-nav">
       <button type="button" class="sidebar-item active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
         <span>Painel de Viagens</span>
       </button>
       <button type="button" class="sidebar-item disabled">
@@ -84,7 +84,7 @@
             <span>Gerenciar Clientes</span>
           </button>
           <button type="button" class="dropdown-item" (click)="openGerenciarFornecedores()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
             <span>Gerenciar Fornecedores</span>
           </button>
           <button type="button" class="dropdown-item" (click)="openGerenciarMotoristas()">
@@ -428,6 +428,7 @@
       </div>
 
       <div class="modal-body-container">
+        <!-- NOME LIVRE DO DOCUMENTO -->
         <div *ngIf="activeMotoristaPhotoTab === 'ADICIONAR'" class="modal-pane-compact">
           <div class="f-group">
             <label>Nome / Tipo do Documento</label>
@@ -519,14 +520,8 @@
 
       <form (ngSubmit)="salvarViagemForm()" class="modal-trip-scroll">
         <div class="f-group">
-          <label>Nº da Viagem (ID) *</label>
-          <input 
-            type="text" 
-            [(ngModel)]="tripForm.id" 
-            name="id" 
-            placeholder="Ex: 30, 105, 6844751" 
-            [disabled]="isEditing"
-            required />
+          <label>Nº da Viagem (ID)</label>
+          <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="Gerado automaticamente (Ou digite para forçar ID)" />
         </div>
 
         <div class="f-group">
@@ -856,16 +851,10 @@
             <input type="text" [(ngModel)]="motoristaForm.placa" name="placa" placeholder="Placa" />
           </div>
 
-          <div class="form-row-3">
+          <div class="form-row-2">
             <select [(ngModel)]="motoristaForm.fornecedorVinculado" name="fornecedor">
-              <option value="" disabled selected>Agenciador / Vínculo</option>
+              <option value="" disabled selected>Selecione a Agência / Fornecedor</option>
               <option value="Sem Agência (Frota Própria)">Sem Agência (Frota Própria)</option>
-              <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
-            </select>
-
-            <select [(ngModel)]="motoristaForm.fornecedorVinculado" name="fornecedorRecebedor">
-              <option value="" disabled selected>Recebedor do Frete</option>
-              <option value="Próprio Motorista">Próprio Motorista</option>
               <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
             </select>
 

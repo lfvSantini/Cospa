@@ -38,6 +38,7 @@ export interface ViagemItem {
   origem: string[];
   destino: string[];
   coletaPrevista: string;
+  entregaPrevista: string;
   placa: string;
   motorista: string;
   status: StatusViagem;
@@ -98,7 +99,10 @@ export interface VeiculoModel {
   fornecedor: string;
   numeroAntt: string;
   tipoRastreador: string;
+  idRastreador: string;
   situacao: 'ATIVO' | 'INATIVO';
+  crlvFile?: File | null;
+  crlvPreviewName?: string;
   documentos?: ComprovanteItem[];
 }
 
@@ -147,6 +151,7 @@ export class DashboardComponent implements OnInit {
   isDraggingMotoristaDoc: boolean = false;
   isDraggingVeiculoDoc: boolean = false;
   isDraggingCnh: boolean = false;
+  isDraggingVeiculoCrlv: boolean = false;
 
   novoComprovante = {
     descricao: '',
@@ -209,7 +214,7 @@ export class DashboardComponent implements OnInit {
     destinos: [{ local: '', endereco: '' }] as PontoRota[],
     motorista: '',
     placa: '',
-    agencia: 'Sem Agência (Frota Própria)',
+    agencia: 'Frota Própria',
     coletaPrevista: '',
     coletaReal: '',
     entregaPrevista: '',
@@ -287,6 +292,12 @@ export class DashboardComponent implements OnInit {
           } else if (this.modalType === 'MOTORISTA') {
             this.motoristaForm.cnhFile = pastedFile;
             this.motoristaForm.cnhPreviewName = pastedFile.name;
+            this.cdr.detectChanges();
+            event.preventDefault();
+            break;
+          } else if (this.modalType === 'VEICULO') {
+            this.veiculoForm.crlvFile = pastedFile;
+            this.veiculoForm.crlvPreviewName = pastedFile.name;
             this.cdr.detectChanges();
             event.preventDefault();
             break;
@@ -369,6 +380,7 @@ export class DashboardComponent implements OnInit {
     this.isDraggingMotoristaDoc = false;
     this.isDraggingVeiculoDoc = false;
     this.isDraggingCnh = false;
+    this.isDraggingVeiculoCrlv = false;
     this.cdr.detectChanges();
   }
 
@@ -494,6 +506,7 @@ export class DashboardComponent implements OnInit {
       origem: origens.length ? origens : ['-'],
       destino: destinos.length ? destinos : ['-'],
       coletaPrevista: v.dataColetaPrevista || v.data_coleta_prevista || '-',
+      entregaPrevista: v.dataEntregaPrevista || v.data_entrega_prevista || '-',
       placa: v.placa || '-',
       motorista: v.nomeMotorista || v.nome_motorista || 'A Contratar',
       status: v.status,
@@ -697,7 +710,7 @@ export class DashboardComponent implements OnInit {
           id: m.id || 0,
           nome: m.nome,
           cpf: m.cpf || '',
-          fornecedorVinculado: m.fornecedor || 'Sem Agência (Frota Própria)',
+          fornecedorVinculado: m.fornecedor || 'Frota Própria',
           situacao: (m.situacao === 'INATIVO' || m.ativo === false) ? 'INATIVO' : 'ATIVO',
           informacoesAdicionais: m.informacoesAdicionais || m.observacoes || '',
           documentos: (m.documentos || []).map((d: any) => ({
@@ -876,7 +889,7 @@ export class DashboardComponent implements OnInit {
       id: this.isEditingMotorista ? this.motoristaForm.id : undefined,
       nome: this.motoristaForm.nome.toUpperCase(),
       cpf: this.motoristaForm.cpf.toUpperCase(),
-      fornecedor: this.motoristaForm.fornecedorVinculado || 'Sem Agência (Frota Própria)',
+      fornecedor: this.motoristaForm.fornecedorVinculado || 'Frota Própria',
       situacao: this.motoristaForm.situacao,
       ativo: this.motoristaForm.situacao === 'ATIVO',
       informacoesAdicionais: this.motoristaForm.informacoesAdicionais
@@ -944,9 +957,10 @@ export class DashboardComponent implements OnInit {
           numeroPaletes: v.numeroPaletes || '',
           anoFabricacao: v.anoFabricacao || '',
           dataVencimento: v.dataVencimento || '',
-          fornecedor: v.fornecedor || 'Sem Agência (Frota Própria)',
+          fornecedor: v.fornecedor || 'Frota Própria',
           numeroAntt: v.numeroAntt || '',
           tipoRastreador: v.tipoRastreador || '',
+          idRastreador: v.idRastreador || '',
           situacao: v.situacao || 'ATIVO',
           documentos: (v.documentos || []).map((d: any) => ({
             id: d.id || 0,
@@ -973,7 +987,8 @@ export class DashboardComponent implements OnInit {
       (v.placa || '').toLowerCase().includes(t) ||
       (v.tipoVeiculo || '').toLowerCase().includes(t) ||
       (v.tipoCarroceria || '').toLowerCase().includes(t) ||
-      (v.fornecedor || '').toLowerCase().includes(t)
+      (v.fornecedor || '').toLowerCase().includes(t) ||
+      (v.idRastreador || '').toLowerCase().includes(t)
     );
   }
 
@@ -990,10 +1005,13 @@ export class DashboardComponent implements OnInit {
       numeroPaletes: '',
       anoFabricacao: '',
       dataVencimento: '',
-      fornecedor: 'Sem Agência (Frota Própria)',
+      fornecedor: 'Frota Própria',
       numeroAntt: '',
       tipoRastreador: '',
+      idRastreador: '',
       situacao: 'ATIVO',
+      crlvFile: null,
+      crlvPreviewName: '',
       documentos: []
     };
   }
@@ -1026,14 +1044,21 @@ export class DashboardComponent implements OnInit {
       numeroPaletes: this.veiculoForm.numeroPaletes || '',
       anoFabricacao: this.veiculoForm.anoFabricacao || '',
       dataVencimento: this.veiculoForm.dataVencimento || '',
-      fornecedor: this.veiculoForm.fornecedor || 'Sem Agência (Frota Própria)',
+      fornecedor: this.veiculoForm.fornecedor || 'Frota Própria',
       numeroAntt: this.veiculoForm.numeroAntt || '',
       tipoRastreador: this.veiculoForm.tipoRastreador || '',
+      idRastreador: this.veiculoForm.idRastreador || '',
       situacao: this.veiculoForm.situacao || 'ATIVO'
     };
 
     this.veiculoService.salvar(payload).subscribe({
-      next: () => {
+      next: (veicSalvo: any) => {
+        const veicId = veicSalvo?.id || payload.id;
+        if (this.veiculoForm.crlvFile && veicId) {
+          this.veiculoService.uploadDocumento(veicId, 'CRLV', this.veiculoForm.crlvFile).subscribe({
+            next: () => this.carregarVeiculos()
+          });
+        }
         this.carregarVeiculos();
         this.activeManageTab = 'LISTAR';
         this.cancelarEdicaoVeiculo();
@@ -1048,7 +1073,7 @@ export class DashboardComponent implements OnInit {
   }
 
   editarVeiculo(v: VeiculoModel): void {
-    this.veiculoForm = { ...v };
+    this.veiculoForm = { ...v, crlvFile: null, crlvPreviewName: '' };
     this.isEditingVeiculo = true;
     this.activeManageTab = 'CADASTRAR';
     this.cdr.detectChanges();
@@ -1065,6 +1090,18 @@ export class DashboardComponent implements OnInit {
     this.veiculoForm = this.getEmptyVeiculo();
     this.isEditingVeiculo = false;
     this.cdr.detectChanges();
+  }
+
+  onVeiculoCrlvDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingVeiculoCrlv = false;
+    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      this.veiculoForm.crlvFile = file;
+      this.veiculoForm.crlvPreviewName = file.name;
+      this.cdr.detectChanges();
+    }
   }
 
   openVeiculoFotosModal(v: VeiculoModel): void {
@@ -1366,7 +1403,7 @@ export class DashboardComponent implements OnInit {
       destinos: [{ local: '', endereco: '' }],
       motorista: '',
       placa: '',
-      agencia: 'Sem Agência (Frota Própria)',
+      agencia: 'Frota Própria',
       coletaPrevista: '',
       coletaReal: '',
       entregaPrevista: '',
@@ -1413,7 +1450,7 @@ export class DashboardComponent implements OnInit {
       destinos: destinosMapeados.length > 0 ? destinosMapeados : [{ local: '', endereco: '' }],
       motorista: item.motorista === 'A Contratar' ? '' : item.motorista,
       placa: item.placa === '-' ? '' : item.placa,
-      agencia: raw?.fornecedorAgencia || raw?.fornecedor_agencia || 'Sem Agência (Frota Própria)',
+      agencia: raw?.fornecedorAgencia || raw?.fornecedor_agencia || 'Frota Própria',
       coletaPrevista: (raw?.dataColetaPrevista || raw?.data_coleta_prevista || '') === 'A confirmar' ? '' : (raw?.dataColetaPrevista || raw?.data_coleta_prevista || ''),
       coletaReal: (raw?.dataColetaReal || raw?.data_coleta_real || '') === 'A confirmar' ? '' : (raw?.dataColetaReal || raw?.data_coleta_real || ''),
       entregaPrevista: (raw?.dataEntregaPrevista || raw?.data_entrega_prevista || '') === 'A confirmar' ? '' : (raw?.dataEntregaPrevista || raw?.data_entrega_prevista || ''),
@@ -1504,8 +1541,8 @@ export class DashboardComponent implements OnInit {
       cpf_motorista: cpfFinal,
       placa: placaFinal,
 
-      fornecedorAgencia: this.tripForm.agencia || 'Sem Agência (Frota Própria)',
-      fornecedor_agencia: this.tripForm.agencia || 'Sem Agência (Frota Própria)',
+      fornecedorAgencia: this.tripForm.agencia || 'Frota Própria',
+      fornecedor_agencia: this.tripForm.agencia || 'Frota Própria',
 
       dataColetaPrevista: (this.tripForm.coletaPrevista || '').toUpperCase(),
       data_coleta_prevista: (this.tripForm.coletaPrevista || '').toUpperCase(),
@@ -1592,12 +1629,17 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: Event, tipo: 'CNH'): void {
+  onFileSelected(event: Event, tipo: 'CNH' | 'CRLV'): void {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
       const file = target.files[0];
-      this.motoristaForm.cnhFile = file;
-      this.motoristaForm.cnhPreviewName = file.name;
+      if (tipo === 'CNH') {
+        this.motoristaForm.cnhFile = file;
+        this.motoristaForm.cnhPreviewName = file.name;
+      } else {
+        this.veiculoForm.crlvFile = file;
+        this.veiculoForm.crlvPreviewName = file.name;
+      }
       this.cdr.detectChanges();
     }
   }

@@ -53,6 +53,9 @@ public class Veiculo {
     @Column(name = "tipo_rastreador", length = 100)
     private String tipoRastreador;
 
+    @Column(name = "id_rastreador", length = 100)
+    private String idRastreador;
+
     @Column(length = 20)
     private String situacao = "ATIVO";
 
@@ -110,6 +113,9 @@ public class Veiculo {
 
     public String getTipoRastreador() { return tipoRastreador; }
     public void setTipoRastreador(String tipoRastreador) { this.tipoRastreador = tipoRastreador; }
+
+    public String getIdRastreador() { return idRastreador; }
+    public void setIdRastreador(String idRastreador) { this.idRastreador = idRastreador; }
 
     public String getSituacao() { return situacao; }
     public void setSituacao(String situacao) { this.situacao = situacao; }

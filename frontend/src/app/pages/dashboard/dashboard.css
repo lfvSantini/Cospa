@@ -620,16 +620,18 @@ textarea {
   box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.85) !important;
 }
 
-.cospa-table th:nth-child(1), .cospa-table td:nth-child(1) { width: 6%; }
-.cospa-table th:nth-child(2), .cospa-table td:nth-child(2) { width: 12%; }
-.cospa-table th:nth-child(3), .cospa-table td:nth-child(3) { width: 13%; }
-.cospa-table th:nth-child(4), .cospa-table td:nth-child(4) { width: 14%; }
-.cospa-table th:nth-child(5), .cospa-table td:nth-child(5) { width: 11%; }
-.cospa-table th:nth-child(6), .cospa-table td:nth-child(6) { width: 8%; }
-.cospa-table th:nth-child(7), .cospa-table td:nth-child(7) { width: 14%; }
-.cospa-table th:nth-child(8), .cospa-table td:nth-child(8) { width: 9%; }
-.cospa-table th:nth-child(9), .cospa-table td:nth-child(9) { width: 5%; }
-.cospa-table th:nth-child(10), .cospa-table td:nth-child(10) { width: 8%; }
+/* 11 Colunas Padronizadas com Coleta Prevista e Entrega Prevista */
+.cospa-table th:nth-child(1), .cospa-table td:nth-child(1) { width: 5%; }  /* Viagem */
+.cospa-table th:nth-child(2), .cospa-table td:nth-child(2) { width: 11%; } /* Cliente */
+.cospa-table th:nth-child(3), .cospa-table td:nth-child(3) { width: 12%; } /* Origem */
+.cospa-table th:nth-child(4), .cospa-table td:nth-child(4) { width: 13%; } /* Destino */
+.cospa-table th:nth-child(5), .cospa-table td:nth-child(5) { width: 10%; } /* Coleta Prevista */
+.cospa-table th:nth-child(6), .cospa-table td:nth-child(6) { width: 10%; } /* Entrega Prevista */
+.cospa-table th:nth-child(7), .cospa-table td:nth-child(7) { width: 8%; }  /* Placa */
+.cospa-table th:nth-child(8), .cospa-table td:nth-child(8) { width: 13%; } /* Motorista */
+.cospa-table th:nth-child(9), .cospa-table td:nth-child(9) { width: 8%; }  /* Status */
+.cospa-table th:nth-child(10), .cospa-table td:nth-child(10) { width: 4%; } /* Obs */
+.cospa-table th:nth-child(11), .cospa-table td:nth-child(11) { width: 6%; } /* Ações */
 
 .col-viagem {
   font-weight: 700;
@@ -735,7 +737,7 @@ textarea {
   border: 1px solid #10b981;
 }
 
-.cospa-table th:nth-child(9) {
+.cospa-table th:nth-child(10) {
   text-align: center;
 }
 

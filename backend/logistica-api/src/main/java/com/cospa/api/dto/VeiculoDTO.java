@@ -16,6 +16,7 @@ public class VeiculoDTO {
     private String fornecedor;
     private String numeroAntt;
     private String tipoRastreador;
+    private String idRastreador;
     private String situacao;
 
     public VeiculoDTO() {}
@@ -61,6 +62,9 @@ public class VeiculoDTO {
 
     public String getTipoRastreador() { return tipoRastreador; }
     public void setTipoRastreador(String tipoRastreador) { this.tipoRastreador = tipoRastreador; }
+
+    public String getIdRastreador() { return idRastreador; }
+    public void setIdRastreador(String idRastreador) { this.idRastreador = idRastreador; }
 
     public String getSituacao() { return situacao; }
     public void setSituacao(String situacao) { this.situacao = situacao; }

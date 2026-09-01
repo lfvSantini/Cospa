@@ -127,9 +127,10 @@ public class VeiculoController {
             veiculo.setNumeroPaletes(getMapString(payload, "numeroPaletes", ""));
             veiculo.setAnoFabricacao(getMapString(payload, "anoFabricacao", ""));
             veiculo.setDataVencimento(getMapString(payload, "dataVencimento", ""));
-            veiculo.setFornecedor(getMapString(payload, "fornecedor", "Sem Agência (Frota Própria)"));
+            veiculo.setFornecedor(getMapString(payload, "fornecedor", "Frota Própria"));
             veiculo.setNumeroAntt(getMapString(payload, "numeroAntt", ""));
             veiculo.setTipoRastreador(getMapString(payload, "tipoRastreador", ""));
+            veiculo.setIdRastreador(getMapString(payload, "idRastreador", ""));
             veiculo.setSituacao(getMapString(payload, "situacao", "ATIVO"));
 
             Veiculo salvo = repository.save(veiculo);
@@ -165,9 +166,10 @@ public class VeiculoController {
             veiculo.setNumeroPaletes(getMapString(payload, "numeroPaletes", ""));
             veiculo.setAnoFabricacao(getMapString(payload, "anoFabricacao", ""));
             veiculo.setDataVencimento(getMapString(payload, "dataVencimento", ""));
-            veiculo.setFornecedor(getMapString(payload, "fornecedor", "Sem Agência (Frota Própria)"));
+            veiculo.setFornecedor(getMapString(payload, "fornecedor", "Frota Própria"));
             veiculo.setNumeroAntt(getMapString(payload, "numeroAntt", ""));
             veiculo.setTipoRastreador(getMapString(payload, "tipoRastreador", ""));
+            veiculo.setIdRastreador(getMapString(payload, "idRastreador", ""));
             veiculo.setSituacao(getMapString(payload, "situacao", "ATIVO"));
             return ResponseEntity.ok(repository.save(veiculo));
         }).orElse(ResponseEntity.notFound().build());

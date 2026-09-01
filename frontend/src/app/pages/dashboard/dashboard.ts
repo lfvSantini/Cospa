@@ -504,6 +504,15 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  trocarAbaMotoristaFoto(aba: 'ADICIONAR' | 'LISTAR', event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.activeMotoristaPhotoTab = aba;
+    this.cdr.detectChanges();
+  }
+
   onComprovanteFileSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
@@ -1233,18 +1242,34 @@ export class DashboardComponent implements OnInit {
   }
 
   get filteredFornecedores(): FornecedorModel[] {
-    const t = this.manageSearchTerm.toLowerCase();
-    return this.fornecedoresList.filter(f => f.nome.toLowerCase().includes(t) || f.cnpjCpf.toLowerCase().includes(t) || f.nomeContato.toLowerCase().includes(t));
+    const t = (this.manageSearchTerm || '').toLowerCase().trim();
+    if (!t) return this.fornecedoresList;
+    return this.fornecedoresList.filter(f => 
+      (f.nome || '').toLowerCase().includes(t) || 
+      (f.cnpjCpf || '').toLowerCase().includes(t) || 
+      (f.nomeContato || '').toLowerCase().includes(t)
+    );
   }
 
   get filteredClientes(): ClienteModel[] {
-    const t = this.manageSearchTerm.toLowerCase();
-    return this.clientesList.filter(c => c.nomeFantasia.toLowerCase().includes(t) || c.razaoSocial.toLowerCase().includes(t) || c.cnpjCpf.toLowerCase().includes(t));
+    const t = (this.manageSearchTerm || '').toLowerCase().trim();
+    if (!t) return this.clientesList;
+    return this.clientesList.filter(c => 
+      (c.nomeFantasia || '').toLowerCase().includes(t) || 
+      (c.razaoSocial || '').toLowerCase().includes(t) || 
+      (c.cnpjCpf || '').toLowerCase().includes(t)
+    );
   }
 
   get filteredMotoristas(): MotoristaModel[] {
-    const t = this.manageSearchTerm.toLowerCase();
-    return this.motoristasList.filter(m => m.nome.toLowerCase().includes(t) || m.placa.toLowerCase().includes(t) || m.cpf.toLowerCase().includes(t));
+    const t = (this.manageSearchTerm || '').toLowerCase().trim();
+    if (!t) return this.motoristasList;
+    return this.motoristasList.filter(m => 
+      (m.nome || '').toLowerCase().includes(t) || 
+      (m.placa || '').toLowerCase().includes(t) || 
+      (m.cpf || '').toLowerCase().includes(t) ||
+      (m.fornecedorVinculado || '').toLowerCase().includes(t)
+    );
   }
 
   openObsModal(item: ViagemItem): void {

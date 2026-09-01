@@ -621,6 +621,13 @@
   border-bottom: none;
 }
 
+.cospa-table tbody tr:last-child .row-dropdown-menu,
+.cospa-table tbody tr:nth-last-child(2) .row-dropdown-menu {
+  top: auto !important;
+  bottom: calc(100% + 6px) !important;
+  box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.85) !important;
+}
+
 .cospa-table th:nth-child(1),
 .cospa-table td:nth-child(1) {
   width: 7%;

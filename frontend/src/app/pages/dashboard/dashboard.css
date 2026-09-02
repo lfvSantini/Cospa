@@ -473,10 +473,10 @@ textarea {
 
 .dashboard-content {
   flex: 1;
-  padding: 2.5rem 1rem 6rem 1rem;
+  padding: 2rem 0.5rem 5rem 0.5rem;
   max-width: 100% !important;
   width: 100% !important;
-  margin: 0;
+  margin: 0 !important;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -559,7 +559,7 @@ textarea {
 .table-container {
   background-color: var(--bg-table-card);
   border: 1px solid var(--border-nav);
-  border-radius: 14px;
+  border-radius: 10px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: visible !important;

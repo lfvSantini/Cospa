@@ -473,10 +473,10 @@ textarea {
 
 .dashboard-content {
   flex: 1;
-  padding: 2.5rem 1.5rem 6rem 1.5rem;
-  max-width: 98vw;
-  width: 100%;
-  margin: 0 auto;
+  padding: 2.5rem 1rem 6rem 1rem;
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -563,6 +563,7 @@ textarea {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: visible !important;
+  width: 100%;
 }
 
 .cospa-table {
@@ -620,16 +621,15 @@ textarea {
   box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.85) !important;
 }
 
-/* 11 Colunas Padronizadas com Coleta Prevista e Entrega Prevista */
-.cospa-table th:nth-child(1), .cospa-table td:nth-child(1) { width: 5%; }  /* Viagem */
-.cospa-table th:nth-child(2), .cospa-table td:nth-child(2) { width: 11%; } /* Cliente */
-.cospa-table th:nth-child(3), .cospa-table td:nth-child(3) { width: 12%; } /* Origem */
-.cospa-table th:nth-child(4), .cospa-table td:nth-child(4) { width: 13%; } /* Destino */
-.cospa-table th:nth-child(5), .cospa-table td:nth-child(5) { width: 10%; } /* Coleta Prevista */
-.cospa-table th:nth-child(6), .cospa-table td:nth-child(6) { width: 10%; } /* Entrega Prevista */
-.cospa-table th:nth-child(7), .cospa-table td:nth-child(7) { width: 8%; }  /* Placa */
-.cospa-table th:nth-child(8), .cospa-table td:nth-child(8) { width: 13%; } /* Motorista */
-.cospa-table th:nth-child(9), .cospa-table td:nth-child(9) { width: 8%; }  /* Status */
+.cospa-table th:nth-child(1), .cospa-table td:nth-child(1) { width: 5%; }   /* Viagem */
+.cospa-table th:nth-child(2), .cospa-table td:nth-child(2) { width: 11%; }  /* Cliente */
+.cospa-table th:nth-child(3), .cospa-table td:nth-child(3) { width: 12%; }  /* Origem */
+.cospa-table th:nth-child(4), .cospa-table td:nth-child(4) { width: 12%; }  /* Destino */
+.cospa-table th:nth-child(5), .cospa-table td:nth-child(5) { width: 9%; }   /* Coleta Prevista */
+.cospa-table th:nth-child(6), .cospa-table td:nth-child(6) { width: 9%; }   /* Entrega Prevista */
+.cospa-table th:nth-child(7), .cospa-table td:nth-child(7) { width: 8%; }   /* Placa */
+.cospa-table th:nth-child(8), .cospa-table td:nth-child(8) { width: 15%; }  /* Motorista */
+.cospa-table th:nth-child(9), .cospa-table td:nth-child(9) { width: 9%; }   /* Status */
 .cospa-table th:nth-child(10), .cospa-table td:nth-child(10) { width: 4%; } /* Obs */
 .cospa-table th:nth-child(11), .cospa-table td:nth-child(11) { width: 6%; } /* Ações */
 

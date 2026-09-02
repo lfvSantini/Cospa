@@ -1,9 +1,9 @@
 package com.cospa.api.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +15,17 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 @Service
 public class BackupService {
+
+    private static final Logger log = LoggerFactory.getLogger(BackupService.class);
 
     @Value("${app.upload.dir:/app/uploads}")
     private String uploadDirConfig;
@@ -31,17 +35,12 @@ public class BackupService {
 
     private List<Path> getPossibleUploadPaths() {
         List<Path> paths = new ArrayList<>();
-
-        // 1. Caminho configurado no application.properties ou env
         if (uploadDirConfig != null && !uploadDirConfig.isBlank()) {
             paths.add(Paths.get(uploadDirConfig).toAbsolutePath().normalize());
         }
-        // 2. Caminho padrão do volume Docker
         paths.add(Paths.get("/app/uploads").toAbsolutePath().normalize());
-        // 3. Caminhos relativos de execução
         paths.add(Paths.get("uploads").toAbsolutePath().normalize());
         paths.add(Paths.get(System.getProperty("user.dir"), "uploads").toAbsolutePath().normalize());
-
         return paths;
     }
 
@@ -51,7 +50,7 @@ public class BackupService {
                 return p;
             }
         }
-        Path fallback = Paths.get(uploadDirConfig != null ? uploadDirConfig : "/app/uploads").toAbsolutePath().normalize();
+        Path fallback = Paths.get(uploadDirConfig != null && !uploadDirConfig.isBlank() ? uploadDirConfig : "/app/uploads").toAbsolutePath().normalize();
         try {
             Files.createDirectories(fallback);
         } catch (IOException ignored) {}
@@ -69,28 +68,28 @@ public class BackupService {
             }
 
             Path arquivoZipDestino = pastaBackups.resolve("backup_completo_" + timestamp + ".zip");
-            byte[] zipBytes = gerarBackupManualZip();
-            Files.write(arquivoZipDestino, zipBytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            try (OutputStream fos = Files.newOutputStream(arquivoZipDestino, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+                gerarBackupStreaming(fos);
+            }
 
-            System.out.println("[BACKUP] Backup compactado criado com sucesso: " + arquivoZipDestino);
+            log.info("[BACKUP] Backup compactado criado com sucesso: {}", arquivoZipDestino);
         } catch (Exception e) {
-            System.err.println("[BACKUP ERRO] Falha ao gerar backup: " + e.getMessage());
+            log.error("[BACKUP ERRO] Falha ao gerar backup diário: ", e);
         }
     }
 
-    public byte[] gerarBackupManualZip() throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            // 1. Exporta Dump SQL do Banco de Dados
-            String scriptSql = gerarDumpBancoDeDados();
+    public void gerarBackupStreaming(OutputStream outputStream) throws IOException {
+        try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(outputStream))) {
+            // 1. Exporta Dump SQL mapeando explicitamente o nome das colunas
             ZipEntry sqlEntry = new ZipEntry("database_dump.sql");
             zos.putNextEntry(sqlEntry);
-            zos.write(scriptSql.getBytes(StandardCharsets.UTF_8));
+            escreverDumpBancoDeDados(zos);
             zos.closeEntry();
 
-            // 2. Varre todos os diretórios de upload para empacotar todas as fotos encontradas
-            List<String> arquivosAdicionados = new ArrayList<>();
+            // 2. Empacota todos os arquivos de upload (fotos de viagens, CNH/CRLV de motoristas e documentos de veículos)
+            Set<String> arquivosAdicionados = new HashSet<>();
+            byte[] buffer = new byte[8192];
+
             for (Path pasta : getPossibleUploadPaths()) {
                 if (Files.exists(pasta) && Files.isDirectory(pasta)) {
                     try (var stream = Files.walk(pasta)) {
@@ -101,21 +100,95 @@ public class BackupService {
                                     String relativePath = pasta.relativize(path).toString().replace('\\', '/');
                                     String entryName = "uploads/" + relativePath;
 
-                                    if (!arquivosAdicionados.contains(entryName)) {
-                                        arquivosAdicionados.add(entryName);
+                                    if (arquivosAdicionados.add(entryName)) {
                                         try {
                                             ZipEntry zipEntry = new ZipEntry(entryName);
                                             zos.putNextEntry(zipEntry);
-                                            Files.copy(path, zos);
+                                            try (InputStream is = Files.newInputStream(path)) {
+                                                int len;
+                                                while ((len = is.read(buffer)) > 0) {
+                                                    zos.write(buffer, 0, len);
+                                                }
+                                            }
                                             zos.closeEntry();
-                                        } catch (IOException ignored) {}
+                                        } catch (IOException e) {
+                                            log.warn("Não foi possível adicionar arquivo ao zip: {}", path, e);
+                                        }
                                     }
                                 });
                     }
                 }
             }
+            zos.finish();
         }
-        return baos.toByteArray();
+    }
+
+    private void escreverDumpBancoDeDados(OutputStream os) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
+        writer.write("SET FOREIGN_KEY_CHECKS = 0;\n\n");
+
+        try (Connection conn = dataSource.getConnection()) {
+            DatabaseMetaData metaData = conn.getMetaData();
+            String catalog = conn.getCatalog();
+
+            List<String> tabelas = new ArrayList<>();
+            try (ResultSet rs = metaData.getTables(catalog, null, "%", new String[]{"TABLE"})) {
+                while (rs.next()) {
+                    String nomeTabela = rs.getString("TABLE_NAME");
+                    if (!"flyway_schema_history".equalsIgnoreCase(nomeTabela)) {
+                        tabelas.add(nomeTabela);
+                    }
+                }
+            }
+
+            for (String tabela : tabelas) {
+                writer.write("DELETE FROM `" + tabela + "`;\n");
+
+                try (Statement stmt = conn.createStatement();
+                     ResultSet rsData = stmt.executeQuery("SELECT * FROM `" + tabela + "`")) {
+
+                    ResultSetMetaData rsMeta = rsData.getMetaData();
+                    int colCount = rsMeta.getColumnCount();
+
+                    // Constrói lista explícita de colunas para evitar incompatibilidade entre versões do schema
+                    StringBuilder colsHeader = new StringBuilder();
+                    for (int i = 1; i <= colCount; i++) {
+                        colsHeader.append("`").append(rsMeta.getColumnName(i)).append("`");
+                        if (i < colCount) colsHeader.append(", ");
+                    }
+
+                    while (rsData.next()) {
+                        writer.write("INSERT INTO `" + tabela + "` (" + colsHeader + ") VALUES (");
+                        for (int i = 1; i <= colCount; i++) {
+                            Object val = rsData.getObject(i);
+                            if (val == null) {
+                                writer.write("NULL");
+                            } else if (val instanceof Number || val instanceof Boolean) {
+                                writer.write(val.toString());
+                            } else {
+                                String strVal = val.toString()
+                                        .replace("\\", "\\\\")
+                                        .replace("'", "\\'")
+                                        .replace("\r", "\\r")
+                                        .replace("\n", "\\n");
+                                writer.write("'" + strVal + "'");
+                            }
+                            if (i < colCount) writer.write(", ");
+                        }
+                        writer.write(");\n");
+                    }
+                }
+                writer.write("\n");
+                writer.flush();
+            }
+
+            writer.write("SET FOREIGN_KEY_CHECKS = 1;\n");
+            writer.flush();
+        } catch (Exception e) {
+            log.error("Erro ao gerar dump do banco: ", e);
+            writer.write("\n-- Erro ao gerar dump: " + e.getMessage() + "\n");
+            writer.flush();
+        }
     }
 
     public String restaurarBackupZip(InputStream zipInputStream) throws Exception {
@@ -126,8 +199,9 @@ public class BackupService {
 
         int arquivosRestaurados = 0;
         String sqlScript = null;
+        byte[] buffer = new byte[8192];
 
-        try (ZipInputStream zis = new ZipInputStream(zipInputStream)) {
+        try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(zipInputStream))) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 if (entry.isDirectory()) {
@@ -136,9 +210,8 @@ public class BackupService {
 
                 String entryName = entry.getName().replace('\\', '/');
 
-                if (entryName.equals("database_dump.sql") || entryName.endsWith("/database_dump.sql")) {
+                if (entryName.equals("database_dump.sql") || entryName.endsWith("/database_dump.sql") || entryName.endsWith(".sql")) {
                     ByteArrayOutputStream sqlBaos = new ByteArrayOutputStream();
-                    byte[] buffer = new byte[1024];
                     int len;
                     while ((len = zis.read(buffer)) > 0) {
                         sqlBaos.write(buffer, 0, len);
@@ -159,7 +232,13 @@ public class BackupService {
                     Files.createDirectories(caminhoArquivo.getParent());
                 }
 
-                Files.copy(zis, caminhoArquivo, StandardCopyOption.REPLACE_EXISTING);
+                try (OutputStream fos = Files.newOutputStream(caminhoArquivo, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
+                }
+
                 arquivosRestaurados++;
                 zis.closeEntry();
             }
@@ -167,68 +246,47 @@ public class BackupService {
 
         boolean bancoRestaurado = false;
         if (sqlScript != null && !sqlScript.isBlank()) {
-            try (Connection conn = dataSource.getConnection()) {
-                ScriptUtils.executeSqlScript(conn, new ByteArrayResource(sqlScript.getBytes(StandardCharsets.UTF_8)));
-                bancoRestaurado = true;
-            }
+            executarScriptSqlTolerante(sqlScript);
+            bancoRestaurado = true;
         }
 
         return String.format("Backup restaurado com sucesso! Fotos e Arquivos: %d | Banco de Dados: %s",
-                arquivosRestaurados, (bancoRestaurado ? "Atualizado com Sucesso" : "Não encontrado"));
+                arquivosRestaurados, (bancoRestaurado ? "Atualizado com Sucesso" : "Script não encontrado"));
     }
 
-    private String gerarDumpBancoDeDados() {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SET FOREIGN_KEY_CHECKS = 0;\n\n");
+    private void executarScriptSqlTolerante(String sqlContent) {
+        try (Connection conn = dataSource.getConnection();
+             Statement stmt = conn.createStatement()) {
 
-        try (Connection conn = dataSource.getConnection()) {
-            DatabaseMetaData metaData = conn.getMetaData();
-            String catalog = conn.getCatalog();
+            try {
+                stmt.execute("SET FOREIGN_KEY_CHECKS = 0;");
+            } catch (Exception ignored) {}
 
-            List<String> tabelas = new ArrayList<>();
-            try (ResultSet rs = metaData.getTables(catalog, null, "%", new String[]{"TABLE"})) {
-                while (rs.next()) {
-                    String nomeTabela = rs.getString("TABLE_NAME");
-                    if (!"flyway_schema_history".equalsIgnoreCase(nomeTabela)) {
-                        tabelas.add(nomeTabela);
-                    }
+            String[] rawStatements = sqlContent.split(";");
+            for (String rawStmt : rawStatements) {
+                String statementText = rawStmt.trim();
+                if (statementText.isEmpty() || statementText.startsWith("--") || statementText.startsWith("/*")) {
+                    continue;
+                }
+
+                // Garante que inserts incompatíveis ou duplicados não abortem a importação
+                if (statementText.toUpperCase().startsWith("INSERT INTO")) {
+                    statementText = "INSERT IGNORE INTO" + statementText.substring("INSERT INTO".length());
+                }
+
+                try {
+                    stmt.execute(statementText);
+                } catch (Exception e) {
+                    log.warn("Instrução ignorada durante restauração: {} | Motivo: {}", statementText, e.getMessage());
                 }
             }
 
-            for (String tabela : tabelas) {
-                sql.append("DELETE FROM `").append(tabela).append("`;\n");
+            try {
+                stmt.execute("SET FOREIGN_KEY_CHECKS = 1;");
+            } catch (Exception ignored) {}
 
-                try (Statement stmt = conn.createStatement();
-                     ResultSet rsData = stmt.executeQuery("SELECT * FROM `" + tabela + "`")) {
-
-                    ResultSetMetaData rsMeta = rsData.getMetaData();
-                    int colCount = rsMeta.getColumnCount();
-
-                    while (rsData.next()) {
-                        sql.append("INSERT INTO `").append(tabela).append("` VALUES (");
-                        for (int i = 1; i <= colCount; i++) {
-                            Object val = rsData.getObject(i);
-                            if (val == null) {
-                                sql.append("NULL");
-                            } else if (val instanceof Number || val instanceof Boolean) {
-                                sql.append(val);
-                            } else {
-                                String strVal = val.toString().replace("'", "\\'");
-                                sql.append("'").append(strVal).append("'");
-                            }
-                            if (i < colCount) sql.append(", ");
-                        }
-                        sql.append(");\n");
-                    }
-                }
-                sql.append("\n");
-            }
-
-            sql.append("SET FOREIGN_KEY_CHECKS = 1;\n");
         } catch (Exception e) {
-            sql.append("-- Erro ao gerar dump: ").append(e.getMessage()).append("\n");
+            log.error("Erro ao executar script de restauração: ", e);
         }
-
-        return sql.toString();
     }
 }

@@ -143,7 +143,7 @@
             <span>Gerenciar Motoristas</span>
           </button>
           <button type="button" class="dropdown-item" (click)="openGerenciarVeiculos()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
             <span>Gerenciar Veículos</span>
           </button>
         </div>
@@ -405,7 +405,7 @@
               <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
               <div class="comprovante-dropzone" [class.drag-over]="isDraggingComprovante" (click)="fileInputComp.click()" (dragover)="onComprovanteDragOver($event)" (dragleave)="onComprovanteDragLeave($event)" (drop)="onComprovanteDrop($event)">
                 <input #fileInputComp type="file" (change)="onComprovanteFileSelected($event)" style="display: none;" accept="image/*,.pdf" />
-                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 <span>{{ novoComprovante.nomeArquivo || 'Clique, arraste ou use Ctrl+V' }}</span>
               </div>
             </div>
@@ -516,72 +516,178 @@
     </div>
   </div>
 
-  <!-- MODAL: DOCUMENTOS / FOTOS DO VEÍCULO -->
-  <div class="cospa-modal-overlay" *ngIf="modalType === 'VEICULO_PHOTO' && !previewImageUrl" (click)="closeModal()">
-    <div class="cospa-modal-box modal-photo-frame" (click)="$event.stopPropagation()">
+  <!-- MODAL: NOVA / EDITAR VIAGEM (TRIP_FORM) -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'TRIP_FORM'" (click)="closeModal()">
+    <div class="cospa-modal-box modal-trip-form" (click)="$event.stopPropagation()">
       <div class="modal-head">
-        <h3>Documentos e Fotos: {{ selectedVeiculo?.placa }}</h3>
+        <h3>{{ isEditing ? 'Editar Viagem #' + tripForm.id : 'Cadastrar Nova Viagem' }}</h3>
         <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
       </div>
 
-      <div class="modal-subtabs">
-        <button type="button" [class.active]="activeVeiculoPhotoTab === 'ADICIONAR'" (click)="trocarAbaVeiculoFoto('ADICIONAR', $event)">
-          + Adicionar Documento
-        </button>
-        <button type="button" [class.active]="activeVeiculoPhotoTab === 'LISTAR'" (click)="trocarAbaVeiculoFoto('LISTAR', $event)">
-          Documentos Cadastrados ({{ selectedVeiculo?.documentos?.length || 0 }})
-        </button>
-      </div>
+      <form (ngSubmit)="salvarViagemForm()" (keydown.enter)="$event.preventDefault()" class="modal-trip-scroll">
+        <div class="f-group">
+          <label>Nº da Viagem (ID) *</label>
+          <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="EX: 30, 105, 6844751" [disabled]="isEditing" required />
+        </div>
 
-      <div class="modal-body-container">
-        <div *ngIf="activeVeiculoPhotoTab === 'ADICIONAR'" class="modal-pane-compact">
-          <div class="f-group">
-            <label>Nome / Tipo do Documento</label>
-            <input type="text" [(ngModel)]="novoDocVeiculo.nome" placeholder="DIGITE O NOME (EX: ANTT, LAUDO, FOTO BAÚ)" />
-          </div>
-
-          <div class="f-group">
-            <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
-            <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoDoc" (click)="fileInputVeiculo.click()" (dragover)="$event.preventDefault(); isDraggingVeiculoDoc = true;" (dragleave)="$event.preventDefault(); isDraggingVeiculoDoc = false;" (drop)="$event.preventDefault(); isDraggingVeiculoDoc = false;">
-              <input #fileInputVeiculo type="file" (change)="onVeiculoDocSelected($event)" style="display: none;" accept="image/*,.pdf" />
-              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-              <span>{{ novoDocVeiculo.nomeArquivo || 'Clique ou arraste o arquivo (PDF/Imagem)' }}</span>
-            </div>
-          </div>
-
-          <div class="modal-actions-right">
-            <button type="button" class="btn-pri-cospa" (click)="adicionarDocVeiculo()">Adicionar Documento</button>
+        <div class="f-group">
+          <label>Cliente</label>
+          <div class="form-row-2">
+            <select [(ngModel)]="tripForm.clienteSelect" name="clienteSelect">
+              <option value="">Selecione um Cliente cadastrado...</option>
+              <option *ngFor="let c of clientesList" [value]="c.nomeFantasia">{{ c.nomeFantasia }}</option>
+            </select>
+            <input type="text" [(ngModel)]="tripForm.clienteManual" name="clienteManual" placeholder="OU DIGITE O NOME DO CLIENTE" />
           </div>
         </div>
 
-        <div *ngIf="activeVeiculoPhotoTab === 'LISTAR'" class="modal-pane-compact">
-          <div class="photo-gallery" *ngIf="selectedVeiculo?.documentos?.length">
-            <div class="comprovante-card" *ngFor="let doc of selectedVeiculo?.documentos" (click)="abrirPreviewFoto(doc.url)" title="Clique para ver o arquivo">
-              <div class="comp-img-wrapper" *ngIf="!isPdf(doc.url)">
-                <img [src]="doc.url" alt="Documento Veículo" />
-                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
-                <button type="button" class="btn-del-photo" (click)="removerDocVeiculo($event, doc.id)" title="Excluir">✕</button>
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Origem / Coleta</label>
+            <div class="dynamic-point-group" *ngFor="let orig of tripForm.origens; let i = index">
+              <div class="input-with-action">
+                <input type="text" [(ngModel)]="orig.local" [name]="'orig_local_' + i" placeholder="PONTO DE ORIGEM" />
+                <button type="button" class="btn-add-point" (click)="addOrigem()" *ngIf="i === 0">+</button>
+                <button type="button" class="btn-rem-point" (click)="removeOrigem(i)" *ngIf="i > 0">✕</button>
               </div>
-
-              <div class="comp-pdf-wrapper" *ngIf="isPdf(doc.url)">
-                <svg class="pdf-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                <span class="pdf-badge">DOCUMENTO PDF</span>
-                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir PDF em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
-                <button type="button" class="btn-del-photo" (click)="removerDocVeiculo($event, doc.id)" title="Excluir">✕</button>
-              </div>
-
-              <div class="comp-info-footer">
-                <strong>{{ doc.descricao }}</strong>
-                <span>{{ doc.nomeArquivo }} • {{ doc.dataEnvio }}</span>
-              </div>
+              <input type="text" [(ngModel)]="orig.endereco" [name]="'orig_end_' + i" placeholder="RUA DA COLETA" />
             </div>
           </div>
 
-          <div class="empty-photos" *ngIf="!selectedVeiculo?.documentos?.length">
-            <p>Nenhum documento ou foto anexado para este veículo.</p>
+          <div class="f-group">
+            <label>Destino / Entrega</label>
+            <div class="dynamic-point-group" *ngFor="let dest of tripForm.destinos; let j = index">
+              <div class="input-with-action">
+                <input type="text" [(ngModel)]="dest.local" [name]="'dest_local_' + j" placeholder="PONTO DE DESTINO" />
+                <button type="button" class="btn-add-point" (click)="addDestino()" *ngIf="j === 0">+</button>
+                <button type="button" class="btn-rem-point" (click)="removeDestino(j)" *ngIf="j > 0">✕</button>
+              </div>
+              <input type="text" [(ngModel)]="dest.endereco" [name]="'dest_end_' + j" placeholder="RUA DA ENTREGA" />
+            </div>
           </div>
         </div>
-      </div>
+
+        <div class="form-row-3">
+          <div class="f-group">
+            <label>Motorista</label>
+            <select [(ngModel)]="tripForm.motorista" name="motorista">
+              <option value="">Sem Motorista (A Contratar)</option>
+              <option *ngFor="let m of motoristasList" [value]="m.nome">{{ m.nome }}</option>
+            </select>
+          </div>
+          <div class="f-group">
+            <label>Veículo / Placa</label>
+            <select [(ngModel)]="tripForm.placa" name="placa">
+              <option value="">Sem Veículo Vinculado</option>
+              <option *ngFor="let v of veiculosList" [value]="v.placa">{{ v.placa }} - {{ v.tipoVeiculo }} ({{ v.tipoCarroceria }})</option>
+            </select>
+          </div>
+          <div class="f-group">
+            <label>Agência / Fornecedor</label>
+            <select [(ngModel)]="tripForm.agencia" name="agencia">
+              <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Coleta Prevista</label>
+            <input type="text" [(ngModel)]="tripForm.coletaPrevista" name="coletaPrevista" placeholder="EX: 13/08/2026 14:00" />
+          </div>
+          <div class="f-group">
+            <label>Coleta Real</label>
+            <input type="text" [(ngModel)]="tripForm.coletaReal" name="coletaReal" placeholder="EX: 13/08/2026 14:30" />
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Entrega Prevista</label>
+            <input type="text" [(ngModel)]="tripForm.entregaPrevista" name="entregaPrevista" placeholder="EX: 14/08/2026 10:00" />
+          </div>
+          <div class="f-group">
+            <label>Entrega Real</label>
+            <input type="text" [(ngModel)]="tripForm.entregaReal" name="entregaReal" placeholder="" />
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Valor a Receber (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.valorReceber" name="valorReceber" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="f-group">
+            <label>Adicional a Receber (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.adicionalReceber" name="adicionalReceber" placeholder="0,00" step="0.01" />
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Valor a Pagar Motorista (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.valorPagarMotorista" name="valorPagarMotorista" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="f-group">
+            <label>Adicional a Pagar Motorista (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.adicionalPagarMotorista" name="adicionalPagarMotorista" placeholder="0,00" step="0.01" />
+          </div>
+        </div>
+
+        <div class="f-group">
+          <label>Valor Adicional da Agência (R$)</label>
+          <input type="number" [(ngModel)]="tripForm.valorAdicionalAgencia" name="valorAdicionalAgencia" placeholder="0,00" step="0.01" />
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Liberação</label>
+            <div class="checkbox-container">
+              <input type="checkbox" id="liberadoCheck" [(ngModel)]="tripForm.pagamentoLiberado" name="pagamentoLiberado" />
+              <label for="liberadoCheck">Pagamento Liberado?</label>
+            </div>
+          </div>
+          <div class="f-group">
+            <label>Pagamento Realizado</label>
+            <select [(ngModel)]="tripForm.pagamentoRealizado" name="pagamentoRealizado">
+              <option value="Não Realizado">Não Realizado</option>
+              <option value="Adiantamento pago">Adiantamento pago</option>
+              <option value="Saldo pago">Saldo pago</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="f-group">
+          <label>Hora / Data Pagada</label>
+          <input type="text" [(ngModel)]="tripForm.dataHoraPagada" name="dataHoraPagada" placeholder="EX: 14/08/2026 15:45" />
+        </div>
+
+        <div class="f-group">
+          <label>Status Inicial</label>
+          <select [(ngModel)]="tripForm.statusInicial" name="statusInicial">
+            <option value="PROGRAMADO">PROGRAMADO</option>
+            <option value="A CONTRATAR">A CONTRATAR</option>
+            <option value="AG CARREGAMENTO">AG CARREGAMENTO</option>
+            <option value="CARREGAMENTO">CARREGAMENTO</option>
+            <option value="EM ROTA">EM ROTA</option>
+            <option value="AG DOCUMENTAÇÃO">AG DOCUMENTAÇÃO</option>
+            <option value="AG DESCARGA">AG DESCARGA</option>
+            <option value="DESCARGA">DESCARGA</option>
+            <option value="A PAGAR">A PAGAR</option>
+            <option value="FINALIZADO">FINALIZADO</option>
+          </select>
+        </div>
+
+        <div class="f-group">
+          <label>Observação</label>
+          <textarea rows="3" [(ngModel)]="tripForm.observacao" name="observacao" placeholder=""></textarea>
+        </div>
+
+        <div class="modal-trip-footer">
+          <button type="submit" class="btn-cadastrar-blue">{{ isEditing ? 'Salvar Alterações' : 'Cadastrar' }}</button>
+          <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -819,7 +925,7 @@
     </div>
   </div>
 
-  <!-- GERENCIAR VEÍCULOS (NOVO GRID COM ID RASTREADOR E ANEXAR CRLV) -->
+  <!-- GERENCIAR VEÍCULOS -->
   <div class="cospa-modal-overlay" *ngIf="modalType === 'VEICULO'" (click)="closeModal()">
     <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">
@@ -838,7 +944,6 @@
 
       <div class="modal-body-container">
         <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarVeiculo()" class="modal-pane-content">
-          <!-- Linha 1 (4 Colunas): Placa + Tipo Veículo + Tipo Carroceria + Adicional -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Placa *</label>
@@ -866,7 +971,6 @@
             </div>
           </div>
 
-          <!-- Linha 2 (4 Colunas): Nº Eixos + Cubagem + Capacidade Peso + Nº Paletes -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Nº Eixos</label>
@@ -886,7 +990,6 @@
             </div>
           </div>
 
-          <!-- Linha 3 (4 Colunas): Ano Fabr. + Data Vencimento + Situação + Fornecedor -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Ano Fabricação</label>
@@ -912,7 +1015,6 @@
             </div>
           </div>
 
-          <!-- Linha 4 (4 Colunas): Nº ANTT + Tipo de Rastreador + Id Rastreador + Dropzone CRLV -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Nº ANTT</label>

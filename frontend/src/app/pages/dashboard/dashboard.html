@@ -162,19 +162,19 @@
   </header>
 
   <!-- Conteúdo Principal -->
-  <main class="dashboard-content">
+  <main class="dashboard-content" style="padding: 20px; max-width: 1440px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
 
     <!-- 1. VIAGENS PROGRAMADAS -->
-    <section class="accordion-section">
-      <button type="button" class="accordion-header" (click)="showProgramadas = !showProgramadas">
-        <span class="accordion-title">Viagens Programadas</span>
-        <svg class="accordion-arrow" [class.open]="showProgramadas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    <section class="accordion-section" style="background: var(--card-bg, #161b22); border: 1px solid var(--border-color, #30363d); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+      <button type="button" class="accordion-header" (click)="showProgramadas = !showProgramadas" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: none; cursor: pointer; color: inherit;">
+        <span class="accordion-title" style="font-size: 18px; font-weight: 600;">Viagens Programadas</span>
+        <svg class="accordion-arrow" [class.open]="showProgramadas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px; height: 20px; transition: transform 0.2s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
 
-      <div class="accordion-collapse" [class.expanded]="showProgramadas">
+      <div class="accordion-collapse" [class.expanded]="showProgramadas" *ngIf="showProgramadas" style="padding: 0 20px 20px 20px;">
         <div class="accordion-inner">
           <div class="table-container">
-            <table class="cospa-table">
+            <table class="cospa-table" style="width: 100%; border-collapse: collapse;">
               <thead>
                 <tr>
                   <th>VIAGEM</th>
@@ -234,16 +234,16 @@
     </section>
 
     <!-- 2. VIAGENS EM ANDAMENTO -->
-    <section class="accordion-section">
-      <button type="button" class="accordion-header" (click)="showAndamento = !showAndamento">
-        <span class="accordion-title">Viagens em Andamento</span>
-        <svg class="accordion-arrow" [class.open]="showAndamento" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    <section class="accordion-section" style="background: var(--card-bg, #161b22); border: 1px solid var(--border-color, #30363d); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+      <button type="button" class="accordion-header" (click)="showAndamento = !showAndamento" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: none; cursor: pointer; color: inherit;">
+        <span class="accordion-title" style="font-size: 18px; font-weight: 600;">Viagens em Andamento</span>
+        <svg class="accordion-arrow" [class.open]="showAndamento" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px; height: 20px; transition: transform 0.2s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
 
-      <div class="accordion-collapse" [class.expanded]="showAndamento">
+      <div class="accordion-collapse" [class.expanded]="showAndamento" *ngIf="showAndamento" style="padding: 0 20px 20px 20px;">
         <div class="accordion-inner">
           <div class="table-container">
-            <table class="cospa-table">
+            <table class="cospa-table" style="width: 100%; border-collapse: collapse;">
               <thead>
                 <tr>
                   <th>VIAGEM</th>
@@ -311,16 +311,16 @@
     </section>
 
     <!-- 3. VIAGENS FINALIZADAS -->
-    <section class="accordion-section">
-      <button type="button" class="accordion-header" (click)="showFinalizadas = !showFinalizadas">
-        <span class="accordion-title">Viagens Finalizadas</span>
-        <svg class="accordion-arrow" [class.open]="showFinalizadas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    <section class="accordion-section" style="background: var(--card-bg, #161b22); border: 1px solid var(--border-color, #30363d); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+      <button type="button" class="accordion-header" (click)="showFinalizadas = !showFinalizadas" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: none; cursor: pointer; color: inherit;">
+        <span class="accordion-title" style="font-size: 18px; font-weight: 600;">Viagens Finalizadas</span>
+        <svg class="accordion-arrow" [class.open]="showFinalizadas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px; height: 20px; transition: transform 0.2s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
 
-      <div class="accordion-collapse" [class.expanded]="showFinalizadas">
+      <div class="accordion-collapse" [class.expanded]="showFinalizadas" *ngIf="showFinalizadas" style="padding: 0 20px 20px 20px;">
         <div class="accordion-inner">
           <div class="table-container">
-            <table class="cospa-table">
+            <table class="cospa-table" style="width: 100%; border-collapse: collapse;">
               <thead>
                 <tr>
                   <th>VIAGEM</th>
@@ -583,7 +583,7 @@
             </select>
           </div>
           <div class="f-group">
-            <label>Agência / Fornecedor</label>
+            <label>Fornecedor</label>
             <select [(ngModel)]="tripForm.agencia" name="agencia">
               <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
             </select>
@@ -635,7 +635,7 @@
         </div>
 
         <div class="f-group">
-          <label>Valor Adicional da Agência (R$)</label>
+          <label>Valor Adicional do Fornecedor (R$)</label>
           <input type="number" [(ngModel)]="tripForm.valorAdicionalAgencia" name="valorAdicionalAgencia" placeholder="0,00" step="0.01" />
         </div>
 

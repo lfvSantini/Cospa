@@ -44,3 +44,6 @@ build/
 
 ### VS Code ###
 .vscode/
+frontend/.github/workflows/playwright.yml
+frontend/playwright.config.ts
+frontend/e2e/cospa-fluxo.spec.ts

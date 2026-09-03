@@ -476,7 +476,6 @@ export class DashboardComponent implements OnInit {
           } else if (st === 'A PAGAR' || st === 'ADIANTAMENTO PAGO' || st === 'SALDO PAGO') {
             this.viagensAPagar.push(item);
           } else {
-            // Em Andamento: PROGRAMADO, A CONTRATAR, AG CARREGAMENTO, EM ROTA, etc.
             this.viagensAndamento.push(item);
           }
         });
@@ -913,6 +912,21 @@ export class DashboardComponent implements OnInit {
   salvarMotorista(): void {
     if (!this.motoristaForm.nome.trim()) return;
 
+    const cpfLimpo = (this.motoristaForm.cpf || '').replace(/\D/g, '').trim();
+    const idAtual = this.isEditingMotorista ? this.motoristaForm.id : null;
+
+    if (cpfLimpo) {
+      const motoristaExistente = this.motoristasList.find(m => {
+        const cpfCadastrado = (m.cpf || '').replace(/\D/g, '').trim();
+        return cpfCadastrado === cpfLimpo && m.id !== idAtual;
+      });
+
+      if (motoristaExistente) {
+        alert(`Atenção: O CPF "${this.motoristaForm.cpf}" já está cadastrado para o motorista "${motoristaExistente.nome}"!`);
+        return;
+      }
+    }
+
     const payload: any = {
       id: this.isEditingMotorista ? this.motoristaForm.id : undefined,
       nome: this.motoristaForm.nome.toUpperCase(),
@@ -1060,14 +1074,25 @@ export class DashboardComponent implements OnInit {
   }
 
   salvarVeiculo(): void {
-    if (!this.veiculoForm.placa.trim()) {
+    const placaLimpa = (this.veiculoForm.placa || '').toUpperCase().trim();
+    if (!placaLimpa) {
       alert('Informe a placa do veículo.');
+      return;
+    }
+
+    const idAtual = this.isEditingVeiculo ? this.veiculoForm.id : null;
+    const placaExistente = this.veiculosList.find(v => 
+      v.placa.toUpperCase().trim() === placaLimpa && v.id !== idAtual
+    );
+
+    if (placaExistente) {
+      alert(`Atenção: A placa "${placaLimpa}" já está cadastrada no sistema!`);
       return;
     }
 
     const payload: any = {
       id: this.isEditingVeiculo ? this.veiculoForm.id : undefined,
-      placa: this.veiculoForm.placa.toUpperCase().trim(),
+      placa: placaLimpa,
       tipoVeiculo: this.veiculoForm.tipoVeiculo || 'Truck',
       tipoCarroceria: this.veiculoForm.tipoCarroceria || 'Bau Seco',
       adicional: this.veiculoForm.adicional || '',
@@ -1311,6 +1336,21 @@ export class DashboardComponent implements OnInit {
   salvarCliente(): void {
     if (!this.clienteForm.nomeFantasia.trim()) return;
 
+    const docLimpo = (this.clienteForm.cnpjCpf || '').replace(/\D/g, '').trim();
+    const idAtual = this.isEditingCliente ? this.clienteForm.id : null;
+
+    if (docLimpo) {
+      const clienteExistente = this.clientesList.find(c => {
+        const docCadastrado = (c.cnpjCpf || '').replace(/\D/g, '').trim();
+        return docCadastrado === docLimpo && c.id !== idAtual;
+      });
+
+      if (clienteExistente) {
+        alert(`Atenção: O CNPJ/CPF "${this.clienteForm.cnpjCpf}" já está cadastrado para o cliente "${clienteExistente.nomeFantasia}"!`);
+        return;
+      }
+    }
+
     const payload: Cliente = {
       id: this.isEditingCliente ? this.clienteForm.id : undefined,
       nome: this.clienteForm.nomeFantasia.toUpperCase(),
@@ -1410,6 +1450,21 @@ export class DashboardComponent implements OnInit {
 
   salvarFornecedor(): void {
     if (!this.fornecedorForm.nome.trim()) return;
+
+    const docLimpo = (this.fornecedorForm.cnpjCpf || '').replace(/\D/g, '').trim();
+    const idAtual = this.isEditingFornecedor ? this.fornecedorForm.id : null;
+
+    if (docLimpo) {
+      const docExistente = this.fornecedoresList.find(f => {
+        const docCadastrado = (f.cnpjCpf || '').replace(/\D/g, '').trim();
+        return docCadastrado === docLimpo && f.id !== idAtual;
+      });
+
+      if (docExistente) {
+        alert(`Atenção: O CNPJ/CPF "${this.fornecedorForm.cnpjCpf}" já está cadastrado para o fornecedor "${docExistente.nome}"!`);
+        return;
+      }
+    }
 
     const payload: Fornecedor = {
       id: this.isEditingFornecedor ? this.fornecedorForm.id : undefined,

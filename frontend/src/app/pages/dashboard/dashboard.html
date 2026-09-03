@@ -34,7 +34,7 @@
       <button type="button" class="sidebar-item disabled">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path
-            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
           <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
           <line x1="12" y1="22.08" x2="12" y2="12"></line>
         </svg>
@@ -135,7 +135,7 @@
             <span>Gerenciar Clientes</span>
           </button>
           <button type="button" class="dropdown-item" (click)="openGerenciarFornecedores()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
             <span>Gerenciar Fornecedores</span>
           </button>
           <button type="button" class="dropdown-item" (click)="openGerenciarMotoristas()">
@@ -162,19 +162,19 @@
   </header>
 
   <!-- Conteúdo Principal Encaixado -->
-  <main class="dashboard-content" style="padding: 20px; max-width: 1440px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+  <main class="dashboard-content">
 
     <!-- 1. VIAGENS PROGRAMADAS -->
-    <section class="accordion-section" style="background: var(--card-bg, #161b22); border: 1px solid var(--border-color, #30363d); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-      <button type="button" class="accordion-header" (click)="showProgramadas = !showProgramadas" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: none; cursor: pointer; color: inherit;">
-        <span class="accordion-title" style="font-size: 18px; font-weight: 600;">Viagens Programadas</span>
-        <svg class="accordion-arrow" [class.open]="showProgramadas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px; height: 20px; transition: transform 0.2s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    <section class="accordion-section">
+      <button type="button" class="accordion-header" (click)="showProgramadas = !showProgramadas">
+        <span class="accordion-title">Viagens Programadas</span>
+        <svg class="accordion-arrow" [class.open]="showProgramadas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
 
-      <div class="accordion-collapse" [class.expanded]="showProgramadas" *ngIf="showProgramadas" style="padding: 0 20px 20px 20px;">
+      <div class="accordion-collapse" [class.expanded]="showProgramadas" *ngIf="showProgramadas">
         <div class="accordion-inner">
           <div class="table-container">
-            <table class="cospa-table" style="width: 100%; border-collapse: collapse;">
+            <table class="cospa-table">
               <thead>
                 <tr>
                   <th>VIAGEM</th>
@@ -234,16 +234,16 @@
     </section>
 
     <!-- 2. VIAGENS EM ANDAMENTO -->
-    <section class="accordion-section" style="background: var(--card-bg, #161b22); border: 1px solid var(--border-color, #30363d); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-      <button type="button" class="accordion-header" (click)="showAndamento = !showAndamento" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: none; cursor: pointer; color: inherit;">
-        <span class="accordion-title" style="font-size: 18px; font-weight: 600;">Viagens em Andamento</span>
-        <svg class="accordion-arrow" [class.open]="showAndamento" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px; height: 20px; transition: transform 0.2s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    <section class="accordion-section">
+      <button type="button" class="accordion-header" (click)="showAndamento = !showAndamento">
+        <span class="accordion-title">Viagens em Andamento</span>
+        <svg class="accordion-arrow" [class.open]="showAndamento" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
 
-      <div class="accordion-collapse" [class.expanded]="showAndamento" *ngIf="showAndamento" style="padding: 0 20px 20px 20px;">
+      <div class="accordion-collapse" [class.expanded]="showAndamento" *ngIf="showAndamento">
         <div class="accordion-inner">
           <div class="table-container">
-            <table class="cospa-table" style="width: 100%; border-collapse: collapse;">
+            <table class="cospa-table">
               <thead>
                 <tr>
                   <th>VIAGEM</th>
@@ -275,7 +275,9 @@
                       'status-rota': item.status === 'EM ROTA',
                       'status-doc': item.status === 'AG DOCUMENTAÇÃO',
                       'status-descarga': item.status === 'AG DESCARGA' || item.status === 'DESCARGA',
-                      'status-pagar': item.status === 'A PAGAR'
+                      'status-pagar': item.status === 'A PAGAR',
+                      'status-adiantamento': item.status === 'ADIANTAMENTO PAGO',
+                      'status-saldo-pago': item.status === 'SALDO PAGO'
                     }">{{ item.status }}</span>
                   </td>
                   <td class="col-obs">
@@ -291,6 +293,10 @@
                         <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                       </button>
                       <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
+                        <button *ngIf="item.status !== 'A PAGAR'" type="button" class="row-menu-item item-pagar" (click)="passarParaAPagar(item)" style="color: #f97316;">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 6v2"></path><path d="M12 16v2"></path></svg>
+                          <span>Passar p/ A Pagar</span>
+                        </button>
                         <button type="button" class="row-menu-item item-finalizar" (click)="finalizarViagem(item)">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
                           <span>Finalizar Viagem</span>
@@ -311,16 +317,16 @@
     </section>
 
     <!-- 3. VIAGENS FINALIZADAS -->
-    <section class="accordion-section" style="background: var(--card-bg, #161b22); border: 1px solid var(--border-color, #30363d); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-      <button type="button" class="accordion-header" (click)="showFinalizadas = !showFinalizadas" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: none; cursor: pointer; color: inherit;">
-        <span class="accordion-title" style="font-size: 18px; font-weight: 600;">Viagens Finalizadas</span>
-        <svg class="accordion-arrow" [class.open]="showFinalizadas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px; height: 20px; transition: transform 0.2s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    <section class="accordion-section">
+      <button type="button" class="accordion-header" (click)="showFinalizadas = !showFinalizadas">
+        <span class="accordion-title">Viagens Finalizadas</span>
+        <svg class="accordion-arrow" [class.open]="showFinalizadas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
 
-      <div class="accordion-collapse" [class.expanded]="showFinalizadas" *ngIf="showFinalizadas" style="padding: 0 20px 20px 20px;">
+      <div class="accordion-collapse" [class.expanded]="showFinalizadas" *ngIf="showFinalizadas">
         <div class="accordion-inner">
           <div class="table-container">
-            <table class="cospa-table" style="width: 100%; border-collapse: collapse;">
+            <table class="cospa-table">
               <thead>
                 <tr>
                   <th>VIAGEM</th>
@@ -405,7 +411,7 @@
               <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
               <div class="comprovante-dropzone" [class.drag-over]="isDraggingComprovante" (click)="fileInputComp.click()" (dragover)="onComprovanteDragOver($event)" (dragleave)="onComprovanteDragLeave($event)" (drop)="onComprovanteDrop($event)">
                 <input #fileInputComp type="file" (change)="onComprovanteFileSelected($event)" style="display: none;" accept="image/*,.pdf" />
-                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                 <span>{{ novoComprovante.nomeArquivo || 'Clique, arraste ou use Ctrl+V' }}</span>
               </div>
             </div>
@@ -765,6 +771,8 @@
             <option value="AG DESCARGA">AG DESCARGA</option>
             <option value="DESCARGA">DESCARGA</option>
             <option value="A PAGAR">A PAGAR</option>
+            <option value="ADIANTAMENTO PAGO">ADIANTAMENTO PAGO</option>
+            <option value="SALDO PAGO">SALDO PAGO</option>
             <option value="FINALIZADO">FINALIZADO</option>
           </select>
         </div>
@@ -1035,6 +1043,7 @@
 
       <div class="modal-body-container">
         <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarVeiculo()" class="modal-pane-content">
+          <!-- LINHA 1: PLACA, TIPO VEÍCULO, CARROCERIA, ADICIONAL -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Placa *</label>
@@ -1062,6 +1071,7 @@
             </div>
           </div>
 
+          <!-- LINHA 2: EIXOS, CUBAGEM, CAPACIDADE, PALETES -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Nº Eixos</label>
@@ -1081,6 +1091,7 @@
             </div>
           </div>
 
+          <!-- LINHA 3: ANO, VENCIMENTO, SITUAÇÃO, FORNECEDOR -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Ano Fabricação</label>
@@ -1106,6 +1117,7 @@
             </div>
           </div>
 
+          <!-- LINHA 4: ANTT, TIPO RASTREADOR, ID RASTREADOR, TAG PEDÁGIO -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Nº ANTT</label>
@@ -1120,12 +1132,20 @@
               <input type="text" [(ngModel)]="veiculoForm.idRastreador" name="idRastreador" placeholder="EX: ID / SÉRIE 98412" />
             </div>
             <div class="f-group">
-              <label>Anexar CRLV</label>
-              <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoCrlv" (click)="crlvVeiculoInput.click()" (dragover)="$event.preventDefault(); isDraggingVeiculoCrlv = true;" (dragleave)="$event.preventDefault(); isDraggingVeiculoCrlv = false;" (drop)="onVeiculoCrlvDrop($event)">
-                <input #crlvVeiculoInput type="file" (change)="onFileSelected($event, 'CRLV')" style="display: none;" accept="image/*,.pdf" />
-                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                <span>{{ veiculoForm.crlvPreviewName || 'Anexar CRLV' }}</span>
-              </div>
+              <label>Tag Pedágio</label>
+              <select [(ngModel)]="veiculoForm.tagPedagio" name="tagPedagio">
+                <option *ngFor="let opt of tiposTagPedagioOpcoes" [value]="opt">{{ opt }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- LINHA 5: ÁREA EXCLUSIVA DE ANEXAR CRLV -->
+          <div class="f-group" style="margin-top: 0.25rem;">
+            <label>Anexar CRLV (Arraste, Clique ou Cole com Ctrl+V)</label>
+            <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoCrlv" (click)="crlvVeiculoInput.click()" (dragover)="$event.preventDefault(); isDraggingVeiculoCrlv = true;" (dragleave)="$event.preventDefault(); isDraggingVeiculoCrlv = false;" (drop)="onVeiculoCrlvDrop($event)">
+              <input #crlvVeiculoInput type="file" (change)="onFileSelected($event, 'CRLV')" style="display: none;" accept="image/*,.pdf" />
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span>{{ veiculoForm.crlvPreviewName || 'Clique ou arraste o CRLV (PDF/Imagem)' }}</span>
             </div>
           </div>
 
@@ -1147,7 +1167,7 @@
                   <h4>{{ v.placa }}</h4>
                   <span class="badge-status" [class.badge-active]="v.situacao === 'ATIVO'" [class.badge-inactive]="v.situacao === 'INATIVO'">{{ v.situacao }}</span>
                 </div>
-                <p class="crud-subtext">{{ v.tipoVeiculo }} • {{ v.tipoCarroceria }} • Fornecedor: <strong>{{ v.fornecedor }}</strong> • Rastreador: {{ v.tipoRastreador || '-' }} (ID: {{ v.idRastreador || '-' }})</p>
+                <p class="crud-subtext">{{ v.tipoVeiculo }} • {{ v.tipoCarroceria }} • Fornecedor: <strong>{{ v.fornecedor }}</strong> • Rastreador: {{ v.tipoRastreador || '-' }} • Tag: <strong>{{ v.tagPedagio || 'Nenhum' }}</strong></p>
               </div>
               <div class="crud-item-actions">
                 <button type="button" class="btn-photo-inline" (click)="openVeiculoFotosModal(v)" title="Ver Documentos e Fotos">

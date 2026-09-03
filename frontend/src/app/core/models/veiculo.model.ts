@@ -21,6 +21,8 @@ export interface Veiculo {
   fornecedor?: string;
   numeroAntt?: string;
   tipoRastreador?: string;
+  idRastreador?: string;
+  tagPedagio?: string;
   situacao?: 'ATIVO' | 'INATIVO';
   documentos?: VeiculoDocumentoItem[];
 }

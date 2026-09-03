@@ -8,6 +8,8 @@ export type StatusViagem =
   | 'AG DESCARGA' 
   | 'DESCARGA' 
   | 'A PAGAR' 
+  | 'ADIANTAMENTO PAGO' 
+  | 'SALDO PAGO' 
   | 'FINALIZADO';
 
 export interface Comprovante {
@@ -36,6 +38,8 @@ export interface Viagem {
   cpfMotorista?: string;
   cpf_motorista?: string;
   placa?: string;
+  placaSecundaria?: string;
+  placa_secundaria?: string;
   
   fornecedorAgencia?: string;
   fornecedor_agencia?: string;

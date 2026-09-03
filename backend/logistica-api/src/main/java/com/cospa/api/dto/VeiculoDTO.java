@@ -17,6 +17,7 @@ public class VeiculoDTO {
     private String numeroAntt;
     private String tipoRastreador;
     private String idRastreador;
+    private String tagPedagio;
     private String situacao;
 
     public VeiculoDTO() {}
@@ -65,6 +66,9 @@ public class VeiculoDTO {
 
     public String getIdRastreador() { return idRastreador; }
     public void setIdRastreador(String idRastreador) { this.idRastreador = idRastreador; }
+
+    public String getTagPedagio() { return tagPedagio; }
+    public void setTagPedagio(String tagPedagio) { this.tagPedagio = tagPedagio; }
 
     public String getSituacao() { return situacao; }
     public void setSituacao(String situacao) { this.situacao = situacao; }

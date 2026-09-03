@@ -56,6 +56,9 @@ public class Veiculo {
     @Column(name = "id_rastreador", length = 100)
     private String idRastreador;
 
+    @Column(name = "tag_pedagio", length = 50)
+    private String tagPedagio = "Nenhum";
+
     @Column(length = 20)
     private String situacao = "ATIVO";
 
@@ -116,6 +119,9 @@ public class Veiculo {
 
     public String getIdRastreador() { return idRastreador; }
     public void setIdRastreador(String idRastreador) { this.idRastreador = idRastreador; }
+
+    public String getTagPedagio() { return tagPedagio; }
+    public void setTagPedagio(String tagPedagio) { this.tagPedagio = tagPedagio; }
 
     public String getSituacao() { return situacao; }
     public void setSituacao(String situacao) { this.situacao = situacao; }

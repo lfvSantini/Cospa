@@ -16,6 +16,8 @@ public enum StatusViagem {
     AG_DESCARGA("AG DESCARGA"),
     DESCARGA("DESCARGA"),
     A_PAGAR("A PAGAR"),
+    ADIANTAMENTO_PAGO("ADIANTAMENTO PAGO"),
+    SALDO_PAGO("SALDO PAGO"),
     FINALIZADO("FINALIZADO");
 
     private final String descricao;

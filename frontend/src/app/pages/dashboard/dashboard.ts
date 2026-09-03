@@ -100,6 +100,7 @@ export interface VeiculoModel {
   numeroAntt: string;
   tipoRastreador: string;
   idRastreador: string;
+  tagPedagio: string;
   situacao: 'ATIVO' | 'INATIVO';
   crlvFile?: File | null;
   crlvPreviewName?: string;
@@ -204,6 +205,10 @@ export class DashboardComponent implements OnInit {
   tiposCarroceriaOpcoes: string[] = [
     'Bau Seco', 'Bau Refrigerado', 'Baú Frigorífico', 'Bau Blindado',
     'Bau Plataforma', 'Sider', 'Aberta', 'Graneleira'
+  ];
+
+  tiposTagPedagioOpcoes: string[] = [
+    'Nenhum', 'Sem Parar', 'Veloe', 'ConectCar', 'Move Mais', 'Taggy', 'Outro'
   ];
 
   tripForm = {
@@ -515,6 +520,26 @@ export class DashboardComponent implements OnInit {
       fotos: fotos,
       rawViagem: v
     };
+  }
+
+  passarParaAPagar(item: ViagemItem): void {
+    if (!item.rawViagem) return;
+    const atualizada: any = {
+      ...item.rawViagem,
+      id: item.rawId,
+      status: 'A PAGAR'
+    };
+
+    this.viagemService.salvar(atualizada, true).subscribe({
+      next: () => {
+        this.closeRowActions();
+        this.carregarViagens();
+      },
+      error: (err) => {
+        console.error('Erro ao mudar status para A PAGAR:', err);
+        alert('Erro ao atualizar status para A PAGAR.');
+      }
+    });
   }
 
   finalizarViagem(item: ViagemItem): void {
@@ -965,6 +990,7 @@ export class DashboardComponent implements OnInit {
           numeroAntt: v.numeroAntt || '',
           tipoRastreador: v.tipoRastreador || '',
           idRastreador: v.idRastreador || '',
+          tagPedagio: v.tagPedagio || v.tag_pedagio || 'Nenhum',
           situacao: v.situacao || 'ATIVO',
           documentos: (v.documentos || []).map((d: any) => ({
             id: d.id || 0,
@@ -1013,6 +1039,7 @@ export class DashboardComponent implements OnInit {
       numeroAntt: '',
       tipoRastreador: '',
       idRastreador: '',
+      tagPedagio: 'Nenhum',
       situacao: 'ATIVO',
       crlvFile: null,
       crlvPreviewName: '',
@@ -1052,6 +1079,7 @@ export class DashboardComponent implements OnInit {
       numeroAntt: this.veiculoForm.numeroAntt || '',
       tipoRastreador: this.veiculoForm.tipoRastreador || '',
       idRastreador: this.veiculoForm.idRastreador || '',
+      tagPedagio: this.veiculoForm.tagPedagio || 'Nenhum',
       situacao: this.veiculoForm.situacao || 'ATIVO'
     };
 

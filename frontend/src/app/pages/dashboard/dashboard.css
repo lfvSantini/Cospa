@@ -478,10 +478,10 @@ textarea {
 
 .dashboard-content {
   flex: 1;
-  padding: 1.5rem 1.75rem 4rem 1.75rem;
-  max-width: 1600px;
-  width: 100%;
-  margin: 0 auto;
+  padding: 1.25rem 1.5rem 4rem 1.5rem;
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -500,9 +500,17 @@ textarea {
   overflow: hidden;
 }
 
-.accordion-section:nth-child(1) { z-index: 30; }
-.accordion-section:nth-child(2) { z-index: 20; }
-.accordion-section:nth-child(3) { z-index: 10; }
+.accordion-section:nth-child(1) {
+  z-index: 30;
+}
+
+.accordion-section:nth-child(2) {
+  z-index: 20;
+}
+
+.accordion-section:nth-child(3) {
+  z-index: 10;
+}
 
 .accordion-header {
   display: flex;
@@ -617,18 +625,72 @@ textarea {
   box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.25) !important;
 }
 
-.cospa-table th:nth-child(1), .cospa-table td:nth-child(1) { width: 5%; }
-.cospa-table th:nth-child(2), .cospa-table td:nth-child(2) { width: 11%; }
-.cospa-table th:nth-child(3), .cospa-table td:nth-child(3) { width: 12%; }
-.cospa-table th:nth-child(4), .cospa-table td:nth-child(4) { width: 12%; }
-.cospa-table th:nth-child(5), .cospa-table td:nth-child(5) { width: 9%; }
-.cospa-table th:nth-child(6), .cospa-table td:nth-child(6) { width: 9%; }
-.cospa-table th:nth-child(7), .cospa-table td:nth-child(7) { width: 8%; }
-.cospa-table th:nth-child(8), .cospa-table td:nth-child(8) { width: 15%; }
-.cospa-table th:nth-child(9), .cospa-table td:nth-child(9) { width: 9%; }
-.cospa-table th:nth-child(10), .cospa-table td:nth-child(10) { width: 4%; }
-.cospa-table th:nth-child(11), .cospa-table td:nth-child(11) { width: 6%; }
+.cospa-table th:nth-child(1),
+.cospa-table td:nth-child(1) {
+  width: 5%;
+}
 
+/* Viagem */
+.cospa-table th:nth-child(2),
+.cospa-table td:nth-child(2) {
+  width: 11%;
+}
+
+/* Cliente */
+.cospa-table th:nth-child(3),
+.cospa-table td:nth-child(3) {
+  width: 11%;
+}
+
+/* Origem */
+.cospa-table th:nth-child(4),
+.cospa-table td:nth-child(4) {
+  width: 11%;
+}
+
+/* Destino */
+.cospa-table th:nth-child(5),
+.cospa-table td:nth-child(5) {
+  width: 9%;
+}
+
+/* Coleta Prevista */
+.cospa-table th:nth-child(6),
+.cospa-table td:nth-child(6) {
+  width: 9%;
+}
+
+/* Entrega Prevista */
+.cospa-table th:nth-child(7),
+.cospa-table td:nth-child(7) {
+  width: 13%;
+}
+
+/* Placa (ampliada para comportar duas placas) */
+.cospa-table th:nth-child(8),
+.cospa-table td:nth-child(8) {
+  width: 13%;
+}
+
+/* Motorista */
+.cospa-table th:nth-child(9),
+.cospa-table td:nth-child(9) {
+  width: 9%;
+}
+
+/* Status */
+.cospa-table th:nth-child(10),
+.cospa-table td:nth-child(10) {
+  width: 4%;
+}
+
+/* Obs */
+.cospa-table th:nth-child(11),
+.cospa-table td:nth-child(11) {
+  width: 5%;
+}
+
+/* Ações */
 .col-viagem {
   font-weight: 700;
   color: #0066d6;
@@ -659,9 +721,11 @@ textarea {
 .col-placa {
   font-family: monospace;
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .col-motorista {
@@ -749,15 +813,41 @@ textarea {
   border: 1px solid #10b981;
 }
 
-.dashboard-wrapper:not(.light-mode) .status-contratar { color: #fbbf24; }
-.dashboard-wrapper:not(.light-mode) .status-programado { color: #60a5fa; }
-.dashboard-wrapper:not(.light-mode) .status-carregamento { color: #38bdf8; }
-.dashboard-wrapper:not(.light-mode) .status-rota { color: #34d399; }
-.dashboard-wrapper:not(.light-mode) .status-doc { color: #facc15; }
-.dashboard-wrapper:not(.light-mode) .status-descarga { color: #c084fc; }
-.dashboard-wrapper:not(.light-mode) .status-adiantamento { color: #f59e0b; }
-.dashboard-wrapper:not(.light-mode) .status-saldo-pago { color: #10b981; }
-.dashboard-wrapper:not(.light-mode) .status-finalizado { color: #10b981; }
+.dashboard-wrapper:not(.light-mode) .status-contratar {
+  color: #fbbf24;
+}
+
+.dashboard-wrapper:not(.light-mode) .status-programado {
+  color: #60a5fa;
+}
+
+.dashboard-wrapper:not(.light-mode) .status-carregamento {
+  color: #38bdf8;
+}
+
+.dashboard-wrapper:not(.light-mode) .status-rota {
+  color: #34d399;
+}
+
+.dashboard-wrapper:not(.light-mode) .status-doc {
+  color: #facc15;
+}
+
+.dashboard-wrapper:not(.light-mode) .status-descarga {
+  color: #c084fc;
+}
+
+.dashboard-wrapper:not(.light-mode) .status-adiantamento {
+  color: #f59e0b;
+}
+
+.dashboard-wrapper:not(.light-mode) .status-saldo-pago {
+  color: #10b981;
+}
+
+.dashboard-wrapper:not(.light-mode) .status-finalizado {
+  color: #10b981;
+}
 
 .cospa-table th:nth-child(10) {
   text-align: center;
@@ -875,8 +965,15 @@ textarea {
 }
 
 @keyframes dropdownFade {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .row-menu-item {
@@ -919,13 +1016,22 @@ textarea {
   background-color: rgba(16, 185, 129, 0.12);
 }
 
-.row-menu-item.item-foto:hover svg { stroke: #0066d6; }
-.row-menu-item.item-alterar:hover svg { stroke: #f59e0b; }
+.row-menu-item.item-foto:hover svg {
+  stroke: #0066d6;
+}
+
+.row-menu-item.item-alterar:hover svg {
+  stroke: #f59e0b;
+}
+
 .row-menu-item.item-excluir:hover {
   background-color: rgba(239, 68, 68, 0.12);
   color: #ef4444;
 }
-.row-menu-item.item-excluir svg { stroke: #ef4444; }
+
+.row-menu-item.item-excluir svg {
+  stroke: #ef4444;
+}
 
 .row-menu-divider {
   height: 1px;
@@ -988,13 +1094,25 @@ textarea {
 }
 
 @keyframes modalPop {
-  from { opacity: 0; transform: scale(0.96) translateY(8px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-head {
@@ -1303,8 +1421,14 @@ textarea {
   padding: 0;
 }
 
-.btn-open-ext:hover { background-color: #0066d6; }
-.btn-open-ext svg { width: 14px; height: 14px; }
+.btn-open-ext:hover {
+  background-color: #0066d6;
+}
+
+.btn-open-ext svg {
+  width: 14px;
+  height: 14px;
+}
 
 .btn-del-photo {
   position: absolute;
@@ -1325,7 +1449,9 @@ textarea {
   padding: 0;
 }
 
-.btn-del-photo:hover { background-color: #ef4444; }
+.btn-del-photo:hover {
+  background-color: #ef4444;
+}
 
 .comp-info-footer {
   padding: 0.75rem 0.85rem;
@@ -1436,7 +1562,9 @@ textarea {
   flex-shrink: 0;
 }
 
-.btn-add-point:hover { background-color: #0056b3; }
+.btn-add-point:hover {
+  background-color: #0056b3;
+}
 
 .btn-rem-point {
   background-color: rgba(239, 68, 68, 0.15);
@@ -1452,7 +1580,10 @@ textarea {
   flex-shrink: 0;
 }
 
-.btn-rem-point:hover { background-color: #ef4444; color: #ffffff; }
+.btn-rem-point:hover {
+  background-color: #ef4444;
+  color: #ffffff;
+}
 
 .checkbox-container {
   display: flex;
@@ -1500,7 +1631,9 @@ textarea {
   cursor: pointer;
 }
 
-.btn-cadastrar-blue:hover { background-color: #0056b3; }
+.btn-cadastrar-blue:hover {
+  background-color: #0056b3;
+}
 
 .btn-cancelar-gray {
   padding: 0.75rem 1.4rem;
@@ -1513,7 +1646,9 @@ textarea {
   cursor: pointer;
 }
 
-.btn-cancelar-gray:hover { background-color: #475569; }
+.btn-cancelar-gray:hover {
+  background-color: #475569;
+}
 
 .manage-search-bar {
   margin-bottom: 0.25rem;
@@ -1609,8 +1744,15 @@ textarea {
   cursor: pointer;
 }
 
-.btn-photo-inline:hover { background-color: #0066d6; color: #ffffff; }
-.btn-photo-inline svg { width: 13px; height: 13px; }
+.btn-photo-inline:hover {
+  background-color: #0066d6;
+  color: #ffffff;
+}
+
+.btn-photo-inline svg {
+  width: 13px;
+  height: 13px;
+}
 
 .btn-edit-inline {
   display: inline-flex;
@@ -1626,8 +1768,15 @@ textarea {
   cursor: pointer;
 }
 
-.btn-edit-inline:hover { background-color: #d97706; color: #ffffff; }
-.btn-edit-inline svg { width: 13px; height: 13px; }
+.btn-edit-inline:hover {
+  background-color: #d97706;
+  color: #ffffff;
+}
+
+.btn-edit-inline svg {
+  width: 13px;
+  height: 13px;
+}
 
 .btn-del-inline {
   display: inline-flex;
@@ -1641,8 +1790,15 @@ textarea {
   cursor: pointer;
 }
 
-.btn-del-inline:hover { background-color: #ef4444; color: #ffffff; }
-.btn-del-inline svg { width: 14px; height: 14px; }
+.btn-del-inline:hover {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+.btn-del-inline svg {
+  width: 14px;
+  height: 14px;
+}
 
 .upload-dropzone-row {
   display: grid;
@@ -1701,7 +1857,9 @@ textarea {
   cursor: pointer;
 }
 
-.btn-pri-cospa:hover { background-color: var(--btn-primary-hover); }
+.btn-pri-cospa:hover {
+  background-color: var(--btn-primary-hover);
+}
 
 .btn-sec-cospa {
   padding: 0.75rem 1.5rem;

@@ -522,6 +522,27 @@ export class DashboardComponent implements OnInit {
     };
   }
 
+  iniciarViagem(item: ViagemItem): void {
+    if (!item.rawViagem) return;
+    const atualizada: any = {
+      ...item.rawViagem,
+      id: item.rawId,
+      status: 'AG CARREGAMENTO'
+    };
+
+    this.viagemService.salvar(atualizada, true).subscribe({
+      next: () => {
+        this.showAndamento = true;
+        this.closeRowActions();
+        this.carregarViagens();
+      },
+      error: (err) => {
+        console.error('Erro ao iniciar viagem:', err);
+        alert('Erro ao iniciar viagem.');
+      }
+    });
+  }
+
   passarParaAPagar(item: ViagemItem): void {
     if (!item.rawViagem) return;
     const atualizada: any = {
@@ -1551,19 +1572,15 @@ export class DashboardComponent implements OnInit {
   salvarViagemForm(): void {
     const rawIdInput = (this.tripForm.id || '').toString().trim();
 
-    if (!this.isEditing && (!rawIdInput || isNaN(Number(rawIdInput)) || Number(rawIdInput) <= 0)) {
-      alert('Por favor, informe o Nº da Viagem (ID) antes de cadastrar.');
+    if (!rawIdInput || isNaN(Number(rawIdInput)) || Number(rawIdInput) <= 0) {
+      alert('Por favor, informe um Nº da Viagem (ID) válido antes de salvar.');
       return;
     }
 
-    const idFinal = this.isEditing && this.selectedViagem 
-      ? this.selectedViagem.rawId 
-      : Number(rawIdInput);
+    const idFinal = Number(rawIdInput);
+    const idOriginal = this.isEditing && this.selectedViagem ? this.selectedViagem.rawId : null;
 
-    // ==========================================
-    // VERIFICAÇÃO DE DUPLICIDADE DE ID
-    // ==========================================
-    if (!this.isEditing) {
+    if (!this.isEditing || idFinal !== idOriginal) {
       const todosOsIds = [
         ...this.viagensProgramadas.map(v => v.rawId),
         ...this.viagensAndamento.map(v => v.rawId),

@@ -214,6 +214,7 @@ export class DashboardComponent implements OnInit {
     destinos: [{ local: '', endereco: '' }] as PontoRota[],
     motorista: '',
     placa: '',
+    placaSecundaria: '',
     agencia: 'Frota Própria',
     coletaPrevista: '',
     coletaReal: '',
@@ -917,6 +918,9 @@ export class DashboardComponent implements OnInit {
   }
 
   excluirMotorista(id: number): void {
+    if (!confirm('Deseja realmente excluir este motorista?')) {
+      return;
+    }
     this.motoristaService.deletar(id).subscribe({
       next: () => this.carregarMotoristas(),
       error: () => alert('Erro ao excluir motorista.')
@@ -1080,6 +1084,9 @@ export class DashboardComponent implements OnInit {
   }
 
   excluirVeiculo(id: number): void {
+    if (!confirm('Deseja realmente excluir este veículo? Esta ação não pode ser desfeita.')) {
+      return;
+    }
     this.veiculoService.deletar(id).subscribe({
       next: () => this.carregarVeiculos(),
       error: () => alert('Erro ao excluir veículo.')
@@ -1116,6 +1123,34 @@ export class DashboardComponent implements OnInit {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
       const file = target.files[0];
+      this.novoDocVeiculo.arquivo = file;
+      this.novoDocVeiculo.nomeArquivo = file.name;
+      if (!this.novoDocVeiculo.nome.trim()) {
+        this.novoDocVeiculo.nome = file.name.replace(/\.[^/.]+$/, '').toUpperCase();
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
+  onVeiculoDocDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingVeiculoDoc = true;
+  }
+
+  onVeiculoDocDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingVeiculoDoc = false;
+  }
+
+  onVeiculoDocDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingVeiculoDoc = false;
+
+    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
       this.novoDocVeiculo.arquivo = file;
       this.novoDocVeiculo.nomeArquivo = file.name;
       if (!this.novoDocVeiculo.nome.trim()) {
@@ -1279,6 +1314,9 @@ export class DashboardComponent implements OnInit {
   }
 
   excluirCliente(id: number): void {
+    if (!confirm('Deseja realmente excluir este cliente?')) {
+      return;
+    }
     this.clienteService.deletar(id).subscribe({
       next: () => this.carregarClientes(),
       error: () => alert('Erro ao excluir cliente.')
@@ -1375,6 +1413,9 @@ export class DashboardComponent implements OnInit {
   }
 
   excluirFornecedor(id: number): void {
+    if (!confirm('Deseja realmente excluir este fornecedor?')) {
+      return;
+    }
     this.fornecedorService.deletar(id).subscribe({
       next: () => this.carregarFornecedores(),
       error: () => alert('Erro ao excluir fornecedor.')
@@ -1403,6 +1444,7 @@ export class DashboardComponent implements OnInit {
       destinos: [{ local: '', endereco: '' }],
       motorista: '',
       placa: '',
+      placaSecundaria: '',
       agencia: 'Frota Própria',
       coletaPrevista: '',
       coletaReal: '',
@@ -1442,6 +1484,11 @@ export class DashboardComponent implements OnInit {
       endereco: rawEntregaArr[idx] || (rawEntregaArr.length === 1 && rawEntregaArr[0] !== d ? rawEntregaArr[0] : '')
     }));
 
+    const rawPlaca = item.placa || '';
+    const placasSplit = rawPlaca.split(' / ').map(p => p.trim());
+    const placa1 = placasSplit[0] && placasSplit[0] !== '-' ? placasSplit[0] : '';
+    const placa2 = placasSplit[1] || (raw?.placaSecundaria || raw?.placa_secundaria || '');
+
     this.tripForm = {
       id: item.id.replace('#', ''),
       clienteSelect: item.cliente,
@@ -1449,7 +1496,8 @@ export class DashboardComponent implements OnInit {
       origens: origensMapeadas.length > 0 ? origensMapeadas : [{ local: '', endereco: '' }],
       destinos: destinosMapeados.length > 0 ? destinosMapeados : [{ local: '', endereco: '' }],
       motorista: item.motorista === 'A Contratar' ? '' : item.motorista,
-      placa: item.placa === '-' ? '' : item.placa,
+      placa: placa1,
+      placaSecundaria: placa2,
       agencia: raw?.fornecedorAgencia || raw?.fornecedor_agencia || 'Frota Própria',
       coletaPrevista: (raw?.dataColetaPrevista || raw?.data_coleta_prevista || '') === 'A confirmar' ? '' : (raw?.dataColetaPrevista || raw?.data_coleta_prevista || ''),
       coletaReal: (raw?.dataColetaReal || raw?.data_coleta_real || '') === 'A confirmar' ? '' : (raw?.dataColetaReal || raw?.data_coleta_real || ''),
@@ -1484,6 +1532,22 @@ export class DashboardComponent implements OnInit {
       ? this.selectedViagem.rawId 
       : Number(rawIdInput);
 
+    // ==========================================
+    // VERIFICAÇÃO DE DUPLICIDADE DE ID
+    // ==========================================
+    if (!this.isEditing) {
+      const todosOsIds = [
+        ...this.viagensProgramadas.map(v => v.rawId),
+        ...this.viagensAndamento.map(v => v.rawId),
+        ...this.viagensFinalizadas.map(v => v.rawId)
+      ];
+
+      if (todosOsIds.includes(idFinal)) {
+        alert(`Atenção: Já existe uma viagem cadastrada com o ID "${idFinal}" (seja ativa, a pagar ou no histórico). Escolha outro número para não sobrescrever.`);
+        return;
+      }
+    }
+
     const nomeClienteFinal = (this.tripForm.clienteManual || '').trim() || this.tripForm.clienteSelect;
     if (!nomeClienteFinal) {
       alert('Por favor, selecione ou digite o nome do Cliente.');
@@ -1517,7 +1581,17 @@ export class DashboardComponent implements OnInit {
       cpfFinal = motSelected ? (motSelected.cpf || '') : '';
     }
 
-    const placaFinal = (this.tripForm.placa || '').trim().toUpperCase() || '-';
+    const p1 = (this.tripForm.placa || '').trim().toUpperCase();
+    const p2 = (this.tripForm.placaSecundaria || '').trim().toUpperCase();
+    
+    let placaFinal = '-';
+    if (p1 && p2) {
+      placaFinal = `${p1} / ${p2}`;
+    } else if (p1) {
+      placaFinal = p1;
+    } else if (p2) {
+      placaFinal = p2;
+    }
 
     const payload: any = {
       id: idFinal,
@@ -1540,6 +1614,8 @@ export class DashboardComponent implements OnInit {
       cpfMotorista: cpfFinal,
       cpf_motorista: cpfFinal,
       placa: placaFinal,
+      placaSecundaria: p2,
+      placa_secundaria: p2,
 
       fornecedorAgencia: this.tripForm.agencia || 'Frota Própria',
       fornecedor_agencia: this.tripForm.agencia || 'Frota Própria',

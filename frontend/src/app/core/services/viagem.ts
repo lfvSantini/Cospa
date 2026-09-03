@@ -9,7 +9,11 @@ import { environment } from '../../../environments/environment';
 })
 export class ViagemService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/viagens`;
+  
+  // Garante a rota correta alinhada ao @RequestMapping("/api/viagens") do Controller
+  private apiUrl = environment.apiUrl.endsWith('/api') 
+    ? `${environment.apiUrl}/viagens` 
+    : `${environment.apiUrl}/api/viagens`;
 
   listarTodas(): Observable<Viagem[]> {
     return this.http.get<Viagem[]>(this.apiUrl);

@@ -6,6 +6,7 @@ import com.cospa.api.model.Viagem;
 import com.cospa.api.service.ViagemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,13 +43,14 @@ public class ViagemController {
     @PostMapping
     public ResponseEntity<ViagemResponseDTO> criar(@RequestBody @Valid ViagemRequestDTO dto) {
         Viagem salva = viagemService.salvar(dto);
-        return ResponseEntity.ok(new ViagemResponseDTO(salva));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ViagemResponseDTO(salva));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ViagemResponseDTO> atualizar(@PathVariable Long id, @RequestBody @Valid ViagemRequestDTO dto) {
-        Viagem salva = viagemService.salvarOuAtualizar(id, dto);
-        return ResponseEntity.ok(new ViagemResponseDTO(salva));
+        return viagemService.atualizar(id, dto)
+                .map(v -> ResponseEntity.ok(new ViagemResponseDTO(v)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

@@ -18,7 +18,7 @@
       <button type="button" class="sidebar-item active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="1" y="3" width="15" height="13"></rect>
-          <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
           <circle cx="5.5" cy="18.5" r="2.5"></circle>
           <circle cx="18.5" cy="18.5" r="2.5"></circle>
         </svg>
@@ -164,85 +164,7 @@
   <!-- Conteúdo Principal -->
   <main class="dashboard-content">
 
-    <!-- 1. VIAGENS PROGRAMADAS -->
-    <section class="accordion-section">
-      <button type="button" class="accordion-header" (click)="showProgramadas = !showProgramadas">
-        <span class="accordion-title">Viagens Programadas</span>
-        <svg class="accordion-arrow" [class.open]="showProgramadas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-      </button>
-
-      <div class="accordion-collapse" [class.expanded]="showProgramadas" *ngIf="showProgramadas">
-        <div class="accordion-inner">
-          <div class="table-container">
-            <table class="cospa-table">
-              <thead>
-                <tr>
-                  <th>VIAGEM</th>
-                  <th>CLIENTE</th>
-                  <th>ORIGEM</th>
-                  <th>DESTINO</th>
-                  <th>COLETA PREVISTA</th>
-                  <th>ENTREGA PREVISTA</th>
-                  <th>PLACA</th>
-                  <th>MOTORISTA</th>
-                  <th>STATUS</th>
-                  <th>OBS</th>
-                  <th class="actions-th">AÇÕES</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let item of viagensProgramadas" [class.row-menu-open]="openedActionMenuId === item.id">
-                  <td class="col-viagem">{{ item.id }}</td>
-                  <td class="col-cliente">{{ item.cliente }}</td>
-                  <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
-                  <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
-                  <td class="col-coleta">{{ item.coletaPrevista }}</td>
-                  <td class="col-coleta">{{ item.entregaPrevista }}</td>
-                  <td class="col-placa">{{ item.placa }}</td>
-                  <td class="col-motorista" [class.to-hire]="item.motorista === 'A Contratar'">{{ item.motorista }}</td>
-                  <td class="col-status">
-                    <span class="status-pill" [ngClass]="{
-                      'status-contratar': item.status === 'A CONTRATAR',
-                      'status-programado': item.status === 'PROGRAMADO'
-                    }">{{ item.status }}</span>
-                  </td>
-                  <td class="col-obs">
-                    <button *ngIf="item.obs && item.obs !== '-'" type="button" class="btn-obs" (click)="openObsModal(item)">
-                      {{ (item.obs.length > 9) ? (item.obs | slice:0:8) + '...' : item.obs }}
-                    </button>
-                    <span *ngIf="!item.obs || item.obs === '-'" class="dash-text">-</span>
-                  </td>
-                  <td class="col-acoes">
-                    <div class="row-dropdown-wrapper">
-                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)" [class.active]="openedActionMenuId === item.id">
-                        <span>Ações</span>
-                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                      </button>
-                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
-                        <button type="button" class="row-menu-item item-iniciar" (click)="iniciarViagem(item)" style="color: #38bdf8;">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                          <span>Iniciar Viagem</span>
-                        </button>
-                        <button type="button" class="row-menu-item item-pagar" (click)="passarParaAPagar(item)" style="color: #f97316;">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 6v2"></path><path d="M12 16v2"></path></svg>
-                          <span>Passar p/ A Pagar</span>
-                        </button>
-                        <div class="row-menu-divider"></div>
-                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
-                        <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'programadas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
-                        <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'programadas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. VIAGENS EM ANDAMENTO -->
+    <!-- 1. VIAGENS EM ANDAMENTO -->
     <section class="accordion-section">
       <button type="button" class="accordion-header" (click)="showAndamento = !showAndamento">
         <span class="accordion-title">Viagens em Andamento</span>
@@ -280,10 +202,84 @@
                   <td class="col-motorista" [class.to-hire]="item.motorista === 'A Contratar'">{{ item.motorista }}</td>
                   <td class="col-status">
                     <span class="status-pill" [ngClass]="{
+                      'status-contratar': item.status === 'A CONTRATAR',
+                      'status-programado': item.status === 'PROGRAMADO',
                       'status-carregamento': item.status === 'AG CARREGAMENTO' || item.status === 'CARREGAMENTO',
                       'status-rota': item.status === 'EM ROTA',
                       'status-doc': item.status === 'AG DOCUMENTAÇÃO',
-                      'status-descarga': item.status === 'AG DESCARGA' || item.status === 'DESCARGA',
+                      'status-descarga': item.status === 'AG DESCARGA' || item.status === 'DESCARGA'
+                    }">{{ item.status }}</span>
+                  </td>
+                  <td class="col-obs">
+                    <button *ngIf="item.obs && item.obs !== '-'" type="button" class="btn-obs" (click)="openObsModal(item)">
+                      {{ (item.obs.length > 9) ? (item.obs | slice:0:8) + '...' : item.obs }}
+                    </button>
+                    <span *ngIf="!item.obs || item.obs === '-'" class="dash-text">-</span>
+                  </td>
+                  <td class="col-acoes">
+                    <div class="row-dropdown-wrapper">
+                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)" [class.active]="openedActionMenuId === item.id">
+                        <span>Ações</span>
+                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </button>
+                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
+                        <button type="button" class="row-menu-item item-pagar" (click)="passarParaAPagar(item)" style="color: #f97316;">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 6v2"></path><path d="M12 16v2"></path></svg>
+                          <span>Passar p/ A Pagar</span>
+                        </button>
+                        <div class="row-menu-divider"></div>
+                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
+                        <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'andamento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
+                        <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'andamento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. VIAGENS A PAGAR -->
+    <section class="accordion-section">
+      <button type="button" class="accordion-header" (click)="showAPagar = !showAPagar">
+        <span class="accordion-title">Viagens a Pagar</span>
+        <svg class="accordion-arrow" [class.open]="showAPagar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+
+      <div class="accordion-collapse" [class.expanded]="showAPagar" *ngIf="showAPagar">
+        <div class="accordion-inner">
+          <div class="table-container">
+            <table class="cospa-table">
+              <thead>
+                <tr>
+                  <th>VIAGEM</th>
+                  <th>CLIENTE</th>
+                  <th>ORIGEM</th>
+                  <th>DESTINO</th>
+                  <th>COLETA PREVISTA</th>
+                  <th>ENTREGA PREVISTA</th>
+                  <th>PLACA</th>
+                  <th>MOTORISTA</th>
+                  <th>STATUS</th>
+                  <th>OBS</th>
+                  <th class="actions-th">AÇÕES</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of viagensAPagar" [class.row-menu-open]="openedActionMenuId === item.id">
+                  <td class="col-viagem">{{ item.id }}</td>
+                  <td class="col-cliente">{{ item.cliente }}</td>
+                  <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
+                  <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
+                  <td class="col-coleta">{{ item.coletaPrevista }}</td>
+                  <td class="col-coleta">{{ item.entregaPrevista }}</td>
+                  <td class="col-placa">{{ item.placa }}</td>
+                  <td class="col-motorista">{{ item.motorista }}</td>
+                  <td class="col-status">
+                    <span class="status-pill" [ngClass]="{
                       'status-pagar': item.status === 'A PAGAR',
                       'status-adiantamento': item.status === 'ADIANTAMENTO PAGO',
                       'status-saldo-pago': item.status === 'SALDO PAGO'
@@ -302,18 +298,14 @@
                         <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                       </button>
                       <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
-                        <button *ngIf="item.status !== 'A PAGAR'" type="button" class="row-menu-item item-pagar" (click)="passarParaAPagar(item)" style="color: #f97316;">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 6v2"></path><path d="M12 16v2"></path></svg>
-                          <span>Passar p/ A Pagar</span>
-                        </button>
                         <button type="button" class="row-menu-item item-finalizar" (click)="finalizarViagem(item)">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
                           <span>Finalizar Viagem</span>
                         </button>
                         <div class="row-menu-divider"></div>
                         <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
-                        <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'andamento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
-                        <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'andamento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
+                        <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'aPagar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
+                        <button type="button" class="row-menu-item item-excluir" (click)="openExcluirModal(item, 'aPagar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Excluir</span></button>
                       </div>
                     </div>
                   </td>
@@ -620,7 +612,6 @@
       </div>
 
       <form (ngSubmit)="salvarViagemForm()" (keydown.enter)="$event.preventDefault()" class="modal-trip-scroll">
-        <!-- CAMPO ID SEMPRE EDITÁVEL -->
         <div class="f-group">
           <label>Nº da Viagem (ID) *</label>
           <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="EX: 30, 105, 6844751" required />
@@ -769,7 +760,7 @@
           <input type="text" [(ngModel)]="tripForm.dataHoraPagada" name="dataHoraPagada" placeholder="EX: 14/08/2026 15:45" />
         </div>
 
-        <!-- STATUS INICIAL COM OS NOVOS STATUS -->
+        <!-- STATUS INICIAL -->
         <div class="f-group">
           <label>Status Inicial</label>
           <select [(ngModel)]="tripForm.statusInicial" name="statusInicial">
@@ -1054,7 +1045,7 @@
 
       <div class="modal-body-container">
         <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarVeiculo()" class="modal-pane-content">
-          <!-- LINHA 1: PLACA, TIPO VEÍCULO, CARROCERIA, ADICIONAL -->
+          <!-- LINHA 1 -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Placa *</label>
@@ -1082,7 +1073,7 @@
             </div>
           </div>
 
-          <!-- LINHA 2: EIXOS, CUBAGEM, CAPACIDADE, PALETES -->
+          <!-- LINHA 2 -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Nº Eixos</label>
@@ -1102,7 +1093,7 @@
             </div>
           </div>
 
-          <!-- LINHA 3: ANO, VENCIMENTO, SITUAÇÃO, FORNECEDOR -->
+          <!-- LINHA 3 -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Ano Fabricação</label>
@@ -1128,7 +1119,7 @@
             </div>
           </div>
 
-          <!-- LINHA 4: ANTT, TIPO RASTREADOR, ID RASTREADOR, TAG PEDÁGIO -->
+          <!-- LINHA 4 -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Nº ANTT</label>

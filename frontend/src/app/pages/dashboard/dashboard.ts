@@ -133,8 +133,8 @@ export class DashboardComponent implements OnInit {
   isManageOpen: boolean = false;
   openedActionMenuId: string | null = null;
 
-  showProgramadas: boolean = true;
   showAndamento: boolean = true;
+  showAPagar: boolean = true;
   showFinalizadas: boolean = false;
 
   modalType: 'TRIP_FORM' | 'PHOTO' | 'OBS' | 'DELETE' | 'FORNECEDOR' | 'CLIENTE' | 'MOTORISTA' | 'VEICULO' | 'MOTORISTA_PHOTO' | 'VEICULO_PHOTO' | null = null;
@@ -238,11 +238,11 @@ export class DashboardComponent implements OnInit {
   };
 
   selectedViagem: ViagemItem | null = null;
-  selectedListOrigin: 'programadas' | 'andamento' | 'finalizadas' = 'andamento';
+  selectedListOrigin: 'andamento' | 'aPagar' | 'finalizadas' = 'andamento';
   isEditing: boolean = false;
 
-  viagensProgramadas: ViagemItem[] = [];
   viagensAndamento: ViagemItem[] = [];
+  viagensAPagar: ViagemItem[] = [];
   viagensFinalizadas: ViagemItem[] = [];
 
   ngOnInit(): void {
@@ -463,8 +463,8 @@ export class DashboardComponent implements OnInit {
     this.isLoading = true;
     this.viagemService.listarTodas().subscribe({
       next: (viagens: Viagem[]) => {
-        this.viagensProgramadas = [];
         this.viagensAndamento = [];
+        this.viagensAPagar = [];
         this.viagensFinalizadas = [];
 
         (viagens || []).forEach((v: Viagem) => {
@@ -473,9 +473,10 @@ export class DashboardComponent implements OnInit {
 
           if (st === 'FINALIZADO') {
             this.viagensFinalizadas.push(item);
-          } else if (st === 'PROGRAMADO' || st === 'A CONTRATAR' || st === 'CRIADA') {
-            this.viagensProgramadas.push(item);
+          } else if (st === 'A PAGAR' || st === 'ADIANTAMENTO PAGO' || st === 'SALDO PAGO') {
+            this.viagensAPagar.push(item);
           } else {
+            // Em Andamento: PROGRAMADO, A CONTRATAR, AG CARREGAMENTO, EM ROTA, etc.
             this.viagensAndamento.push(item);
           }
         });
@@ -522,27 +523,6 @@ export class DashboardComponent implements OnInit {
     };
   }
 
-  iniciarViagem(item: ViagemItem): void {
-    if (!item.rawViagem) return;
-    const atualizada: any = {
-      ...item.rawViagem,
-      id: item.rawId,
-      status: 'AG CARREGAMENTO'
-    };
-
-    this.viagemService.salvar(atualizada, true).subscribe({
-      next: () => {
-        this.showAndamento = true;
-        this.closeRowActions();
-        this.carregarViagens();
-      },
-      error: (err) => {
-        console.error('Erro ao iniciar viagem:', err);
-        alert('Erro ao iniciar viagem.');
-      }
-    });
-  }
-
   passarParaAPagar(item: ViagemItem): void {
     if (!item.rawViagem) return;
     const atualizada: any = {
@@ -553,6 +533,7 @@ export class DashboardComponent implements OnInit {
 
     this.viagemService.salvar(atualizada, true).subscribe({
       next: () => {
+        this.showAPagar = true;
         this.closeRowActions();
         this.carregarViagens();
       },
@@ -1514,7 +1495,7 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  openEditarModal(item: ViagemItem, origin: 'programadas' | 'andamento' | 'finalizadas'): void {
+  openEditarModal(item: ViagemItem, origin: 'andamento' | 'aPagar' | 'finalizadas'): void {
     this.isEditing = true;
     this.selectedViagem = item;
     this.selectedListOrigin = origin;
@@ -1582,13 +1563,13 @@ export class DashboardComponent implements OnInit {
 
     if (!this.isEditing || idFinal !== idOriginal) {
       const todosOsIds = [
-        ...this.viagensProgramadas.map(v => v.rawId),
         ...this.viagensAndamento.map(v => v.rawId),
+        ...this.viagensAPagar.map(v => v.rawId),
         ...this.viagensFinalizadas.map(v => v.rawId)
       ];
 
       if (todosOsIds.includes(idFinal)) {
-        alert(`Atenção: Já existe uma viagem cadastrada com o ID "${idFinal}" (seja ativa, a pagar ou no histórico). Escolha outro número para não sobrescrever.`);
+        alert(`Atenção: Já existe uma viagem cadastrada com o ID "${idFinal}". Escolha outro número para não sobrescrever.`);
         return;
       }
     }
@@ -1730,7 +1711,7 @@ export class DashboardComponent implements OnInit {
     this.closeModal();
   }
 
-  openExcluirModal(item: ViagemItem, origin: 'programadas' | 'andamento' | 'finalizadas'): void {
+  openExcluirModal(item: ViagemItem, origin: 'andamento' | 'aPagar' | 'finalizadas'): void {
     this.selectedViagem = item;
     this.selectedListOrigin = origin;
     this.modalType = 'DELETE';

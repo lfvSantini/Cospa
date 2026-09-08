@@ -31,9 +31,10 @@ export class ViagemService {
     return this.http.put<Viagem>(`${this.apiUrl}/${id}`, viagem);
   }
 
-  salvar(viagem: any, isEdicao: boolean = false): Observable<Viagem> {
-    if (isEdicao && viagem.id) {
-      return this.http.put<Viagem>(`${this.apiUrl}/${viagem.id}`, viagem);
+  salvar(viagem: any, isEdicao: boolean = false, idOriginal?: number | null): Observable<Viagem> {
+    const idDestino = idOriginal || viagem.id;
+    if (isEdicao && idDestino) {
+      return this.http.put<Viagem>(`${this.apiUrl}/${idDestino}`, viagem);
     }
     return this.http.post<Viagem>(this.apiUrl, viagem);
   }

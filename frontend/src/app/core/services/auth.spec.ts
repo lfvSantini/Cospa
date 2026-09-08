@@ -11,6 +11,7 @@ export interface LoginDTO {
 
 export interface TokenResponse {
   token: string;
+  tipo?: string;
 }
 
 @Injectable({
@@ -19,7 +20,10 @@ export interface TokenResponse {
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private baseUrl = `${environment.apiUrl}/auth`;
+
+  private baseUrl = environment.apiUrl.endsWith('/api')
+    ? `${environment.apiUrl}/auth`
+    : `${environment.apiUrl}/api/auth`;
 
   isLoggedIn = signal<boolean>(!!localStorage.getItem('cospa_token'));
 

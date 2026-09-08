@@ -22,6 +22,11 @@ public interface ViagemRepository extends JpaRepository<Viagem, Long> {
 
     @Modifying
     @Transactional
+    @Query(value = "UPDATE comprovantes SET viagem_id = :novoId WHERE viagem_id = :antigoId", nativeQuery = true)
+    void atualizarIdComprovantes(@Param("antigoId") Long antigoId, @Param("novoId") Long novoId);
+
+    @Modifying
+    @Transactional
     @Query(value = "UPDATE viagens SET id = :novoId WHERE id = :antigoId", nativeQuery = true)
     void atualizarId(@Param("antigoId") Long antigoId, @Param("novoId") Long novoId);
 }

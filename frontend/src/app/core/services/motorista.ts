@@ -9,7 +9,10 @@ import { environment } from '../../../environments/environment';
 })
 export class MotoristaService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/motoristas`;
+
+  private apiUrl = environment.apiUrl.endsWith('/api')
+    ? `${environment.apiUrl}/motoristas`
+    : `${environment.apiUrl}/api/motoristas`;
 
   listar(): Observable<Motorista[]> {
     return this.http.get<Motorista[]>(this.apiUrl);
@@ -19,7 +22,7 @@ export class MotoristaService {
     return this.http.get<Motorista>(`${this.apiUrl}/${id}`);
   }
 
-  salvar(motorista: Motorista): Observable<Motorista> {
+  salvar(motorista: any): Observable<Motorista> {
     if (motorista.id) {
       return this.http.put<Motorista>(`${this.apiUrl}/${motorista.id}`, motorista);
     }

@@ -6,7 +6,7 @@ export interface Fornecedor {
   telefone?: string;
   email?: string;
   chavePix?: string;
-  situacao?: string;
+  situacao?: 'ATIVO' | 'INATIVO' | string;
   obs?: string;
   observacoes?: string;
   ativo?: boolean;

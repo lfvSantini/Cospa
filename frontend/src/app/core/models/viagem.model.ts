@@ -16,6 +16,8 @@ export interface Comprovante {
   id?: number;
   nome: string;
   urlArquivo: string;
+  descricao?: string;
+  dataEnvio?: string;
 }
 
 export interface Viagem {
@@ -33,6 +35,11 @@ export interface Viagem {
   localEntrega?: string;
   local_entrega?: string;
   
+  perfilVeiculo?: string;
+  perfil_veiculo?: string;
+  carroceriaVeiculo?: string;
+  carroceria_veiculo?: string;
+
   nomeMotorista?: string;
   nome_motorista?: string;
   cpfMotorista?: string;
@@ -43,6 +50,9 @@ export interface Viagem {
   
   fornecedorAgencia?: string;
   fornecedor_agencia?: string;
+  agenciador?: string;
+  especialistaCospa?: string;
+  especialista_cospa?: string;
   
   dataColetaPrevista?: string;
   data_coleta_prevista?: string;
@@ -63,6 +73,10 @@ export interface Viagem {
   valor_adicional_pagar?: number;
   valorAdicionalAgencia?: number;
   valor_adicional_agencia?: number;
+  valorAgenciador?: number;
+  valor_agenciador?: number;
+  valorEspecialistaCospa?: number;
+  valor_especialista_cospa?: number;
   
   pagamentoLiberado?: boolean;
   pagamento_liberado?: boolean;
@@ -70,6 +84,21 @@ export interface Viagem {
   pagamento_realizado_status?: string;
   dataHoraPagamento?: string;
   data_hora_pagamento?: string;
+
+  dataAdiantamento?: string;
+  data_adiantamento?: string;
+  pagoAdiantamento?: boolean;
+  pago_adiantamento?: boolean;
+
+  dataSaldo?: string;
+  data_saldo?: string;
+  pagoSaldo?: boolean;
+  pago_saldo?: boolean;
+
+  dataAdicional?: string;
+  data_adicional?: string;
+  pagoAdicional?: boolean;
+  pago_adicional?: boolean;
   
   status: StatusViagem;
   observacao?: string;

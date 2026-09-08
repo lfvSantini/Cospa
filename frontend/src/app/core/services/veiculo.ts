@@ -9,7 +9,10 @@ import { environment } from '../../../environments/environment';
 })
 export class VeiculoService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/veiculos`;
+
+  private apiUrl = environment.apiUrl.endsWith('/api')
+    ? `${environment.apiUrl}/veiculos`
+    : `${environment.apiUrl}/api/veiculos`;
 
   private headers = new HttpHeaders({
     'Content-Type': 'application/json'

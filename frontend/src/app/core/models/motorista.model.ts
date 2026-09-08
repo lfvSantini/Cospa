@@ -12,9 +12,9 @@ export interface Motorista {
   id?: number;
   nome: string;
   cpf?: string;
-  placa: string;
+  placa?: string;
   fornecedor?: string;
-  situacao?: string;
+  situacao?: 'ATIVO' | 'INATIVO' | string;
   ativo?: boolean;
   urlCnh?: string;
   urlCrlv?: string;

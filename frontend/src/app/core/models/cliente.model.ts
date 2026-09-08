@@ -8,8 +8,8 @@ export interface ClienteDocumento {
 
 export interface Cliente {
   id?: number;
-  nome: string;
-  nomeFantasia?: string;
+  nome?: string;
+  nomeFantasia: string;
   razaoSocial?: string;
   cnpjCpf?: string;
   nomeContato?: string;
@@ -18,7 +18,7 @@ export interface Cliente {
   endereco?: string;
   cidade?: string;
   estado?: string;
-  situacao?: string;
+  situacao?: 'ATIVO' | 'INATIVO' | string;
   ativo?: boolean;
   obs?: string;
   observacoes?: string;

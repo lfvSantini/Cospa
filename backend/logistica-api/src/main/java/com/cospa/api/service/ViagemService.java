@@ -46,25 +46,24 @@ public class ViagemService {
     }
 
     @Transactional
-    public Viagem salvarOuAtualizar(Long id, ViagemRequestDTO dto) {
-        Long idFinal = (id != null) ? id : dto.getId();
-        if (idFinal == null || idFinal <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O Número da Viagem (ID) é obrigatório.");
+    public Optional<Viagem> atualizar(Long idAntigo, ViagemRequestDTO dto) {
+        if (!repository.existsById(idAntigo)) {
+            return Optional.empty();
         }
 
-        Viagem viagem = repository.findById(idFinal).orElseGet(() -> {
-            Viagem nova = new Viagem();
-            nova.setId(idFinal);
-            return nova;
-        });
+        Long idDestino = idAntigo;
 
-        copiarDtoParaEntidade(dto, viagem);
-        return repository.save(viagem);
-    }
+        // Se o usuário modificou o número da viagem (ID) na edição
+        if (dto.getId() != null && !dto.getId().equals(idAntigo)) {
+            if (repository.existsById(dto.getId())) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe outra viagem cadastrada com o número #" + dto.getId());
+            }
+            repository.atualizarIdComprovantes(idAntigo, dto.getId());
+            repository.atualizarId(idAntigo, dto.getId());
+            idDestino = dto.getId();
+        }
 
-    @Transactional
-    public Optional<Viagem> atualizar(Long id, ViagemRequestDTO dto) {
-        return repository.findById(id).map(viagem -> {
+        return repository.findById(idDestino).map(viagem -> {
             copiarDtoParaEntidade(dto, viagem);
             return repository.save(viagem);
         });
@@ -111,10 +110,18 @@ public class ViagemService {
         v.setDestino(dto.getDestino());
         v.setOrigemNome(dto.getOrigemNome());
         v.setDestinoNome(dto.getDestinoNome());
+
+        v.setPerfilVeiculo(dto.getPerfilVeiculo());
+        v.setCarroceriaVeiculo(dto.getCarroceriaVeiculo());
+
         v.setNomeMotorista(dto.getNomeMotorista());
         v.setPlaca(dto.getPlaca());
+        v.setPlacaSecundaria(dto.getPlacaSecundaria());
         v.setCpfMotorista(dto.getCpfMotorista());
+
         v.setFornecedorAgencia(dto.getFornecedorAgencia());
+        v.setAgenciador(dto.getAgenciador());
+        v.setEspecialistaCospa(dto.getEspecialistaCospa());
 
         v.setDataColetaPrevista(dto.getDataColetaPrevista());
         v.setDataColetaReal(dto.getDataColetaReal());
@@ -126,6 +133,8 @@ public class ViagemService {
         v.setValorAdicionalReceber(dto.getValorAdicionalReceber() != null ? dto.getValorAdicionalReceber() : BigDecimal.ZERO);
         v.setValorAdicionalPagar(dto.getValorAdicionalPagar() != null ? dto.getValorAdicionalPagar() : BigDecimal.ZERO);
         v.setValorAdicionalAgencia(dto.getValorAdicionalAgencia() != null ? dto.getValorAdicionalAgencia() : BigDecimal.ZERO);
+        v.setValorAgenciador(dto.getValorAgenciador() != null ? dto.getValorAgenciador() : BigDecimal.ZERO);
+        v.setValorEspecialistaCospa(dto.getValorEspecialistaCospa() != null ? dto.getValorEspecialistaCospa() : BigDecimal.ZERO);
 
         v.setPagamentoLiberado(dto.getPagamentoLiberado() != null ? dto.getPagamentoLiberado() : false);
         v.setPagamentoRealizadoStatus(
@@ -134,6 +143,16 @@ public class ViagemService {
                         : "NAO_REALIZADO"
         );
         v.setDataHoraPagamento(dto.getDataHoraPagamento());
+
+        v.setDataAdiantamento(dto.getDataAdiantamento());
+        v.setPagoAdiantamento(dto.getPagoAdiantamento() != null ? dto.getPagoAdiantamento() : false);
+
+        v.setDataSaldo(dto.getDataSaldo());
+        v.setPagoSaldo(dto.getPagoSaldo() != null ? dto.getPagoSaldo() : false);
+
+        v.setDataAdicional(dto.getDataAdicional());
+        v.setPagoAdicional(dto.getPagoAdicional() != null ? dto.getPagoAdicional() : false);
+
         v.setObservacao(dto.getObservacao());
 
         if (dto.getStatus() != null) {

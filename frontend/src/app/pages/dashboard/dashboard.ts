@@ -540,7 +540,7 @@ export class DashboardComponent implements OnInit {
       status: 'A PAGAR'
     };
 
-    this.viagemService.salvar(atualizada, true).subscribe({
+    this.viagemService.salvar(atualizada, true, item.rawId).subscribe({
       next: () => {
         this.showAPagar = true;
         this.closeRowActions();
@@ -561,7 +561,7 @@ export class DashboardComponent implements OnInit {
       status: 'FINALIZADO' 
     };
     
-    this.viagemService.salvar(atualizada, true).subscribe({
+    this.viagemService.salvar(atualizada, true, item.rawId).subscribe({
       next: () => {
         this.showFinalizadas = true;
         this.closeRowActions();
@@ -884,8 +884,8 @@ export class DashboardComponent implements OnInit {
         }
 
         const motNaLista = this.motoristasList.find(m => m.id === motoristaAtual.id);
-        if (motNaLista && motNaLista.documentos) {
-          motNaLista.documentos = motNaLista.documentos.filter(d => d.id !== id);
+        if (motNaLista) {
+          motNaLista.documentos = (motoristaAtual.documentos || []).filter(d => d.id !== id);
         }
 
         this.filtrarMotoristas();
@@ -1790,14 +1790,14 @@ export class DashboardComponent implements OnInit {
       observacao: (this.tripForm.observacao || '').trim().toUpperCase()
     };
 
-    this.viagemService.salvar(payload, this.isEditing).subscribe({
+    this.viagemService.salvar(payload, this.isEditing, idOriginal).subscribe({
       next: () => {
         this.carregarViagens();
         this.closeModal();
       },
       error: (err: any) => {
         console.error('Erro ao salvar viagem:', err);
-        const msg = err.error?.reason || err.error?.message || err.error?.mensagem || (typeof err.error === 'string' ? err.error : null) || 'Verifique se o ID informado já existe.';
+        const msg = err.error?.message || err.error?.reason || (typeof err.error === 'string' ? err.error : 'Erro ao salvar viagem.');
         alert('Erro ao salvar viagem: ' + msg);
       }
     });
@@ -1813,7 +1813,7 @@ export class DashboardComponent implements OnInit {
   salvarObs(): void {
     if (this.selectedViagem && this.selectedViagem.rawViagem) {
       const payload: any = { ...this.selectedViagem.rawViagem, observacao: (this.selectedViagem.obs || '').toUpperCase() };
-      this.viagemService.salvar(payload, true).subscribe({
+      this.viagemService.salvar(payload, true, this.selectedViagem.rawId).subscribe({
         next: () => this.carregarViagens(),
         error: () => alert('Erro ao salvar observação.')
       });

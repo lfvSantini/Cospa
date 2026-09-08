@@ -25,10 +25,16 @@ public class ViagemRequestDTO {
     private String localColeta;
     private String localEntrega;
 
+    private String perfilVeiculo;
+    private String carroceriaVeiculo;
+
     private String nomeMotorista;
     private String placa;
+    private String placaSecundaria;
     private String cpfMotorista;
     private String fornecedorAgencia;
+    private String agenciador;
+    private String especialistaCospa;
 
     private String dataColetaPrevista;
     private String dataColetaReal;
@@ -40,10 +46,19 @@ public class ViagemRequestDTO {
     private BigDecimal valorAdicionalReceber;
     private BigDecimal valorAdicionalPagar;
     private BigDecimal valorAdicionalAgencia;
+    private BigDecimal valorAgenciador;
+    private BigDecimal valorEspecialistaCospa;
 
     private Boolean pagamentoLiberado;
     private String pagamentoRealizadoStatus;
     private String dataHoraPagamento;
+
+    private String dataAdiantamento;
+    private Boolean pagoAdiantamento;
+    private String dataSaldo;
+    private Boolean pagoSaldo;
+    private String dataAdicional;
+    private Boolean pagoAdicional;
 
     private StatusViagem status;
     private String observacao;

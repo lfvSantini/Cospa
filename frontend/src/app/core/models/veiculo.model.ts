@@ -19,6 +19,7 @@ export interface Veiculo {
   anoFabricacao?: string;
   dataVencimento?: string;
   fornecedor?: string;
+  agenciador?: string;
   numeroAntt?: string;
   tipoRastreador?: string;
   idRastreador?: string;

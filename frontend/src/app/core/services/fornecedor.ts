@@ -9,13 +9,20 @@ import { Fornecedor } from '../models/fornecedor.model';
 })
 export class FornecedorService {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.apiUrl}/fornecedores`;
+
+  private baseUrl = environment.apiUrl.endsWith('/api')
+    ? `${environment.apiUrl}/fornecedores`
+    : `${environment.apiUrl}/api/fornecedores`;
 
   listar(): Observable<Fornecedor[]> {
     return this.http.get<Fornecedor[]>(this.baseUrl);
   }
 
-  salvar(fornecedor: Fornecedor): Observable<Fornecedor> {
+  buscarPorId(id: number): Observable<Fornecedor> {
+    return this.http.get<Fornecedor>(`${this.baseUrl}/${id}`);
+  }
+
+  salvar(fornecedor: any): Observable<Fornecedor> {
     if (fornecedor.id) {
       return this.http.put<Fornecedor>(`${this.baseUrl}/${fornecedor.id}`, fornecedor);
     }

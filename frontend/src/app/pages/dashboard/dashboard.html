@@ -564,8 +564,8 @@
         <div *ngIf="activeVeiculoPhotoTab === 'LISTAR'" class="modal-pane-compact">
           <div class="photo-gallery" *ngIf="selectedVeiculo?.documentos?.length">
             <div class="comprovante-card" *ngFor="let doc of selectedVeiculo?.documentos" (click)="abrirPreviewFoto(doc.url)" title="Clique para ver o arquivo">
-              <div class="comp-img-wrapper" *ngIf="!isPdf(doc.url)">
-                <img [src royal="doc.url" [src]="doc.url" alt="Documento Veículo" />
+             <div class="comp-img-wrapper" *ngIf="!isPdf(doc.url)">
+                <img [src]="doc.url" alt="Documento Veiculo">
                 <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
                 <button type="button" class="btn-del-photo" (click)="removerDocVeiculo($event, doc.id)" title="Excluir">✕</button>
               </div>

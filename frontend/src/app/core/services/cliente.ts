@@ -9,13 +9,20 @@ import { Cliente } from '../models/cliente.model';
 })
 export class ClienteService {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.apiUrl}/clientes`;
+
+  private baseUrl = environment.apiUrl.endsWith('/api')
+    ? `${environment.apiUrl}/clientes`
+    : `${environment.apiUrl}/api/clientes`;
 
   listar(): Observable<Cliente[]> {
     return this.http.get<Cliente[]>(this.baseUrl);
   }
 
-  salvar(cliente: Cliente): Observable<Cliente> {
+  buscarPorId(id: number): Observable<Cliente> {
+    return this.http.get<Cliente>(`${this.baseUrl}/${id}`);
+  }
+
+  salvar(cliente: any): Observable<Cliente> {
     if (cliente.id) {
       return this.http.put<Cliente>(`${this.baseUrl}/${cliente.id}`, cliente);
     }

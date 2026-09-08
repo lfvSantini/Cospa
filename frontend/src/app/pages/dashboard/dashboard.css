@@ -625,6 +625,7 @@ textarea {
   box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.25) !important;
 }
 
+/* Colunas rebalanceadas com 7% para Ações */
 .cospa-table th:nth-child(1),
 .cospa-table td:nth-child(1) {
   width: 5%;

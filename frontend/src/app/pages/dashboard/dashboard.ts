@@ -97,6 +97,7 @@ export interface VeiculoModel {
   anoFabricacao: string;
   dataVencimento: string;
   fornecedor: string;
+  agenciador: string;
   numeroAntt: string;
   tipoRastreador: string;
   idRastreador: string;
@@ -214,7 +215,6 @@ export class DashboardComponent implements OnInit {
   tripForm = {
     id: '',
     clienteSelect: '',
-    clienteManual: '',
     origens: [{ local: '', endereco: '' }] as PontoRota[],
     destinos: [{ local: '', endereco: '' }] as PontoRota[],
     perfilVeiculo: '',
@@ -1013,6 +1013,7 @@ export class DashboardComponent implements OnInit {
           anoFabricacao: v.anoFabricacao || '',
           dataVencimento: v.dataVencimento || '',
           fornecedor: v.fornecedor || 'Frota Própria',
+          agenciador: v.agenciador || '',
           numeroAntt: v.numeroAntt || '',
           tipoRastreador: v.tipoRastreador || '',
           idRastreador: v.idRastreador || '',
@@ -1044,6 +1045,7 @@ export class DashboardComponent implements OnInit {
       (v.tipoVeiculo || '').toLowerCase().includes(t) ||
       (v.tipoCarroceria || '').toLowerCase().includes(t) ||
       (v.fornecedor || '').toLowerCase().includes(t) ||
+      (v.agenciador || '').toLowerCase().includes(t) ||
       (v.idRastreador || '').toLowerCase().includes(t)
     );
   }
@@ -1062,6 +1064,7 @@ export class DashboardComponent implements OnInit {
       anoFabricacao: '',
       dataVencimento: '',
       fornecedor: 'Frota Própria',
+      agenciador: '',
       numeroAntt: '',
       tipoRastreador: '',
       idRastreador: '',
@@ -1113,6 +1116,7 @@ export class DashboardComponent implements OnInit {
       anoFabricacao: this.veiculoForm.anoFabricacao || '',
       dataVencimento: this.veiculoForm.dataVencimento || '',
       fornecedor: this.veiculoForm.fornecedor || 'Frota Própria',
+      agenciador: this.veiculoForm.agenciador || '',
       numeroAntt: this.veiculoForm.numeroAntt || '',
       tipoRastreador: this.veiculoForm.tipoRastreador || '',
       idRastreador: this.veiculoForm.idRastreador || '',
@@ -1534,7 +1538,6 @@ export class DashboardComponent implements OnInit {
     this.tripForm = {
       id: '',
       clienteSelect: '',
-      clienteManual: '',
       origens: [{ local: '', endereco: '' }],
       destinos: [{ local: '', endereco: '' }],
       perfilVeiculo: '',
@@ -1597,7 +1600,6 @@ export class DashboardComponent implements OnInit {
     this.tripForm = {
       id: item.id.replace('#', ''),
       clienteSelect: item.cliente,
-      clienteManual: '',
       origens: origensMapeadas.length > 0 ? origensMapeadas : [{ local: '', endereco: '' }],
       destinos: destinosMapeados.length > 0 ? destinosMapeados : [{ local: '', endereco: '' }],
       perfilVeiculo: raw?.perfilVeiculo || raw?.perfil_veiculo || '',
@@ -1659,9 +1661,9 @@ export class DashboardComponent implements OnInit {
       }
     }
 
-    const nomeClienteFinal = (this.tripForm.clienteManual || '').trim() || this.tripForm.clienteSelect;
+    const nomeClienteFinal = (this.tripForm.clienteSelect || '').trim();
     if (!nomeClienteFinal) {
-      alert('Por favor, selecione ou digite o nome do Cliente.');
+      alert('Por favor, selecione o Cliente.');
       return;
     }
 

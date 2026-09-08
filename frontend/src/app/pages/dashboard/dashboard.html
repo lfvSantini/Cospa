@@ -565,7 +565,7 @@
           <div class="photo-gallery" *ngIf="selectedVeiculo?.documentos?.length">
             <div class="comprovante-card" *ngFor="let doc of selectedVeiculo?.documentos" (click)="abrirPreviewFoto(doc.url)" title="Clique para ver o arquivo">
               <div class="comp-img-wrapper" *ngIf="!isPdf(doc.url)">
-                <img [src]="doc.url" alt="Documento Veículo" />
+                <img [src royal="doc.url" [src]="doc.url" alt="Documento Veículo" />
                 <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
                 <button type="button" class="btn-del-photo" (click)="removerDocVeiculo($event, doc.id)" title="Excluir">✕</button>
               </div>
@@ -618,16 +618,13 @@
           <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="EX: 30, 105, 6844751" required />
         </div>
 
-        <!-- 2. CLIENTE -->
+        <!-- 2. CLIENTE (Apenas seleção de cadastrados) -->
         <div class="f-group">
-          <label>Cliente</label>
-          <div class="form-row-2">
-            <select [(ngModel)]="tripForm.clienteSelect" name="clienteSelect">
-              <option value="">Selecione um Cliente cadastrado...</option>
-              <option *ngFor="let c of clientesList" [value]="c.nomeFantasia">{{ c.nomeFantasia }}</option>
-            </select>
-            <input type="text" [(ngModel)]="tripForm.clienteManual" name="clienteManual" placeholder="OU DIGITE O NOME DO CLIENTE" />
-          </div>
+          <label>Cliente *</label>
+          <select [(ngModel)]="tripForm.clienteSelect" name="clienteSelect" required>
+            <option value="">Selecione um Cliente cadastrado...</option>
+            <option *ngFor="let c of clientesList" [value]="c.nomeFantasia">{{ c.nomeFantasia }}</option>
+          </select>
         </div>
 
         <!-- 3. ORIGEM E DESTINO -->
@@ -1123,6 +1120,7 @@
 
       <div class="modal-body-container">
         <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarVeiculo()" class="modal-pane-content">
+          <!-- LINHA 1 -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Placa *</label>
@@ -1150,6 +1148,7 @@
             </div>
           </div>
 
+          <!-- LINHA 2 -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Nº Eixos</label>
@@ -1169,6 +1168,7 @@
             </div>
           </div>
 
+          <!-- LINHA 3: VEÍCULOS COM AGENCIADOR -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Ano Fabricação</label>
@@ -1179,21 +1179,22 @@
               <input type="text" [(ngModel)]="veiculoForm.dataVencimento" name="dataVencimento" placeholder="EX: 15/12/2026" />
             </div>
             <div class="f-group">
-              <label>Situação</label>
-              <select [(ngModel)]="veiculoForm.situacao" name="situacao">
-                <option value="ATIVO">Situação: ATIVO</option>
-                <option value="INATIVO">Situação: INATIVO</option>
-              </select>
-            </div>
-            <div class="f-group">
               <label>Fornecedor</label>
               <select [(ngModel)]="veiculoForm.fornecedor" name="fornecedor">
                 <option value="Frota Própria">Frota Própria</option>
                 <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
               </select>
             </div>
+            <div class="f-group">
+              <label>Agenciador</label>
+              <select [(ngModel)]="veiculoForm.agenciador" name="agenciador">
+                <option value="">Nenhum / Direto</option>
+                <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+              </select>
+            </div>
           </div>
 
+          <!-- LINHA 4 -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Nº ANTT</label>
@@ -1215,12 +1216,22 @@
             </div>
           </div>
 
-          <div class="f-group" style="margin-top: 0.25rem;">
-            <label>Anexar CRLV (Arraste, Clique ou Cole com Ctrl+V)</label>
-            <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoCrlv" (click)="crlvVeiculoInput.click()" (dragover)="$event.preventDefault(); isDraggingVeiculoCrlv = true;" (dragleave)="$event.preventDefault(); isDraggingVeiculoCrlv = false;" (drop)="onVeiculoCrlvDrop($event)">
-              <input #crlvVeiculoInput type="file" (change)="onFileSelected($event, 'CRLV')" style="display: none;" accept="image/*,.pdf" />
-              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-              <span>{{ veiculoForm.crlvPreviewName || 'Clique ou arraste o CRLV (PDF/Imagem)' }}</span>
+          <!-- LINHA 5: SITUAÇÃO + CRLV -->
+          <div class="form-row-2" style="margin-top: 0.25rem;">
+            <div class="f-group">
+              <label>Situação</label>
+              <select [(ngModel)]="veiculoForm.situacao" name="situacao">
+                <option value="ATIVO">Situação: ATIVO</option>
+                <option value="INATIVO">Situação: INATIVO</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Anexar CRLV (Arraste, Clique ou Cole com Ctrl+V)</label>
+              <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoCrlv" (click)="crlvVeiculoInput.click()" (dragover)="$event.preventDefault(); isDraggingVeiculoCrlv = true;" (dragleave)="$event.preventDefault(); isDraggingVeiculoCrlv = false;" (drop)="onVeiculoCrlvDrop($event)">
+                <input #crlvVeiculoInput type="file" (change)="onFileSelected($event, 'CRLV')" style="display: none;" accept="image/*,.pdf" />
+                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>{{ veiculoForm.crlvPreviewName || 'Clique ou arraste o CRLV (PDF/Imagem)' }}</span>
+              </div>
             </div>
           </div>
 
@@ -1242,7 +1253,7 @@
                   <h4>{{ v.placa }}</h4>
                   <span class="badge-status" [class.badge-active]="v.situacao === 'ATIVO'" [class.badge-inactive]="v.situacao === 'INATIVO'">{{ v.situacao }}</span>
                 </div>
-                <p class="crud-subtext">{{ v.tipoVeiculo }} • {{ v.tipoCarroceria }} • Fornecedor: <strong>{{ v.fornecedor }}</strong> • Rastreador: {{ v.tipoRastreador || '-' }} • Tag: <strong>{{ v.tagPedagio || 'Nenhum' }}</strong></p>
+                <p class="crud-subtext">{{ v.tipoVeiculo }} • {{ v.tipoCarroceria }} • Fornecedor: <strong>{{ v.fornecedor }}</strong> • Agenciador: <strong>{{ v.agenciador || '-' }}</strong> • Tag: <strong>{{ v.tagPedagio || 'Nenhum' }}</strong></p>
               </div>
               <div class="crud-item-actions">
                 <button type="button" class="btn-photo-inline" (click)="openVeiculoFotosModal(v)" title="Ver Documentos e Fotos">

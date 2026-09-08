@@ -18,7 +18,7 @@
       <button type="button" class="sidebar-item active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="1" y="3" width="15" height="13"></rect>
-          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+          <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
           <circle cx="5.5" cy="18.5" r="2.5"></circle>
           <circle cx="18.5" cy="18.5" r="2.5"></circle>
         </svg>
@@ -612,11 +612,13 @@
       </div>
 
       <form (ngSubmit)="salvarViagemForm()" (keydown.enter)="$event.preventDefault()" class="modal-trip-scroll">
+        <!-- 1. ID DA VIAGEM -->
         <div class="f-group">
           <label>Nº da Viagem (ID) *</label>
           <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="EX: 30, 105, 6844751" required />
         </div>
 
+        <!-- 2. CLIENTE -->
         <div class="f-group">
           <label>Cliente</label>
           <div class="form-row-2">
@@ -628,6 +630,7 @@
           </div>
         </div>
 
+        <!-- 3. ORIGEM E DESTINO -->
         <div class="form-row-2">
           <div class="f-group">
             <label>Origem / Coleta</label>
@@ -654,7 +657,25 @@
           </div>
         </div>
 
-        <!-- LINHA: MOTORISTA + PLACA 1 + PLACA 2 -->
+        <!-- 4. PERFIL DO VEÍCULO + CARROCERIA DO VEÍCULO -->
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Perfil do Veículo</label>
+            <select [(ngModel)]="tripForm.perfilVeiculo" name="perfilVeiculo">
+              <option value="">Selecione o Perfil do Veículo...</option>
+              <option *ngFor="let opt of tiposVeiculosOpcoes" [value]="opt">{{ opt }}</option>
+            </select>
+          </div>
+          <div class="f-group">
+            <label>Carroceria do Veículo</label>
+            <select [(ngModel)]="tripForm.carroceriaVeiculo" name="carroceriaVeiculo">
+              <option value="">Selecione a Carroceria...</option>
+              <option *ngFor="let opt of tiposCarroceriaOpcoes" [value]="opt">{{ opt }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 5. MOTORISTA + PLACA 1 + PLACA 2 -->
         <div class="form-row-3">
           <div class="f-group">
             <label>Motorista</label>
@@ -679,15 +700,32 @@
           </div>
         </div>
 
-        <!-- LINHA: FORNECEDOR -->
-        <div class="f-group">
-          <label>Fornecedor</label>
-          <select [(ngModel)]="tripForm.agencia" name="agencia">
-            <option value="Frota Própria">Frota Própria</option>
-            <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
-          </select>
+        <!-- 6. FORNECEDOR + AGENCIADOR + ESPECIALISTA COSPA -->
+        <div class="form-row-3">
+          <div class="f-group">
+            <label>Fornecedor</label>
+            <select [(ngModel)]="tripForm.agencia" name="agencia">
+              <option value="Frota Própria">Frota Própria</option>
+              <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+            </select>
+          </div>
+          <div class="f-group">
+            <label>Agenciador</label>
+            <select [(ngModel)]="tripForm.agenciador" name="agenciador">
+              <option value="">Nenhum / Direto</option>
+              <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+            </select>
+          </div>
+          <div class="f-group">
+            <label>Especialista Cospa</label>
+            <select [(ngModel)]="tripForm.especialistaCospa" name="especialistaCospa">
+              <option value="">Nenhum</option>
+              <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+            </select>
+          </div>
         </div>
 
+        <!-- 7. DATAS DE COLETA E ENTREGA -->
         <div class="form-row-2">
           <div class="f-group">
             <label>Coleta Prevista</label>
@@ -710,6 +748,7 @@
           </div>
         </div>
 
+        <!-- 8. VALORES A RECEBER E PAGAR -->
         <div class="form-row-2">
           <div class="f-group">
             <label>Valor a Receber (R$)</label>
@@ -732,11 +771,19 @@
           </div>
         </div>
 
-        <div class="f-group">
-          <label>Valor Adicional do Fornecedor (R$)</label>
-          <input type="number" [(ngModel)]="tripForm.valorAdicionalAgencia" name="valorAdicionalAgencia" placeholder="0,00" step="0.01" />
+        <!-- 9. VALOR DO AGENCIADOR + VALOR DO ESPECIALISTA COSPA -->
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Valor do Agenciador (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.valorAgenciador" name="valorAgenciador" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="f-group">
+            <label>Valor do Especialista Cospa (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.valorEspecialistaCospa" name="valorEspecialistaCospa" placeholder="0,00" step="0.01" />
+          </div>
         </div>
 
+        <!-- 10. LIBERAÇÃO E STATUS GERAL -->
         <div class="form-row-2">
           <div class="f-group">
             <label>Liberação</label>
@@ -755,12 +802,43 @@
           </div>
         </div>
 
-        <div class="f-group">
-          <label>Hora / Data Pagada</label>
-          <input type="text" [(ngModel)]="tripForm.dataHoraPagada" name="dataHoraPagada" placeholder="EX: 14/08/2026 15:45" />
+        <!-- 11. DATAS DE PAGAMENTO COM CHECKBOX AO LADO -->
+        <div class="payment-checks-block">
+          <div class="payment-check-row">
+            <div class="f-group check-input-col">
+              <label>Data do Adiantamento</label>
+              <input type="text" [(ngModel)]="tripForm.dataAdiantamento" name="dataAdiantamento" placeholder="EX: 14/08/2026 15:45" />
+            </div>
+            <div class="checkbox-container inline-check">
+              <input type="checkbox" id="pagoAdiantamentoCheck" [(ngModel)]="tripForm.pagoAdiantamento" name="pagoAdiantamento" />
+              <label for="pagoAdiantamentoCheck">Pago?</label>
+            </div>
+          </div>
+
+          <div class="payment-check-row">
+            <div class="f-group check-input-col">
+              <label>Data do Saldo</label>
+              <input type="text" [(ngModel)]="tripForm.dataSaldo" name="dataSaldo" placeholder="EX: 15/08/2026 11:30" />
+            </div>
+            <div class="checkbox-container inline-check">
+              <input type="checkbox" id="pagoSaldoCheck" [(ngModel)]="tripForm.pagoSaldo" name="pagoSaldo" />
+              <label for="pagoSaldoCheck">Pago?</label>
+            </div>
+          </div>
+
+          <div class="payment-check-row">
+            <div class="f-group check-input-col">
+              <label>Data do Adicional</label>
+              <input type="text" [(ngModel)]="tripForm.dataAdicional" name="dataAdicional" placeholder="EX: 16/08/2026 09:00" />
+            </div>
+            <div class="checkbox-container inline-check">
+              <input type="checkbox" id="pagoAdicionalCheck" [(ngModel)]="tripForm.pagoAdicional" name="pagoAdicional" />
+              <label for="pagoAdicionalCheck">Pago?</label>
+            </div>
+          </div>
         </div>
 
-        <!-- STATUS INICIAL -->
+        <!-- 12. STATUS INICIAL -->
         <div class="f-group">
           <label>Status Inicial</label>
           <select [(ngModel)]="tripForm.statusInicial" name="statusInicial">
@@ -1045,7 +1123,6 @@
 
       <div class="modal-body-container">
         <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarVeiculo()" class="modal-pane-content">
-          <!-- LINHA 1 -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Placa *</label>
@@ -1073,7 +1150,6 @@
             </div>
           </div>
 
-          <!-- LINHA 2 -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Nº Eixos</label>
@@ -1093,7 +1169,6 @@
             </div>
           </div>
 
-          <!-- LINHA 3 -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Ano Fabricação</label>
@@ -1119,7 +1194,6 @@
             </div>
           </div>
 
-          <!-- LINHA 4 -->
           <div class="form-row-4">
             <div class="f-group">
               <label>Nº ANTT</label>
@@ -1141,7 +1215,6 @@
             </div>
           </div>
 
-          <!-- LINHA 5: CRLV -->
           <div class="f-group" style="margin-top: 0.25rem;">
             <label>Anexar CRLV (Arraste, Clique ou Cole com Ctrl+V)</label>
             <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoCrlv" (click)="crlvVeiculoInput.click()" (dragover)="$event.preventDefault(); isDraggingVeiculoCrlv = true;" (dragleave)="$event.preventDefault(); isDraggingVeiculoCrlv = false;" (drop)="onVeiculoCrlvDrop($event)">

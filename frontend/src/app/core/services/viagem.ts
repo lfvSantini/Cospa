@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 export class ViagemService {
   private http = inject(HttpClient);
   
-  // Garante a rota correta alinhada ao @RequestMapping("/api/viagens") do Controller
+  // Garante a rota correta alinhada ao endpoint de viagens do Controller
   private apiUrl = environment.apiUrl.endsWith('/api') 
     ? `${environment.apiUrl}/viagens` 
     : `${environment.apiUrl}/api/viagens`;
@@ -24,7 +24,9 @@ export class ViagemService {
   }
 
   criar(viagem: any): Observable<Viagem> {
-    return this.http.post<Viagem>(this.apiUrl, viagem);
+    const payload = { ...viagem };
+    delete payload.id; // Garante que a primary key seja gerada pelo banco
+    return this.http.post<Viagem>(this.apiUrl, payload);
   }
 
   atualizar(id: number, viagem: any): Observable<Viagem> {
@@ -36,7 +38,11 @@ export class ViagemService {
     if (isEdicao && idDestino) {
       return this.http.put<Viagem>(`${this.apiUrl}/${idDestino}`, viagem);
     }
-    return this.http.post<Viagem>(this.apiUrl, viagem);
+    
+    // Na criação de nova viagem, remove o id técnico para preservar a sequência do AUTO_INCREMENT
+    const payload = { ...viagem };
+    delete payload.id;
+    return this.http.post<Viagem>(this.apiUrl, payload);
   }
 
   deletar(id: number): Observable<void> {

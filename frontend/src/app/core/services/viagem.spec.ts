@@ -33,12 +33,16 @@ describe('ViagemService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('deve listar todas as viagens via GET', () => {
-    const dummyViagens: any[] = [{ id: 1, cliente: 'TESTE' }];
+  it('deve listar todas as viagens via GET incluindo numeroOperacional', () => {
+    const dummyViagens: any[] = [
+      { id: 83, numeroOperacional: '6848963', cliente: 'CLICK RODO' },
+      { id: 84, numeroOperacional: '84', cliente: 'BULKY LOG' }
+    ];
 
     service.listarTodas().subscribe(viagens => {
-      expect(viagens.length).toBe(1);
+      expect(viagens.length).toBe(2);
       expect(viagens).toEqual(dummyViagens);
+      expect(viagens[0].numeroOperacional).toBe('6848963');
     });
 
     const req = httpMock.expectOne(baseUrl);
@@ -46,22 +50,38 @@ describe('ViagemService', () => {
     req.flush(dummyViagens);
   });
 
-  it('deve salvar uma nova viagem via POST', () => {
-    const novaViagem = { id: 10, cliente: 'CLIENTE A' };
+  it('deve salvar uma nova viagem via POST sem ID fixo e com numeroOperacional', () => {
+    const novaViagem = { 
+      numeroOperacional: '6848963', 
+      numero_operacional: '6848963', 
+      cliente: 'CLICK RODO' 
+    };
+    const viagemSalvaMock = { 
+      id: 88, 
+      numeroOperacional: '6848963', 
+      numero_operacional: '6848963', 
+      cliente: 'CLICK RODO' 
+    };
 
     service.salvar(novaViagem, false).subscribe(res => {
-      expect(res).toEqual(novaViagem);
+      expect(res).toEqual(viagemSalvaMock);
     });
 
     const req = httpMock.expectOne(baseUrl);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(novaViagem);
-    req.flush(novaViagem);
+    expect(req.request.body.id).toBeUndefined();
+    req.flush(viagemSalvaMock);
   });
 
-  it('deve atualizar viagem existente via PUT usando o idOriginal na rota', () => {
-    const idOriginal = 10;
-    const viagemAtualizada = { id: 20, cliente: 'CLIENTE ALTERADO' };
+  it('deve atualizar viagem existente via PUT usando o idOriginal na rota e atualizando o numeroOperacional', () => {
+    const idOriginal = 83;
+    const viagemAtualizada = { 
+      id: 83, 
+      numeroOperacional: '6848963_ALTERADO', 
+      numero_operacional: '6848963_ALTERADO', 
+      cliente: 'CLICK RODO CDSP' 
+    };
 
     service.salvar(viagemAtualizada, true, idOriginal).subscribe(res => {
       expect(res).toEqual(viagemAtualizada);

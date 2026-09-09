@@ -22,6 +22,9 @@ export interface Comprovante {
 
 export interface Viagem {
   id?: number;
+  numeroOperacional?: string;
+  numero_operacional?: string;
+  
   cliente: string;
   origem: string;
   origemNome?: string;

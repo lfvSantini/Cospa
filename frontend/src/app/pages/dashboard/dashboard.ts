@@ -32,9 +32,9 @@ export interface ComprovanteItem {
 }
 
 export interface ViagemItem {
-  id: string;
-  rawId: number;
-  numeroOperacional?: string;
+  id: string; // Exibição da coluna (numeroOperacional ou #id)
+  rawId: number; // ID Primário interno do banco
+  numeroOperacional: string; // Minuta, Romaneio ou ID operacional
   cliente: string;
   origem: string[];
   destino: string[];
@@ -229,7 +229,7 @@ export class DashboardComponent implements OnInit {
   ];
 
   tripForm = {
-    id: '',
+    id: '', // Campo que o usuário digita (Nº da Viagem / Minuta / Romaneio)
     clienteSelect: '',
     origens: [{ local: '', endereco: '' }] as PontoRota[],
     destinos: [{ local: '', endereco: '' }] as PontoRota[],
@@ -531,14 +531,17 @@ export class DashboardComponent implements OnInit {
       dataEnvio: c.dataEnvio || ''
     }));
 
-    // Prioriza o número de minuta/romaneio digitado caso exista, senão exibe o ID auto-incremental
-    const numOp = v.numeroOperacional || v.numero_operacional || v.numeroCte || (v.observacao && v.observacao.match(/ROMANEIO:\s*(\d+)/i) ? v.observacao.match(/ROMANEIO:\s*(\d+)/i)[1] : '');
-    const displayId = numOp ? `${numOp}` : `#${v.id}`;
+    // Obtém o número operacional da viagem (Romaneio/Minuta inserido pelo usuário)
+    const rawNumOp = v.numeroOperacional ?? v.numero_operacional ?? v.numeroCte ?? '';
+    const numOpStr = (rawNumOp !== null && rawNumOp !== undefined) ? String(rawNumOp).trim() : '';
+    
+    // Na tabela: se houver número operacional preenchido, mostra ele; senão, mostra o ID sequencial com hashtag
+    const displayId = numOpStr ? numOpStr : `#${v.id}`;
 
     return {
       id: displayId,
       rawId: v.id || 0,
-      numeroOperacional: numOp || '',
+      numeroOperacional: numOpStr,
       cliente: v.cliente,
       origem: origens.length ? origens : ['-'],
       destino: destinos.length ? destinos : ['-'],
@@ -557,6 +560,7 @@ export class DashboardComponent implements OnInit {
     return (lista || []).filter(item => {
       const matchViagem = !this.filtroColunas.viagem || 
         item.id.toLowerCase().includes(this.filtroColunas.viagem.toLowerCase()) || 
+        item.numeroOperacional.toLowerCase().includes(this.filtroColunas.viagem.toLowerCase()) ||
         item.rawId.toString().includes(this.filtroColunas.viagem.trim());
 
       const matchCliente = !this.filtroColunas.cliente || item.cliente.toLowerCase().includes(this.filtroColunas.cliente.toLowerCase());
@@ -1585,7 +1589,7 @@ export class DashboardComponent implements OnInit {
   openNovaViagemModal(): void {
     this.isEditing = false;
     this.tripForm = {
-      id: '',
+      id: '', // Usuário digita a Minuta/Romaneio se tiver, ou deixa vazio para o sistema gerar
       clienteSelect: '',
       origens: [{ local: '', endereco: '' }],
       destinos: [{ local: '', endereco: '' }],
@@ -1646,11 +1650,11 @@ export class DashboardComponent implements OnInit {
     const placa1 = placasSplit[0] && placasSplit[0] !== '-' ? placasSplit[0] : '';
     const placa2 = placasSplit[1] || (raw?.placaSecundaria || raw?.placa_secundaria || '');
 
-    // Se tiver numeroOperacional, exibe ele no input da edição; senão exibe o ID
-    const idParaExibir = item.numeroOperacional || item.rawId.toString();
+    // Se tiver numeroOperacional cadastrado, mostra ele no formulário; senão, mostra o ID
+    const valorParaInput = item.numeroOperacional || item.rawId.toString();
 
     this.tripForm = {
-      id: idParaExibir,
+      id: valorParaInput,
       clienteSelect: item.cliente,
       origens: origensMapeadas.length > 0 ? origensMapeadas : [{ local: '', endereco: '' }],
       destinos: destinosMapeados.length > 0 ? destinosMapeados : [{ local: '', endereco: '' }],
@@ -1691,12 +1695,6 @@ export class DashboardComponent implements OnInit {
 
   salvarViagemForm(): void {
     const rawIdInput = (this.tripForm.id || '').toString().trim();
-
-    if (!rawIdInput) {
-      alert('Por favor, informe o Número / Identificação da Viagem.');
-      return;
-    }
-
     const idOriginal = this.isEditing && this.selectedViagem ? this.selectedViagem.rawId : null;
 
     const nomeClienteFinal = (this.tripForm.clienteSelect || '').trim();
@@ -1744,7 +1742,10 @@ export class DashboardComponent implements OnInit {
       placaFinal = p2;
     }
 
-    // Se for edição preserva o ID original; se for novo, não envia ID para o MySQL usar AUTO_INCREMENT
+    // Regra da Chave Primária Oculta:
+    // 1. Ao cadastrar nova viagem: NÃO envia `id` para o MySQL usar o AUTO_INCREMENT nativo em segundo plano.
+    // 2. Ao editar: envia o `idOriginal` para atualizar exatamente o registro certo sem tocar na primary key.
+    // 3. O valor que o usuário digitou no form é salvo no campo desacoplado `numero_operacional`.
     const payload: any = {
       ...(this.isEditing ? { id: idOriginal } : {}),
       numeroOperacional: rawIdInput,

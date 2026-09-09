@@ -625,60 +625,60 @@ textarea {
   box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.25) !important;
 }
 
-/* Colunas rebalanceadas */
+/* Colunas rebalanceadas: Placa aproximada de Motorista e Status expandido */
 .cospa-table th:nth-child(1),
 .cospa-table td:nth-child(1) {
-  width: 5%;
+  width: 5%; /* VIAGEM */
 }
 
 .cospa-table th:nth-child(2),
 .cospa-table td:nth-child(2) {
-  width: 11%;
+  width: 11%; /* CLIENTE */
 }
 
 .cospa-table th:nth-child(3),
 .cospa-table td:nth-child(3) {
-  width: 10.5%;
+  width: 10.5%; /* ORIGEM */
 }
 
 .cospa-table th:nth-child(4),
 .cospa-table td:nth-child(4) {
-  width: 10.5%;
+  width: 10.5%; /* DESTINO */
 }
 
 .cospa-table th:nth-child(5),
 .cospa-table td:nth-child(5) {
-  width: 9%;
+  width: 8.5%; /* COLETA PREVISTA */
 }
 
 .cospa-table th:nth-child(6),
 .cospa-table td:nth-child(6) {
-  width: 9%;
+  width: 8.5%; /* ENTREGA PREVISTA */
 }
 
 .cospa-table th:nth-child(7),
 .cospa-table td:nth-child(7) {
-  width: 13%;
+  width: 9%; /* PLACA */
 }
 
 .cospa-table th:nth-child(8),
 .cospa-table td:nth-child(8) {
-  width: 13%;
+  width: 13%; /* MOTORISTA */
 }
 
 .cospa-table th:nth-child(9),
 .cospa-table td:nth-child(9) {
-  width: 8%;
+  width: 13%; /* STATUS */
 }
 
 .cospa-table th:nth-child(10),
 .cospa-table td:nth-child(10) {
-  width: 4%;
+  width: 4%; /* OBS */
 }
 
 .cospa-table th:nth-child(11),
 .cospa-table td:nth-child(11) {
-  width: 7%;
+  width: 7%; /* AÇÕES */
 }
 
 /* Linha de filtros por coluna nos cabecalhos */

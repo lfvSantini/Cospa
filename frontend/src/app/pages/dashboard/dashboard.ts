@@ -75,6 +75,8 @@ export interface MotoristaModel {
   id: number;
   nome: string;
   cpf: string;
+  telefone?: string;
+  email?: string;
   placa?: string;
   fornecedorVinculado: string;
   situacao: 'ATIVO' | 'INATIVO';
@@ -137,6 +139,20 @@ export class DashboardComponent implements OnInit {
   showAndamento: boolean = true;
   showAPagar: boolean = true;
   showFinalizadas: boolean = false;
+
+  // Filtros por coluna nas tabelas
+  filtroColunas = {
+    viagem: '',
+    cliente: '',
+    origem: '',
+    destino: '',
+    coletaPrevista: '',
+    entregaPrevista: '',
+    placa: '',
+    motorista: '',
+    status: '',
+    obs: ''
+  };
 
   modalType: 'TRIP_FORM' | 'PHOTO' | 'OBS' | 'DELETE' | 'FORNECEDOR' | 'CLIENTE' | 'MOTORISTA' | 'VEICULO' | 'MOTORISTA_PHOTO' | 'VEICULO_PHOTO' | null = null;
   private previousModalType: 'PHOTO' | 'MOTORISTA_PHOTO' | 'VEICULO_PHOTO' | null = null;
@@ -204,7 +220,7 @@ export class DashboardComponent implements OnInit {
   ];
 
   tiposCarroceriaOpcoes: string[] = [
-    'Bau Seco', 'Bau Refrigerado', 'Baú Frigorífico', 'Bau Blindado',
+    'Nenhum', 'Bau Seco', 'Bau Refrigerado', 'Baú Frigorífico', 'Bau Blindado',
     'Bau Plataforma', 'Sider', 'Aberta', 'Graneleira'
   ];
 
@@ -218,7 +234,7 @@ export class DashboardComponent implements OnInit {
     origens: [{ local: '', endereco: '' }] as PontoRota[],
     destinos: [{ local: '', endereco: '' }] as PontoRota[],
     perfilVeiculo: '',
-    carroceriaVeiculo: '',
+    carroceriaVeiculo: 'Nenhum',
     motorista: '',
     placa: '',
     placaSecundaria: '',
@@ -532,6 +548,24 @@ export class DashboardComponent implements OnInit {
     };
   }
 
+  // Filtragem dinâmica por cada coluna
+  filtrarListaViagens(lista: ViagemItem[]): ViagemItem[] {
+    return (lista || []).filter(item => {
+      const matchViagem = !this.filtroColunas.viagem || item.id.toLowerCase().includes(this.filtroColunas.viagem.toLowerCase());
+      const matchCliente = !this.filtroColunas.cliente || item.cliente.toLowerCase().includes(this.filtroColunas.cliente.toLowerCase());
+      const matchOrigem = !this.filtroColunas.origem || item.origem.some(o => o.toLowerCase().includes(this.filtroColunas.origem.toLowerCase()));
+      const matchDestino = !this.filtroColunas.destino || item.destino.some(d => d.toLowerCase().includes(this.filtroColunas.destino.toLowerCase()));
+      const matchColeta = !this.filtroColunas.coletaPrevista || item.coletaPrevista.toLowerCase().includes(this.filtroColunas.coletaPrevista.toLowerCase());
+      const matchEntrega = !this.filtroColunas.entregaPrevista || item.entregaPrevista.toLowerCase().includes(this.filtroColunas.entregaPrevista.toLowerCase());
+      const matchPlaca = !this.filtroColunas.placa || item.placa.toLowerCase().includes(this.filtroColunas.placa.toLowerCase());
+      const matchMotorista = !this.filtroColunas.motorista || item.motorista.toLowerCase().includes(this.filtroColunas.motorista.toLowerCase());
+      const matchStatus = !this.filtroColunas.status || item.status.toLowerCase().includes(this.filtroColunas.status.toLowerCase());
+      const matchObs = !this.filtroColunas.obs || (item.obs || '').toLowerCase().includes(this.filtroColunas.obs.toLowerCase());
+
+      return matchViagem && matchCliente && matchOrigem && matchDestino && matchColeta && matchEntrega && matchPlaca && matchMotorista && matchStatus && matchObs;
+    });
+  }
+
   passarParaAPagar(item: ViagemItem): void {
     if (!item.rawViagem) return;
     const atualizada: any = {
@@ -747,6 +781,8 @@ export class DashboardComponent implements OnInit {
           id: m.id || 0,
           nome: m.nome,
           cpf: m.cpf || '',
+          telefone: m.telefone || '',
+          email: m.email || '',
           fornecedorVinculado: m.fornecedor || 'Frota Própria',
           situacao: (m.situacao === 'INATIVO' || m.ativo === false) ? 'INATIVO' : 'ATIVO',
           informacoesAdicionais: m.informacoesAdicionais || m.observacoes || '',
@@ -774,6 +810,8 @@ export class DashboardComponent implements OnInit {
     this.filteredMotoristas = this.motoristasList.filter(m =>
       (m.nome || '').toLowerCase().includes(t) ||
       (m.cpf || '').toLowerCase().includes(t) ||
+      (m.telefone || '').toLowerCase().includes(t) ||
+      (m.email || '').toLowerCase().includes(t) ||
       (m.fornecedorVinculado || '').toLowerCase().includes(t)
     );
   }
@@ -901,6 +939,8 @@ export class DashboardComponent implements OnInit {
       id: 0, 
       nome: '', 
       cpf: '', 
+      telefone: '',
+      email: '',
       fornecedorVinculado: '', 
       situacao: 'ATIVO', 
       informacoesAdicionais: '', 
@@ -941,6 +981,8 @@ export class DashboardComponent implements OnInit {
       id: this.isEditingMotorista ? this.motoristaForm.id : undefined,
       nome: this.motoristaForm.nome.toUpperCase(),
       cpf: this.motoristaForm.cpf.toUpperCase(),
+      telefone: (this.motoristaForm.telefone || '').toUpperCase(),
+      email: (this.motoristaForm.email || '').toUpperCase(),
       fornecedor: this.motoristaForm.fornecedorVinculado || 'Frota Própria',
       situacao: this.motoristaForm.situacao,
       ativo: this.motoristaForm.situacao === 'ATIVO',
@@ -1004,7 +1046,7 @@ export class DashboardComponent implements OnInit {
           id: v.id || 0,
           placa: v.placa || '',
           tipoVeiculo: v.tipoVeiculo || 'Truck',
-          tipoCarroceria: v.tipoCarroceria || 'Bau Seco',
+          tipoCarroceria: v.tipoCarroceria || 'Nenhum',
           adicional: v.adicional || '',
           numeroEixos: v.numeroEixos || '',
           cubagemBau: v.cubagemBau || '',
@@ -1055,7 +1097,7 @@ export class DashboardComponent implements OnInit {
       id: 0,
       placa: '',
       tipoVeiculo: 'Truck',
-      tipoCarroceria: 'Bau Seco',
+      tipoCarroceria: 'Nenhum',
       adicional: '',
       numeroEixos: '',
       cubagemBau: '',
@@ -1107,7 +1149,7 @@ export class DashboardComponent implements OnInit {
       id: this.isEditingVeiculo ? this.veiculoForm.id : undefined,
       placa: placaLimpa,
       tipoVeiculo: this.veiculoForm.tipoVeiculo || 'Truck',
-      tipoCarroceria: this.veiculoForm.tipoCarroceria || 'Bau Seco',
+      tipoCarroceria: this.veiculoForm.tipoCarroceria || 'Nenhum',
       adicional: this.veiculoForm.adicional || '',
       numeroEixos: this.veiculoForm.numeroEixos || '',
       cubagemBau: this.veiculoForm.cubagemBau || '',
@@ -1541,7 +1583,7 @@ export class DashboardComponent implements OnInit {
       origens: [{ local: '', endereco: '' }],
       destinos: [{ local: '', endereco: '' }],
       perfilVeiculo: '',
-      carroceriaVeiculo: '',
+      carroceriaVeiculo: 'Nenhum',
       motorista: '',
       placa: '',
       placaSecundaria: '',
@@ -1603,7 +1645,7 @@ export class DashboardComponent implements OnInit {
       origens: origensMapeadas.length > 0 ? origensMapeadas : [{ local: '', endereco: '' }],
       destinos: destinosMapeados.length > 0 ? destinosMapeados : [{ local: '', endereco: '' }],
       perfilVeiculo: raw?.perfilVeiculo || raw?.perfil_veiculo || '',
-      carroceriaVeiculo: raw?.carroceriaVeiculo || raw?.carroceria_veiculo || '',
+      carroceriaVeiculo: raw?.carroceriaVeiculo || raw?.carroceria_veiculo || 'Nenhum',
       motorista: item.motorista === 'A Contratar' ? '' : item.motorista,
       placa: placa1,
       placaSecundaria: placa2,

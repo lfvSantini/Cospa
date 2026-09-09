@@ -625,7 +625,7 @@ textarea {
   box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.25) !important;
 }
 
-/* Colunas rebalanceadas com 7% para Ações */
+/* Colunas rebalanceadas */
 .cospa-table th:nth-child(1),
 .cospa-table td:nth-child(1) {
   width: 5%;
@@ -679,6 +679,35 @@ textarea {
 .cospa-table th:nth-child(11),
 .cospa-table td:nth-child(11) {
   width: 7%;
+}
+
+/* Linha de filtros por coluna nos cabecalhos */
+.filter-row th {
+  padding: 0.35rem 0.45rem !important;
+  background-color: var(--bg-table-card) !important;
+  border-bottom: 1px solid var(--border-nav);
+}
+
+.table-filter-input {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  background-color: var(--btn-action-bg);
+  border: 1px solid var(--btn-action-border);
+  border-radius: 5px;
+  color: var(--text-main);
+  font-size: 0.76rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.table-filter-input:focus {
+  border-color: #0066d6;
+}
+
+.table-filter-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.65;
+  font-size: 0.72rem;
 }
 
 .col-viagem {

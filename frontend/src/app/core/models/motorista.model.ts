@@ -12,6 +12,8 @@ export interface Motorista {
   id?: number;
   nome: string;
   cpf?: string;
+  telefone?: string;
+  email?: string;
   placa?: string;
   fornecedor?: string;
   situacao?: 'ATIVO' | 'INATIVO' | string;

@@ -1,0 +1,2 @@
+ALTER TABLE motoristas ADD COLUMN telefone VARCHAR(50);
+ALTER TABLE motoristas ADD COLUMN email VARCHAR(150);

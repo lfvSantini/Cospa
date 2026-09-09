@@ -20,6 +20,12 @@ public class Motorista {
     @Column(length = 20)
     private String cpf;
 
+    @Column(length = 50)
+    private String telefone;
+
+    @Column(length = 150)
+    private String email;
+
     @Column(length = 20)
     private String placa;
 
@@ -70,6 +76,12 @@ public class Motorista {
 
     public String getCpf() { return cpf; }
     public void setCpf(String cpf) { this.cpf = cpf; }
+
+    public String getTelefone() { return telefone; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
     public String getPlaca() { return placa; }
     public void setPlaca(String placa) { this.placa = placa; }

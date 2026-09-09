@@ -78,6 +78,8 @@ public class MotoristaController {
         return repository.findById(id).map(motorista -> {
             motorista.setNome(motoristaAtualizado.getNome());
             motorista.setCpf(motoristaAtualizado.getCpf());
+            motorista.setTelefone(motoristaAtualizado.getTelefone());
+            motorista.setEmail(motoristaAtualizado.getEmail());
             motorista.setPlaca(motoristaAtualizado.getPlaca());
             motorista.setFornecedor(motoristaAtualizado.getFornecedor());
             motorista.setSituacao(motoristaAtualizado.getSituacao() != null ? motoristaAtualizado.getSituacao() : "ATIVO");

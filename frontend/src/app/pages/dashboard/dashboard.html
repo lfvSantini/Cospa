@@ -189,9 +189,23 @@
                   <th>OBS</th>
                   <th class="actions-th">AÇÕES</th>
                 </tr>
+                <!-- Linha de filtros por coluna -->
+                <tr class="filter-row">
+                  <th><input type="text" [(ngModel)]="filtroColunas.viagem" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.cliente" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.origem" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.destino" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.coletaPrevista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.entregaPrevista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.placa" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.motorista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.status" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.obs" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th></th>
+                </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of viagensAndamento" [class.row-menu-open]="openedActionMenuId === item.id">
+                <tr *ngFor="let item of filtrarListaViagens(viagensAndamento)" [class.row-menu-open]="openedActionMenuId === item.id">
                   <td class="col-viagem">{{ item.id }}</td>
                   <td class="col-cliente">{{ item.cliente }}</td>
                   <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
@@ -267,9 +281,23 @@
                   <th>OBS</th>
                   <th class="actions-th">AÇÕES</th>
                 </tr>
+                <!-- Linha de filtros por coluna -->
+                <tr class="filter-row">
+                  <th><input type="text" [(ngModel)]="filtroColunas.viagem" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.cliente" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.origem" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.destino" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.coletaPrevista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.entregaPrevista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.placa" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.motorista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.status" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.obs" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th></th>
+                </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of viagensAPagar" [class.row-menu-open]="openedActionMenuId === item.id">
+                <tr *ngFor="let item of filtrarListaViagens(viagensAPagar)" [class.row-menu-open]="openedActionMenuId === item.id">
                   <td class="col-viagem">{{ item.id }}</td>
                   <td class="col-cliente">{{ item.cliente }}</td>
                   <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
@@ -342,9 +370,23 @@
                   <th>OBS</th>
                   <th class="actions-th">AÇÕES</th>
                 </tr>
+                <!-- Linha de filtros por coluna -->
+                <tr class="filter-row">
+                  <th><input type="text" [(ngModel)]="filtroColunas.viagem" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.cliente" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.origem" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.destino" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.coletaPrevista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.entregaPrevista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.placa" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.motorista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.status" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.obs" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th></th>
+                </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of viagensFinalizadas" [class.row-menu-open]="openedActionMenuId === item.id">
+                <tr *ngFor="let item of filtrarListaViagens(viagensFinalizadas)" [class.row-menu-open]="openedActionMenuId === item.id">
                   <td class="col-viagem">{{ item.id }}</td>
                   <td class="col-cliente">{{ item.cliente }}</td>
                   <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
@@ -618,7 +660,7 @@
           <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="EX: 30, 105, 6844751" required />
         </div>
 
-        <!-- 2. CLIENTE (Apenas seleção de cadastrados) -->
+        <!-- 2. CLIENTE -->
         <div class="f-group">
           <label>Cliente *</label>
           <select [(ngModel)]="tripForm.clienteSelect" name="clienteSelect" required>
@@ -666,7 +708,6 @@
           <div class="f-group">
             <label>Carroceria do Veículo</label>
             <select [(ngModel)]="tripForm.carroceriaVeiculo" name="carroceriaVeiculo">
-              <option value="">Selecione a Carroceria...</option>
               <option *ngFor="let opt of tiposCarroceriaOpcoes" [value]="opt">{{ opt }}</option>
             </select>
           </div>
@@ -1037,6 +1078,11 @@
           </div>
 
           <div class="form-row-2">
+            <input type="text" [(ngModel)]="motoristaForm.telefone" name="telefone" placeholder="TELEFONE / WHATSAPP" />
+            <input type="email" [(ngModel)]="motoristaForm.email" name="email" placeholder="E-MAIL" />
+          </div>
+
+          <div class="form-row-2">
             <select [(ngModel)]="motoristaForm.fornecedorVinculado" name="fornecedor">
               <option value="" disabled selected>Selecione o Fornecedor</option>
               <option value="Frota Própria">Frota Própria</option>
@@ -1067,7 +1113,7 @@
 
         <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
           <div class="manage-search-bar">
-            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarMotoristas()" placeholder="Buscar por motorista ou CPF..." />
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarMotoristas()" placeholder="Buscar por motorista, CPF, telefone..." />
           </div>
 
           <div class="crud-items-list">
@@ -1077,7 +1123,7 @@
                   <h4>{{ m.nome }}</h4>
                   <span class="badge-status" [class.badge-active]="m.situacao === 'ATIVO'" [class.badge-inactive]="m.situacao === 'INATIVO'">{{ m.situacao }}</span>
                 </div>
-                <p class="crud-subtext">CPF: {{ m.cpf || '-' }} • Vínculo: <strong>{{ m.fornecedorVinculado }}</strong></p>
+                <p class="crud-subtext">CPF: {{ m.cpf || '-' }} • Tel: {{ m.telefone || '-' }} • Vínculo: <strong>{{ m.fornecedorVinculado }}</strong></p>
               </div>
               <div class="crud-item-actions">
                 <button type="button" class="btn-photo-inline" (click)="openMotoristaFotosModal(m)" title="Ver CNH e Documentos">

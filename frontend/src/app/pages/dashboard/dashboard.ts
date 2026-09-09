@@ -34,6 +34,7 @@ export interface ComprovanteItem {
 export interface ViagemItem {
   id: string;
   rawId: number;
+  numeroOperacional?: string;
   cliente: string;
   origem: string[];
   destino: string[];
@@ -140,7 +141,6 @@ export class DashboardComponent implements OnInit {
   showAPagar: boolean = true;
   showFinalizadas: boolean = false;
 
-  // Filtros por coluna nas tabelas
   filtroColunas = {
     viagem: '',
     cliente: '',
@@ -531,9 +531,14 @@ export class DashboardComponent implements OnInit {
       dataEnvio: c.dataEnvio || ''
     }));
 
+    // Prioriza o número de minuta/romaneio digitado caso exista, senão exibe o ID auto-incremental
+    const numOp = v.numeroOperacional || v.numero_operacional || v.numeroCte || (v.observacao && v.observacao.match(/ROMANEIO:\s*(\d+)/i) ? v.observacao.match(/ROMANEIO:\s*(\d+)/i)[1] : '');
+    const displayId = numOp ? `${numOp}` : `#${v.id}`;
+
     return {
-      id: `#${v.id}`,
+      id: displayId,
       rawId: v.id || 0,
+      numeroOperacional: numOp || '',
       cliente: v.cliente,
       origem: origens.length ? origens : ['-'],
       destino: destinos.length ? destinos : ['-'],
@@ -548,10 +553,12 @@ export class DashboardComponent implements OnInit {
     };
   }
 
-  // Filtragem dinâmica por cada coluna
   filtrarListaViagens(lista: ViagemItem[]): ViagemItem[] {
     return (lista || []).filter(item => {
-      const matchViagem = !this.filtroColunas.viagem || item.id.toLowerCase().includes(this.filtroColunas.viagem.toLowerCase());
+      const matchViagem = !this.filtroColunas.viagem || 
+        item.id.toLowerCase().includes(this.filtroColunas.viagem.toLowerCase()) || 
+        item.rawId.toString().includes(this.filtroColunas.viagem.trim());
+
       const matchCliente = !this.filtroColunas.cliente || item.cliente.toLowerCase().includes(this.filtroColunas.cliente.toLowerCase());
       const matchOrigem = !this.filtroColunas.origem || item.origem.some(o => o.toLowerCase().includes(this.filtroColunas.origem.toLowerCase()));
       const matchDestino = !this.filtroColunas.destino || item.destino.some(d => d.toLowerCase().includes(this.filtroColunas.destino.toLowerCase()));
@@ -1639,8 +1646,11 @@ export class DashboardComponent implements OnInit {
     const placa1 = placasSplit[0] && placasSplit[0] !== '-' ? placasSplit[0] : '';
     const placa2 = placasSplit[1] || (raw?.placaSecundaria || raw?.placa_secundaria || '');
 
+    // Se tiver numeroOperacional, exibe ele no input da edição; senão exibe o ID
+    const idParaExibir = item.numeroOperacional || item.rawId.toString();
+
     this.tripForm = {
-      id: item.id.replace('#', ''),
+      id: idParaExibir,
       clienteSelect: item.cliente,
       origens: origensMapeadas.length > 0 ? origensMapeadas : [{ local: '', endereco: '' }],
       destinos: destinosMapeados.length > 0 ? destinosMapeados : [{ local: '', endereco: '' }],
@@ -1682,26 +1692,12 @@ export class DashboardComponent implements OnInit {
   salvarViagemForm(): void {
     const rawIdInput = (this.tripForm.id || '').toString().trim();
 
-    if (!rawIdInput || isNaN(Number(rawIdInput)) || Number(rawIdInput) <= 0) {
-      alert('Por favor, informe um Nº da Viagem (ID) válido antes de salvar.');
+    if (!rawIdInput) {
+      alert('Por favor, informe o Número / Identificação da Viagem.');
       return;
     }
 
-    const idFinal = Number(rawIdInput);
     const idOriginal = this.isEditing && this.selectedViagem ? this.selectedViagem.rawId : null;
-
-    if (!this.isEditing || idFinal !== idOriginal) {
-      const todosOsIds = [
-        ...this.viagensAndamento.map(v => v.rawId),
-        ...this.viagensAPagar.map(v => v.rawId),
-        ...this.viagensFinalizadas.map(v => v.rawId)
-      ];
-
-      if (todosOsIds.includes(idFinal)) {
-        alert(`Atenção: Já existe uma viagem cadastrada com o ID "${idFinal}". Escolha outro número para não sobrescrever.`);
-        return;
-      }
-    }
 
     const nomeClienteFinal = (this.tripForm.clienteSelect || '').trim();
     if (!nomeClienteFinal) {
@@ -1748,8 +1744,11 @@ export class DashboardComponent implements OnInit {
       placaFinal = p2;
     }
 
+    // Se for edição preserva o ID original; se for novo, não envia ID para o MySQL usar AUTO_INCREMENT
     const payload: any = {
-      id: idFinal,
+      ...(this.isEditing ? { id: idOriginal } : {}),
+      numeroOperacional: rawIdInput,
+      numero_operacional: rawIdInput,
       cliente: nomeClienteFinal.toUpperCase(),
 
       origem: strOrigemLocal,

@@ -206,7 +206,12 @@
               </thead>
               <tbody>
                 <tr *ngFor="let item of filtrarListaViagens(viagensAndamento)" [class.row-menu-open]="openedActionMenuId === item.id">
-                  <td class="col-viagem">{{ item.id }}</td>
+                  <td class="col-viagem">
+                    <span>{{ item.id }}</span>
+                    <small *ngIf="item.numeroOperacional" style="display:block; font-size: 0.70rem; color: var(--text-muted); font-weight: normal;">
+                      ID: #{{ item.rawId }}
+                    </small>
+                  </td>
                   <td class="col-cliente">{{ item.cliente }}</td>
                   <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
                   <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
@@ -298,7 +303,12 @@
               </thead>
               <tbody>
                 <tr *ngFor="let item of filtrarListaViagens(viagensAPagar)" [class.row-menu-open]="openedActionMenuId === item.id">
-                  <td class="col-viagem">{{ item.id }}</td>
+                  <td class="col-viagem">
+                    <span>{{ item.id }}</span>
+                    <small *ngIf="item.numeroOperacional" style="display:block; font-size: 0.70rem; color: var(--text-muted); font-weight: normal;">
+                      ID: #{{ item.rawId }}
+                    </small>
+                  </td>
                   <td class="col-cliente">{{ item.cliente }}</td>
                   <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
                   <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
@@ -387,7 +397,12 @@
               </thead>
               <tbody>
                 <tr *ngFor="let item of filtrarListaViagens(viagensFinalizadas)" [class.row-menu-open]="openedActionMenuId === item.id">
-                  <td class="col-viagem">{{ item.id }}</td>
+                  <td class="col-viagem">
+                    <span>{{ item.id }}</span>
+                    <small *ngIf="item.numeroOperacional" style="display:block; font-size: 0.70rem; color: var(--text-muted); font-weight: normal;">
+                      ID: #{{ item.rawId }}
+                    </small>
+                  </td>
                   <td class="col-cliente">{{ item.cliente }}</td>
                   <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
                   <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
@@ -654,10 +669,10 @@
       </div>
 
       <form (ngSubmit)="salvarViagemForm()" (keydown.enter)="$event.preventDefault()" class="modal-trip-scroll">
-        <!-- 1. ID DA VIAGEM -->
+        <!-- 1. IDENTIFICAÇÃO / MINUTA / ROMANEIO / ID -->
         <div class="f-group">
-          <label>Nº da Viagem (ID) *</label>
-          <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="EX: 30, 105, 6844751" required />
+          <label>Nº da Viagem / Minuta / Romaneio *</label>
+          <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="EX: 30, 6848963, 105" required />
         </div>
 
         <!-- 2. CLIENTE -->

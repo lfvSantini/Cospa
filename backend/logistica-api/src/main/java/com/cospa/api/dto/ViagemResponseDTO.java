@@ -9,6 +9,7 @@ import java.util.List;
 
 public record ViagemResponseDTO(
         Long id,
+        String numeroOperacional,
         String cliente,
         String localColeta,
         String localEntrega,
@@ -52,6 +53,7 @@ public record ViagemResponseDTO(
     public ViagemResponseDTO(Viagem viagem) {
         this(
                 viagem.getId(),
+                viagem.getNumeroOperacional(),
                 viagem.getCliente(),
                 viagem.getLocalColeta(),
                 viagem.getLocalEntrega(),

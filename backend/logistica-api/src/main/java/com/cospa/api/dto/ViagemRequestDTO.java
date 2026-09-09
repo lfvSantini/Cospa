@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 public class ViagemRequestDTO {
 
     private Long id;
+    private String numeroOperacional;
 
     @NotBlank(message = "O nome do cliente é obrigatório")
     private String cliente;

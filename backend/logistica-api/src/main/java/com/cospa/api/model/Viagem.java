@@ -18,8 +18,12 @@ import java.util.List;
 public class Viagem {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
+
+    @Column(name = "numero_operacional", length = 50)
+    private String numeroOperacional;
 
     @Column(nullable = false, length = 255)
     private String cliente;

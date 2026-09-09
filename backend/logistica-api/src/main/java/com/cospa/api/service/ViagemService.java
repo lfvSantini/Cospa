@@ -5,10 +5,8 @@ import com.cospa.api.model.StatusViagem;
 import com.cospa.api.model.Viagem;
 import com.cospa.api.repository.ViagemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,7 +20,7 @@ public class ViagemService {
 
     @Transactional(readOnly = true)
     public List<Viagem> listarTodas() {
-        return repository.findAll();
+        return repository.findAllByOrderByIdDesc();
     }
 
     @Transactional(readOnly = true)
@@ -32,39 +30,38 @@ public class ViagemService {
 
     @Transactional
     public Viagem salvar(ViagemRequestDTO dto) {
-        if (dto.getId() == null || dto.getId() <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O Número da Viagem (ID) é obrigatório.");
-        }
-        if (repository.existsById(dto.getId())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe uma viagem cadastrada com o número #" + dto.getId());
+        Viagem viagem = new Viagem();
+
+        // Garante que o MySQL controle o AUTO_INCREMENT nativo da primary key
+        viagem.setId(null);
+
+        copiarDtoParaEntidade(dto, viagem);
+
+        // Define o número operacional que o usuário digitou
+        String numOp = (dto.getNumeroOperacional() != null) ? dto.getNumeroOperacional().trim() : "";
+        viagem.setNumeroOperacional(numOp.isEmpty() ? null : numOp);
+
+        Viagem salva = repository.save(viagem);
+
+        // Se o usuário não informou nenhuma minuta/romaneio, define o número operacional como o próprio ID gerado
+        if (salva.getNumeroOperacional() == null || salva.getNumeroOperacional().isBlank()) {
+            salva.setNumeroOperacional(salva.getId().toString());
+            salva = repository.save(salva);
         }
 
-        Viagem viagem = new Viagem();
-        viagem.setId(dto.getId());
-        copiarDtoParaEntidade(dto, viagem);
-        return repository.save(viagem);
+        return salva;
     }
 
     @Transactional
-    public Optional<Viagem> atualizar(Long idAntigo, ViagemRequestDTO dto) {
-        if (!repository.existsById(idAntigo)) {
-            return Optional.empty();
-        }
-
-        Long idDestino = idAntigo;
-
-        // Se o usuário modificou o número da viagem (ID) na edição
-        if (dto.getId() != null && !dto.getId().equals(idAntigo)) {
-            if (repository.existsById(dto.getId())) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe outra viagem cadastrada com o número #" + dto.getId());
-            }
-            repository.atualizarIdComprovantes(idAntigo, dto.getId());
-            repository.atualizarId(idAntigo, dto.getId());
-            idDestino = dto.getId();
-        }
-
-        return repository.findById(idDestino).map(viagem -> {
+    public Optional<Viagem> atualizar(Long id, ViagemRequestDTO dto) {
+        return repository.findById(id).map(viagem -> {
             copiarDtoParaEntidade(dto, viagem);
+
+            // Atualiza o número operacional digitado sem tocar na chave primária
+            if (dto.getNumeroOperacional() != null && !dto.getNumeroOperacional().isBlank()) {
+                viagem.setNumeroOperacional(dto.getNumeroOperacional().trim());
+            }
+
             return repository.save(viagem);
         });
     }

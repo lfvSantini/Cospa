@@ -11,6 +11,7 @@
   --bg-sidebar: #121418;
   --border-nav: #23262f;
   --border-table: #242731;
+  --border-cell-vertical: rgba(255, 255, 255, 0.05); /* Divisória vertical escura */
   --text-main: #ffffff;
   --text-muted: #8e95a5;
   --row-hover: #1b1e27;
@@ -47,6 +48,7 @@
   --bg-sidebar: #f8fafc;
   --border-nav: #e2e8f0;
   --border-table: #edf2f7;
+  --border-cell-vertical: rgba(0, 0, 0, 0.06); /* Divisória vertical clara */
   --text-main: #0f172a;
   --text-muted: #64748b;
   --row-hover: #f8fafc;
@@ -584,7 +586,7 @@ textarea {
   border-collapse: separate;
   border-spacing: 0;
   text-align: left;
-  font-size: 0.86rem;
+  font-size: 0.86rem; /* Tamanho uniforme em todas as colunas */
 }
 
 .cospa-table thead tr {
@@ -592,6 +594,7 @@ textarea {
   background-color: var(--btn-action-bg);
 }
 
+/* Divisórias verticais no cabeçalho */
 .cospa-table th {
   padding: 0.95rem 0.65rem;
   font-size: 0.73rem;
@@ -602,13 +605,25 @@ textarea {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  border-right: 1px solid var(--border-cell-vertical);
 }
 
+.cospa-table th:last-child {
+  border-right: none;
+}
+
+/* Divisórias verticais e horizontais no corpo da tabela */
 .cospa-table td {
   padding: 0.9rem 0.65rem;
   border-bottom: 1px solid var(--border-table);
+  border-right: 1px solid var(--border-cell-vertical);
   vertical-align: middle;
   color: var(--text-main);
+  font-size: 0.86rem; /* Padroniza o texto de todas as células */
+}
+
+.cospa-table td:last-child {
+  border-right: none;
 }
 
 .cospa-table tbody tr {
@@ -697,11 +712,16 @@ textarea {
   width: 6.5%; /* AÇÕES */
 }
 
-/* Linha de filtros por coluna nos cabecalhos */
+/* Linha de filtros por coluna com divisórias */
 .filter-row th {
   padding: 0.35rem 0.45rem !important;
   background-color: var(--bg-table-card) !important;
   border-bottom: 1px solid var(--border-nav);
+  border-right: 1px solid var(--border-cell-vertical);
+}
+
+.filter-row th:last-child {
+  border-right: none;
 }
 
 .table-filter-input {
@@ -732,9 +752,9 @@ textarea {
 
 .badge-system-id {
   display: inline-block;
-  font-family: monospace;
+  font-family: inherit;
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   padding: 2px 6px;
   border-radius: 4px;
   background-color: rgba(99, 102, 241, 0.14);
@@ -752,6 +772,7 @@ textarea {
   font-weight: 700;
   color: #0066d6;
   white-space: nowrap;
+  font-size: 0.86rem;
 }
 
 .dashboard-wrapper:not(.light-mode) .col-rota {
@@ -761,24 +782,26 @@ textarea {
 .col-cliente {
   font-weight: 600;
   word-break: break-word;
+  font-size: 0.86rem;
 }
 
 .col-multiline {
   line-height: 1.35;
   color: var(--text-main);
   word-break: break-word;
+  font-size: 0.86rem;
 }
 
 .col-coleta {
-  font-size: 0.82rem;
+  font-size: 0.86rem; /* Padronizado com as outras colunas */
   color: var(--text-muted);
   white-space: nowrap;
 }
 
 .col-placa {
-  font-family: monospace;
+  font-family: inherit; /* Removido monospace para manter consistência */
   font-weight: 600;
-  font-size: 0.82rem;
+  font-size: 0.86rem; /* Padronizado com as outras colunas */
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -788,6 +811,7 @@ textarea {
 .col-motorista {
   font-weight: 500;
   word-break: break-word;
+  font-size: 0.86rem;
 }
 
 .col-motorista.to-hire {
@@ -803,7 +827,7 @@ textarea {
   display: inline-block;
   padding: 4px 8px;
   border-radius: 6px;
-  font-size: 0.70rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-align: center;
@@ -922,7 +946,7 @@ textarea {
   color: var(--btn-action-text);
   padding: 0.35rem 0.55rem;
   border-radius: 6px;
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;
   max-width: 100%;

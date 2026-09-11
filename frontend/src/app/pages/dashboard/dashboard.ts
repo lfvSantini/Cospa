@@ -32,9 +32,9 @@ export interface ComprovanteItem {
 }
 
 export interface ViagemItem {
-  id: string; // Exibição da coluna (numeroOperacional ou #id)
+  id: string; // Exibição da coluna
   rawId: number; // ID Primário interno do banco
-  numeroOperacional: string; // Minuta, Romaneio ou ID operacional
+  numeroOperacional: string; // Minuta, Romaneio ou Nº Rota
   cliente: string;
   origem: string[];
   destino: string[];
@@ -143,7 +143,7 @@ export class DashboardComponent implements OnInit {
 
   filtroColunas = {
     id: '',
-    viagem: '',
+    numeroRota: '',
     cliente: '',
     origem: '',
     destino: '',
@@ -230,7 +230,7 @@ export class DashboardComponent implements OnInit {
   ];
 
   tripForm = {
-    id: '', // Campo que o usuário digita (Nº da Viagem / Minuta / Romaneio)
+    id: '', // Campo que o usuário digita (Nº Rota / Minuta / Romaneio)
     clienteSelect: '',
     origens: [{ local: '', endereco: '' }] as PontoRota[],
     destinos: [{ local: '', endereco: '' }] as PontoRota[],
@@ -532,11 +532,10 @@ export class DashboardComponent implements OnInit {
       dataEnvio: c.dataEnvio || ''
     }));
 
-    // Obtém o número operacional da viagem (Romaneio/Minuta inserido pelo usuário)
+    // Obtém o número operacional da rota (Romaneio/Minuta inserido pelo usuário)
     const rawNumOp = v.numeroOperacional ?? v.numero_operacional ?? v.numeroCte ?? '';
     const numOpStr = (rawNumOp !== null && rawNumOp !== undefined) ? String(rawNumOp).trim() : '';
     
-    // Na tabela: se houver número operacional preenchido, mostra ele; senão, mostra o ID sequencial com hashtag
     const displayId = numOpStr ? numOpStr : `#${v.id}`;
 
     return {
@@ -560,9 +559,9 @@ export class DashboardComponent implements OnInit {
   filtrarListaViagens(lista: ViagemItem[]): ViagemItem[] {
     return (lista || []).filter(item => {
       const matchId = !this.filtroColunas.id || item.rawId.toString().includes(this.filtroColunas.id.trim().replace(/^#/, ''));
-      const matchViagem = !this.filtroColunas.viagem || 
-        item.id.toLowerCase().includes(this.filtroColunas.viagem.toLowerCase()) || 
-        item.numeroOperacional.toLowerCase().includes(this.filtroColunas.viagem.toLowerCase());
+      const matchRota = !this.filtroColunas.numeroRota || 
+        item.id.toLowerCase().includes(this.filtroColunas.numeroRota.toLowerCase()) || 
+        item.numeroOperacional.toLowerCase().includes(this.filtroColunas.numeroRota.toLowerCase());
 
       const matchCliente = !this.filtroColunas.cliente || item.cliente.toLowerCase().includes(this.filtroColunas.cliente.toLowerCase());
       const matchOrigem = !this.filtroColunas.origem || item.origem.some(o => o.toLowerCase().includes(this.filtroColunas.origem.toLowerCase()));
@@ -574,7 +573,7 @@ export class DashboardComponent implements OnInit {
       const matchStatus = !this.filtroColunas.status || item.status.toLowerCase().includes(this.filtroColunas.status.toLowerCase());
       const matchObs = !this.filtroColunas.obs || (item.obs || '').toLowerCase().includes(this.filtroColunas.obs.toLowerCase());
 
-      return matchId && matchViagem && matchCliente && matchOrigem && matchDestino && matchColeta && matchEntrega && matchPlaca && matchMotorista && matchStatus && matchObs;
+      return matchId && matchRota && matchCliente && matchOrigem && matchDestino && matchColeta && matchEntrega && matchPlaca && matchMotorista && matchStatus && matchObs;
     });
   }
 
@@ -614,8 +613,8 @@ export class DashboardComponent implements OnInit {
         this.carregarViagens();
       },
       error: (err) => {
-        console.error('Erro ao finalizar viagem:', err);
-        alert('Erro ao finalizar viagem.');
+        console.error('Erro ao finalizar rota:', err);
+        alert('Erro ao finalizar rota.');
       }
     });
   }
@@ -1590,7 +1589,7 @@ export class DashboardComponent implements OnInit {
   openNovaViagemModal(): void {
     this.isEditing = false;
     this.tripForm = {
-      id: '', // Usuário digita a Minuta/Romaneio se tiver, ou deixa vazio para o sistema gerar
+      id: '', // Usuário digita a Minuta/Romaneio/Nº Rota se tiver
       clienteSelect: '',
       origens: [{ local: '', endereco: '' }],
       destinos: [{ local: '', endereco: '' }],
@@ -1651,7 +1650,6 @@ export class DashboardComponent implements OnInit {
     const placa1 = placasSplit[0] && placasSplit[0] !== '-' ? placasSplit[0] : '';
     const placa2 = placasSplit[1] || (raw?.placaSecundaria || raw?.placa_secundaria || '');
 
-    // Se tiver numeroOperacional cadastrado, mostra ele no formulário; senão, mostra o ID
     const valorParaInput = item.numeroOperacional || item.rawId.toString();
 
     this.tripForm = {
@@ -1743,10 +1741,6 @@ export class DashboardComponent implements OnInit {
       placaFinal = p2;
     }
 
-    // Regra da Chave Primária Oculta:
-    // 1. Ao cadastrar nova viagem: NÃO envia `id` para o MySQL usar o AUTO_INCREMENT nativo em segundo plano.
-    // 2. Ao editar: envia o `idOriginal` para atualizar exatamente o registro certo sem tocar na primary key.
-    // 3. O valor que o usuário digitou no form é salvo no campo desacoplado `numero_operacional`.
     const payload: any = {
       ...(this.isEditing ? { id: idOriginal } : {}),
       numeroOperacional: rawIdInput,
@@ -1839,9 +1833,9 @@ export class DashboardComponent implements OnInit {
         this.closeModal();
       },
       error: (err: any) => {
-        console.error('Erro ao salvar viagem:', err);
-        const msg = err.error?.message || err.error?.reason || (typeof err.error === 'string' ? err.error : 'Erro ao salvar viagem.');
-        alert('Erro ao salvar viagem: ' + msg);
+        console.error('Erro ao salvar rota:', err);
+        const msg = err.error?.message || err.error?.reason || (typeof err.error === 'string' ? err.error : 'Erro ao salvar rota.');
+        alert('Erro ao salvar rota: ' + msg);
       }
     });
   }
@@ -1879,7 +1873,7 @@ export class DashboardComponent implements OnInit {
           this.carregarViagens();
           this.closeModal();
         },
-        error: () => alert('Erro ao excluir viagem.')
+        error: () => alert('Erro ao excluir rota.')
       });
     }
   }

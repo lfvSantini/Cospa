@@ -205,6 +205,17 @@ textarea {
   border-top: 1px solid var(--border-nav);
   padding-top: 1rem;
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sidebar-version {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  letter-spacing: 0.04em;
 }
 
 .btn-hub {
@@ -625,7 +636,7 @@ textarea {
   box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.25) !important;
 }
 
-/* 12 Colunas com ID Sistema separado */
+/* 12 Colunas com ID Sistema e Nº Rota */
 .cospa-table th:nth-child(1),
 .cospa-table td:nth-child(1) {
   width: 4.5%; /* ID */
@@ -633,7 +644,7 @@ textarea {
 
 .cospa-table th:nth-child(2),
 .cospa-table td:nth-child(2) {
-  width: 5.5%; /* VIAGEM */
+  width: 5.5%; /* Nº ROTA */
 }
 
 .cospa-table th:nth-child(3),
@@ -737,13 +748,13 @@ textarea {
   border-color: #c7d2fe;
 }
 
-.col-viagem {
+.col-rota {
   font-weight: 700;
   color: #0066d6;
   white-space: nowrap;
 }
 
-.dashboard-wrapper:not(.light-mode) .col-viagem {
+.dashboard-wrapper:not(.light-mode) .col-rota {
   color: #60a5fa;
 }
 

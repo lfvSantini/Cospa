@@ -65,6 +65,9 @@
     </div>
 
     <div class="sidebar-footer">
+      <div class="sidebar-version">
+        <span>COSPA v1.4.1</span>
+      </div>
       <button type="button" class="btn-hub" (click)="goToModules()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="7" height="7"></rect>
@@ -178,7 +181,7 @@
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>VIAGEM</th>
+                  <th>Nº ROTA</th>
                   <th>CLIENTE</th>
                   <th>ORIGEM</th>
                   <th>DESTINO</th>
@@ -193,7 +196,7 @@
                 <!-- Linha de filtros por coluna -->
                 <tr class="filter-row">
                   <th><input type="text" [(ngModel)]="filtroColunas.id" placeholder="Filtrar..." class="table-filter-input"></th>
-                  <th><input type="text" [(ngModel)]="filtroColunas.viagem" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.numeroRota" placeholder="Filtrar..." class="table-filter-input"></th>
                   <th><input type="text" [(ngModel)]="filtroColunas.cliente" placeholder="Filtrar..." class="table-filter-input"></th>
                   <th><input type="text" [(ngModel)]="filtroColunas.origem" placeholder="Filtrar..." class="table-filter-input"></th>
                   <th><input type="text" [(ngModel)]="filtroColunas.destino" placeholder="Filtrar..." class="table-filter-input"></th>
@@ -209,7 +212,7 @@
               <tbody>
                 <tr *ngFor="let item of filtrarListaViagens(viagensAndamento)" [class.row-menu-open]="openedActionMenuId === item.id">
                   <td class="col-id"><span class="badge-system-id">#{{ item.rawId }}</span></td>
-                  <td class="col-viagem">{{ item.numeroOperacional || '-' }}</td>
+                  <td class="col-rota">{{ item.numeroOperacional || '-' }}</td>
                   <td class="col-cliente">{{ item.cliente }}</td>
                   <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
                   <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
@@ -273,7 +276,7 @@
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>VIAGEM</th>
+                  <th>Nº ROTA</th>
                   <th>CLIENTE</th>
                   <th>ORIGEM</th>
                   <th>DESTINO</th>
@@ -288,7 +291,7 @@
                 <!-- Linha de filtros por coluna -->
                 <tr class="filter-row">
                   <th><input type="text" [(ngModel)]="filtroColunas.id" placeholder="Filtrar..." class="table-filter-input"></th>
-                  <th><input type="text" [(ngModel)]="filtroColunas.viagem" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.numeroRota" placeholder="Filtrar..." class="table-filter-input"></th>
                   <th><input type="text" [(ngModel)]="filtroColunas.cliente" placeholder="Filtrar..." class="table-filter-input"></th>
                   <th><input type="text" [(ngModel)]="filtroColunas.origem" placeholder="Filtrar..." class="table-filter-input"></th>
                   <th><input type="text" [(ngModel)]="filtroColunas.destino" placeholder="Filtrar..." class="table-filter-input"></th>
@@ -304,7 +307,7 @@
               <tbody>
                 <tr *ngFor="let item of filtrarListaViagens(viagensAPagar)" [class.row-menu-open]="openedActionMenuId === item.id">
                   <td class="col-id"><span class="badge-system-id">#{{ item.rawId }}</span></td>
-                  <td class="col-viagem">{{ item.numeroOperacional || '-' }}</td>
+                  <td class="col-rota">{{ item.numeroOperacional || '-' }}</td>
                   <td class="col-cliente">{{ item.cliente }}</td>
                   <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
                   <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
@@ -365,7 +368,7 @@
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>VIAGEM</th>
+                  <th>Nº ROTA</th>
                   <th>CLIENTE</th>
                   <th>ORIGEM</th>
                   <th>DESTINO</th>
@@ -380,7 +383,7 @@
                 <!-- Linha de filtros por coluna -->
                 <tr class="filter-row">
                   <th><input type="text" [(ngModel)]="filtroColunas.id" placeholder="Filtrar..." class="table-filter-input"></th>
-                  <th><input type="text" [(ngModel)]="filtroColunas.viagem" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.numeroRota" placeholder="Filtrar..." class="table-filter-input"></th>
                   <th><input type="text" [(ngModel)]="filtroColunas.cliente" placeholder="Filtrar..." class="table-filter-input"></th>
                   <th><input type="text" [(ngModel)]="filtroColunas.origem" placeholder="Filtrar..." class="table-filter-input"></th>
                   <th><input type="text" [(ngModel)]="filtroColunas.destino" placeholder="Filtrar..." class="table-filter-input"></th>
@@ -396,7 +399,7 @@
               <tbody>
                 <tr *ngFor="let item of filtrarListaViagens(viagensFinalizadas)" [class.row-menu-open]="openedActionMenuId === item.id">
                   <td class="col-id"><span class="badge-system-id">#{{ item.rawId }}</span></td>
-                  <td class="col-viagem">{{ item.numeroOperacional || '-' }}</td>
+                  <td class="col-rota">{{ item.numeroOperacional || '-' }}</td>
                   <td class="col-cliente">{{ item.cliente }}</td>
                   <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
                   <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
@@ -658,14 +661,14 @@
   <div class="cospa-modal-overlay" *ngIf="modalType === 'TRIP_FORM'" (click)="closeModal()">
     <div class="cospa-modal-box modal-trip-form" (click)="$event.stopPropagation()">
       <div class="modal-head">
-        <h3>{{ isEditing ? 'Editar Viagem: #' + (selectedViagem?.rawId || tripForm.id) : 'Cadastrar Nova Viagem' }}</h3>
+        <h3>{{ isEditing ? 'Editar Rota: #' + (selectedViagem?.rawId || tripForm.id) : 'Cadastrar Nova Rota' }}</h3>
         <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
       </div>
 
       <form (ngSubmit)="salvarViagemForm()" (keydown.enter)="$event.preventDefault()" class="modal-trip-scroll">
-        <!-- 1. CAMPO DE ENTRADA DO USUÁRIO (Nº DA VIAGEM / MINUTA / ROMANEIO) -->
+        <!-- 1. CAMPO DE ENTRADA DO USUÁRIO (Nº DA ROTA / MINUTA / ROMANEIO) -->
         <div class="f-group">
-          <label>Nº da Viagem (ID Operacional / Minuta / Romaneio)</label>
+          <label>Nº Rota (ID Operacional / Minuta / Romaneio)</label>
           <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="EX: 6848963, 105, 30..." />
         </div>
 
@@ -1334,12 +1337,12 @@
   <div class="cospa-modal-overlay" *ngIf="modalType === 'OBS'" (click)="closeModal()">
     <div class="cospa-modal-box modal-sm" (click)="$event.stopPropagation()">
       <div class="modal-head">
-        <h3>Observação da Viagem #{{ selectedViagem?.rawId }} {{ selectedViagem?.numeroOperacional ? '(' + selectedViagem?.numeroOperacional + ')' : '' }}</h3>
+        <h3>Observação da Rota #{{ selectedViagem?.rawId }} {{ selectedViagem?.numeroOperacional ? '(' + selectedViagem?.numeroOperacional + ')' : '' }}</h3>
         <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
       </div>
 
       <div class="modal-pane-content" *ngIf="selectedViagem">
-        <textarea rows="4" [(ngModel)]="selectedViagem.obs" placeholder="Digite as observações da viagem..."></textarea>
+        <textarea rows="4" [(ngModel)]="selectedViagem.obs" placeholder="Digite as observações da rota..."></textarea>
         <div class="modal-actions-right">
           <button type="button" class="btn-pri-cospa" (click)="salvarObs()">Salvar</button>
         </div>
@@ -1356,7 +1359,7 @@
       </div>
 
       <div class="modal-pane-content">
-        <p>Deseja realmente remover a viagem <strong>#{{ selectedViagem?.rawId }} {{ selectedViagem?.numeroOperacional ? '(' + selectedViagem?.numeroOperacional + ')' : '' }}</strong> permanentemente?</p>
+        <p>Deseja realmente remover a rota <strong>#{{ selectedViagem?.rawId }} {{ selectedViagem?.numeroOperacional ? '(' + selectedViagem?.numeroOperacional + ')' : '' }}</strong> permanentemente?</p>
         <div class="modal-actions-right">
           <button type="button" class="btn-sec-cospa" (click)="closeModal()">Cancelar</button>
           <button type="button" class="btn-danger-cospa" (click)="confirmarExclusao()">Excluir</button>

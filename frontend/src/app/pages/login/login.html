@@ -7,12 +7,7 @@
 
   <div class="login-card">
     <div class="logo-box">
-      <img 
-        src="assets/img/Logo.png" 
-        alt="COSPA" 
-        class="logo-img" 
-        (error)="onImgError($event)" 
-      />
+      <img src="assets/img/Logo.png" alt="COSPA" class="logo-img" (error)="onImgError($event)" />
     </div>
 
     <h2 class="card-title">Painel de Login</h2>
@@ -29,14 +24,8 @@
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
-          <input 
-            type="text" 
-            id="usuario" 
-            name="usuario" 
-            [(ngModel)]="usuario" 
-            placeholder="Digite seu usuário..." 
-            autocomplete="username"
-          />
+          <input type="text" id="usuario" name="usuario" [(ngModel)]="usuario" placeholder="Digite seu usuário..."
+            autocomplete="username" />
         </div>
       </div>
 
@@ -47,14 +36,8 @@
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
           </svg>
-          <input 
-            type="password" 
-            id="senha" 
-            name="senha" 
-            [(ngModel)]="senha" 
-            placeholder="Digite sua senha..." 
-            autocomplete="current-password"
-          />
+          <input type="password" id="senha" name="senha" [(ngModel)]="senha" placeholder="Digite sua senha..."
+            autocomplete="current-password" />
         </div>
       </div>
 
@@ -65,7 +48,7 @@
     </form>
 
     <div class="card-footer">
-      <span>COSPA v1.3.5</span>
+      <span>COSPA v1.4.0</span>
     </div>
   </div>
 </div>

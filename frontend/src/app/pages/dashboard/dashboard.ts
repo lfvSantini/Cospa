@@ -142,6 +142,7 @@ export class DashboardComponent implements OnInit {
   showFinalizadas: boolean = false;
 
   filtroColunas = {
+    id: '',
     viagem: '',
     cliente: '',
     origem: '',
@@ -558,10 +559,10 @@ export class DashboardComponent implements OnInit {
 
   filtrarListaViagens(lista: ViagemItem[]): ViagemItem[] {
     return (lista || []).filter(item => {
+      const matchId = !this.filtroColunas.id || item.rawId.toString().includes(this.filtroColunas.id.trim().replace(/^#/, ''));
       const matchViagem = !this.filtroColunas.viagem || 
         item.id.toLowerCase().includes(this.filtroColunas.viagem.toLowerCase()) || 
-        item.numeroOperacional.toLowerCase().includes(this.filtroColunas.viagem.toLowerCase()) ||
-        item.rawId.toString().includes(this.filtroColunas.viagem.trim());
+        item.numeroOperacional.toLowerCase().includes(this.filtroColunas.viagem.toLowerCase());
 
       const matchCliente = !this.filtroColunas.cliente || item.cliente.toLowerCase().includes(this.filtroColunas.cliente.toLowerCase());
       const matchOrigem = !this.filtroColunas.origem || item.origem.some(o => o.toLowerCase().includes(this.filtroColunas.origem.toLowerCase()));
@@ -573,7 +574,7 @@ export class DashboardComponent implements OnInit {
       const matchStatus = !this.filtroColunas.status || item.status.toLowerCase().includes(this.filtroColunas.status.toLowerCase());
       const matchObs = !this.filtroColunas.obs || (item.obs || '').toLowerCase().includes(this.filtroColunas.obs.toLowerCase());
 
-      return matchViagem && matchCliente && matchOrigem && matchDestino && matchColeta && matchEntrega && matchPlaca && matchMotorista && matchStatus && matchObs;
+      return matchId && matchViagem && matchCliente && matchOrigem && matchDestino && matchColeta && matchEntrega && matchPlaca && matchMotorista && matchStatus && matchObs;
     });
   }
 

@@ -11,9 +11,10 @@
   --bg-sidebar: #121418;
   --border-nav: #23262f;
   --border-table: #242731;
-  --border-cell-vertical: rgba(255, 255, 255, 0.05); /* Divisória vertical escura */
+  --border-cell-vertical: rgba(255, 255, 255, 0.06);
   --text-main: #ffffff;
   --text-muted: #8e95a5;
+  --text-header: #ffffff;
   --row-hover: #1b1e27;
   --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 
@@ -48,9 +49,10 @@
   --bg-sidebar: #f8fafc;
   --border-nav: #e2e8f0;
   --border-table: #edf2f7;
-  --border-cell-vertical: rgba(0, 0, 0, 0.06); /* Divisória vertical clara */
+  --border-cell-vertical: rgba(0, 0, 0, 0.08);
   --text-main: #0f172a;
   --text-muted: #64748b;
+  --text-header: #050811; /* Preto bem forte e nítido para os cabeçalhos circulados */
   --row-hover: #f8fafc;
   --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 
@@ -585,8 +587,8 @@ textarea {
   table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
-  text-align: left;
-  font-size: 0.86rem; /* Tamanho uniforme em todas as colunas */
+  text-align: center; /* Centralização padrão total */
+  font-size: 0.86rem;
 }
 
 .cospa-table thead tr {
@@ -594,17 +596,18 @@ textarea {
   background-color: var(--btn-action-bg);
 }
 
-/* Divisórias verticais no cabeçalho */
+/* Cabeçalho centralizado, negrito forte (800) e cor preta/escura destacada */
 .cospa-table th {
-  padding: 0.95rem 0.65rem;
-  font-size: 0.73rem;
-  font-weight: 700;
-  color: var(--text-muted);
+  padding: 0.95rem 0.5rem;
+  font-size: 0.76rem;
+  font-weight: 800; /* Negrito mais forte */
+  color: var(--text-header); /* Preto forte no modo claro, branco no escuro */
   letter-spacing: 0.05em;
   text-transform: uppercase;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-align: center !important; /* Centralizado */
   border-right: 1px solid var(--border-cell-vertical);
 }
 
@@ -612,14 +615,15 @@ textarea {
   border-right: none;
 }
 
-/* Divisórias verticais e horizontais no corpo da tabela */
+/* Todas as células centralizadas com bordas verticais divisórias */
 .cospa-table td {
-  padding: 0.9rem 0.65rem;
+  padding: 0.9rem 0.5rem;
   border-bottom: 1px solid var(--border-table);
   border-right: 1px solid var(--border-cell-vertical);
   vertical-align: middle;
   color: var(--text-main);
-  font-size: 0.86rem; /* Padroniza o texto de todas as células */
+  font-size: 0.86rem;
+  text-align: center !important; /* Todas as colunas alinhadas ao centro */
 }
 
 .cospa-table td:last-child {
@@ -651,7 +655,7 @@ textarea {
   box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.25) !important;
 }
 
-/* 12 Colunas com ID Sistema e Nº Rota */
+/* 12 Colunas com larguras proporcionais */
 .cospa-table th:nth-child(1),
 .cospa-table td:nth-child(1) {
   width: 4.5%; /* ID */
@@ -712,12 +716,13 @@ textarea {
   width: 6.5%; /* AÇÕES */
 }
 
-/* Linha de filtros por coluna com divisórias */
+/* Linha de filtros com inputs centralizados */
 .filter-row th {
   padding: 0.35rem 0.45rem !important;
   background-color: var(--bg-table-card) !important;
   border-bottom: 1px solid var(--border-nav);
   border-right: 1px solid var(--border-cell-vertical);
+  text-align: center !important;
 }
 
 .filter-row th:last-child {
@@ -726,12 +731,13 @@ textarea {
 
 .table-filter-input {
   width: 100%;
-  padding: 0.35rem 0.5rem;
+  padding: 0.35rem 0.4rem;
   background-color: var(--btn-action-bg);
   border: 1px solid var(--btn-action-border);
   border-radius: 5px;
   color: var(--text-main);
   font-size: 0.76rem;
+  text-align: center; /* Texto de filtro centralizado */
   outline: none;
   box-sizing: border-box;
 }
@@ -744,20 +750,27 @@ textarea {
   color: var(--text-muted);
   opacity: 0.65;
   font-size: 0.72rem;
+  text-align: center;
 }
+
+/* ========================================================= */
+/* REMOÇÃO DE NEGRITO CONFORME SETAS DA PATRÍCIA (FONTE REGULAR) */
+/* ========================================================= */
 
 .col-id {
   white-space: nowrap;
+  text-align: center;
 }
 
+/* ID: Sem negrito pesado */
 .badge-system-id {
   display: inline-block;
   font-family: inherit;
-  font-weight: 700;
-  font-size: 0.78rem;
+  font-weight: 500; /* Regular sem negrito */
+  font-size: 0.82rem;
   padding: 2px 6px;
   border-radius: 4px;
-  background-color: rgba(99, 102, 241, 0.14);
+  background-color: rgba(99, 102, 241, 0.12);
   color: #818cf8;
   border: 1px solid rgba(99, 102, 241, 0.25);
 }
@@ -768,11 +781,12 @@ textarea {
   border-color: #c7d2fe;
 }
 
+/* Nº ROTA: Regular sem negrito */
 .col-rota {
-  font-weight: 700;
+  font-weight: 500; /* Regular sem negrito */
   color: #0066d6;
   white-space: nowrap;
-  font-size: 0.86rem;
+  text-align: center;
 }
 
 .dashboard-wrapper:not(.light-mode) .col-rota {
@@ -780,38 +794,42 @@ textarea {
 }
 
 .col-cliente {
-  font-weight: 600;
+  font-weight: 500;
   word-break: break-word;
-  font-size: 0.86rem;
+  text-align: center;
 }
 
 .col-multiline {
   line-height: 1.35;
   color: var(--text-main);
   word-break: break-word;
-  font-size: 0.86rem;
+  text-align: center;
 }
 
 .col-coleta {
-  font-size: 0.86rem; /* Padronizado com as outras colunas */
+  font-size: 0.86rem;
   color: var(--text-muted);
   white-space: nowrap;
+  text-align: center;
 }
 
+/* PLACA: Regular sem negrito e sem monospace */
 .col-placa {
-  font-family: inherit; /* Removido monospace para manter consistência */
-  font-weight: 600;
-  font-size: 0.86rem; /* Padronizado com as outras colunas */
+  font-family: inherit;
+  font-weight: 500; /* Regular sem negrito */
+  font-size: 0.86rem;
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: center;
 }
 
+/* MOTORISTA: Regular sem negrito */
 .col-motorista {
-  font-weight: 500;
+  font-weight: 500; /* Regular sem negrito */
   word-break: break-word;
-  font-size: 0.86rem;
+  text-align: center;
 }
 
 .col-motorista.to-hire {
@@ -821,6 +839,7 @@ textarea {
 
 .col-status {
   white-space: nowrap;
+  text-align: center;
 }
 
 .status-pill {
@@ -930,12 +949,8 @@ textarea {
   color: #10b981;
 }
 
-.cospa-table th:nth-child(11) {
-  text-align: center;
-}
-
 .col-obs {
-  text-align: center;
+  text-align: center !important;
   white-space: nowrap;
   padding: 0.85rem 0.25rem !important;
 }
@@ -966,18 +981,19 @@ textarea {
 
 .dash-text {
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.9rem;
 }
 
+/* Coluna de Ações 100% centralizada */
 .actions-th {
-  text-align: right;
-  padding-right: 1rem !important;
+  text-align: center !important;
+  padding-right: 0.65rem !important;
 }
 
 .col-acoes {
-  text-align: right;
-  padding-right: 1rem !important;
+  text-align: center !important;
+  padding-right: 0.65rem !important;
   position: relative;
   white-space: nowrap;
   overflow: visible !important;
@@ -985,7 +1001,8 @@ textarea {
 
 .row-dropdown-wrapper {
   display: inline-flex;
-  justify-content: flex-end;
+  justify-content: center;
+  align-items: center;
   position: relative;
 }
 
@@ -1539,6 +1556,7 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  text-align: center;
 }
 
 .comp-info-footer strong {

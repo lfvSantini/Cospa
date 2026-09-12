@@ -66,7 +66,7 @@
 
     <div class="sidebar-footer">
       <div class="sidebar-version">
-        <span>COSPA v1.4.1</span>
+        <span>COSPA v1.4.3</span>
       </div>
       <button type="button" class="btn-hub" (click)="goToModules()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -441,7 +441,7 @@
   <div class="cospa-modal-overlay" *ngIf="modalType === 'PHOTO' && !previewImageUrl" (click)="closeModal()">
     <div class="cospa-modal-box modal-photo-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">
-        <h3>Comprovantes da Viagem #{{ selectedViagem?.rawId }} {{ selectedViagem?.numeroOperacional ? '(' + selectedViagem?.numeroOperacional + ')' : '' }}</h3>
+        <h3>Comprovantes da Rota #{{ selectedViagem?.rawId }} {{ selectedViagem?.numeroOperacional ? '(' + selectedViagem?.numeroOperacional + ')' : '' }}</h3>
         <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
       </div>
 
@@ -501,7 +501,7 @@
           </div>
 
           <div class="empty-photos" *ngIf="!selectedViagem?.fotos?.length">
-            <p>Nenhum comprovante anexado a esta viagem.</p>
+            <p>Nenhum comprovante anexado a esta rota.</p>
           </div>
         </div>
       </div>
@@ -605,7 +605,7 @@
             <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
             <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoDoc" (click)="fileInputVeiculoModal.click()" (dragover)="onVeiculoDocDragOver($event)" (dragleave)="onVeiculoDocDragLeave($event)" (drop)="onVeiculoDocDrop($event)">
               <input #fileInputVeiculoModal type="file" (change)="onVeiculoDocSelected($event)" style="display: none;" accept="image/*,.pdf" />
-              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
               <span>{{ novoDocVeiculo.nomeArquivo || 'Clique, arraste o arquivo (PDF/Imagem) ou use Ctrl+V' }}</span>
             </div>
           </div>

@@ -52,7 +52,7 @@
   --border-cell-vertical: rgba(0, 0, 0, 0.08);
   --text-main: #0f172a;
   --text-muted: #64748b;
-  --text-header: #050811; /* Preto bem forte e nítido para os cabeçalhos circulados */
+  --text-header: #050811; /* Preto forte no modo claro */
   --row-hover: #f8fafc;
   --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 
@@ -587,7 +587,7 @@ textarea {
   table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
-  text-align: center; /* Centralização padrão total */
+  text-align: center;
   font-size: 0.86rem;
 }
 
@@ -596,18 +596,18 @@ textarea {
   background-color: var(--btn-action-bg);
 }
 
-/* Cabeçalho centralizado, negrito forte (800) e cor preta/escura destacada */
+/* Títulos do cabeçalho centralizados, negrito 800 forte e texto nítido */
 .cospa-table th {
   padding: 0.95rem 0.5rem;
   font-size: 0.76rem;
-  font-weight: 800; /* Negrito mais forte */
-  color: var(--text-header); /* Preto forte no modo claro, branco no escuro */
+  font-weight: 800;
+  color: var(--text-header);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-align: center !important; /* Centralizado */
+  text-align: center !important;
   border-right: 1px solid var(--border-cell-vertical);
 }
 
@@ -615,7 +615,7 @@ textarea {
   border-right: none;
 }
 
-/* Todas as células centralizadas com bordas verticais divisórias */
+/* Todas as células de dados centralizadas com divisórias verticais */
 .cospa-table td {
   padding: 0.9rem 0.5rem;
   border-bottom: 1px solid var(--border-table);
@@ -623,7 +623,7 @@ textarea {
   vertical-align: middle;
   color: var(--text-main);
   font-size: 0.86rem;
-  text-align: center !important; /* Todas as colunas alinhadas ao centro */
+  text-align: center !important;
 }
 
 .cospa-table td:last-child {
@@ -737,7 +737,7 @@ textarea {
   border-radius: 5px;
   color: var(--text-main);
   font-size: 0.76rem;
-  text-align: center; /* Texto de filtro centralizado */
+  text-align: center;
   outline: none;
   box-sizing: border-box;
 }
@@ -748,7 +748,7 @@ textarea {
 
 .table-filter-input::placeholder {
   color: var(--text-muted);
-  opacity: 0.65;
+  opacity: 0.75;
   font-size: 0.72rem;
   text-align: center;
 }
@@ -762,7 +762,6 @@ textarea {
   text-align: center;
 }
 
-/* ID: Sem negrito pesado */
 .badge-system-id {
   display: inline-block;
   font-family: inherit;
@@ -781,7 +780,6 @@ textarea {
   border-color: #c7d2fe;
 }
 
-/* Nº ROTA: Regular sem negrito */
 .col-rota {
   font-weight: 500; /* Regular sem negrito */
   color: #0066d6;
@@ -813,7 +811,6 @@ textarea {
   text-align: center;
 }
 
-/* PLACA: Regular sem negrito e sem monospace */
 .col-placa {
   font-family: inherit;
   font-weight: 500; /* Regular sem negrito */
@@ -825,7 +822,6 @@ textarea {
   text-align: center;
 }
 
-/* MOTORISTA: Regular sem negrito */
 .col-motorista {
   font-weight: 500; /* Regular sem negrito */
   word-break: break-word;

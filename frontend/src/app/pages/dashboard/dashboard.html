@@ -66,7 +66,7 @@
 
     <div class="sidebar-footer">
       <div class="sidebar-version">
-        <span>COSPA v1.4.3</span>
+        <span>COSPA v1.4.4</span>
       </div>
       <button type="button" class="btn-hub" (click)="goToModules()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -210,7 +210,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of filtrarListaViagens(viagensAndamento)" [class.row-menu-open]="openedActionMenuId === item.id">
+                <tr *ngFor="let item of filtrarListaViagens(viagensAndamento)" [class.row-menu-open]="openedActionMenuId === item.rawId">
                   <td class="col-id"><span class="badge-system-id">#{{ item.rawId }}</span></td>
                   <td class="col-rota">{{ item.numeroOperacional || '-' }}</td>
                   <td class="col-cliente">{{ item.cliente }}</td>
@@ -238,11 +238,12 @@
                   </td>
                   <td class="col-acoes">
                     <div class="row-dropdown-wrapper">
-                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)" [class.active]="openedActionMenuId === item.id">
+                      <!-- Uso exclusivo de item.rawId no clique e verificação de estado -->
+                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.rawId)" [class.active]="openedActionMenuId === item.rawId">
                         <span>Ações</span>
-                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.rawId" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                       </button>
-                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
+                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.rawId" (click)="$event.stopPropagation()">
                         <button type="button" class="row-menu-item item-pagar" (click)="passarParaAPagar(item)" style="color: #f97316;">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 6v2"></path><path d="M12 16v2"></path></svg>
                           <span>Passar p/ A Pagar</span>
@@ -305,7 +306,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of filtrarListaViagens(viagensAPagar)" [class.row-menu-open]="openedActionMenuId === item.id">
+                <tr *ngFor="let item of filtrarListaViagens(viagensAPagar)" [class.row-menu-open]="openedActionMenuId === item.rawId">
                   <td class="col-id"><span class="badge-system-id">#{{ item.rawId }}</span></td>
                   <td class="col-rota">{{ item.numeroOperacional || '-' }}</td>
                   <td class="col-cliente">{{ item.cliente }}</td>
@@ -330,11 +331,12 @@
                   </td>
                   <td class="col-acoes">
                     <div class="row-dropdown-wrapper">
-                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)" [class.active]="openedActionMenuId === item.id">
+                      <!-- Uso exclusivo de item.rawId no clique e verificação de estado -->
+                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.rawId)" [class.active]="openedActionMenuId === item.rawId">
                         <span>Ações</span>
-                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.rawId" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                       </button>
-                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
+                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.rawId" (click)="$event.stopPropagation()">
                         <button type="button" class="row-menu-item item-finalizar" (click)="finalizarViagem(item)">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
                           <span>Finalizar Viagem</span>
@@ -397,7 +399,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of filtrarListaViagens(viagensFinalizadas)" [class.row-menu-open]="openedActionMenuId === item.id">
+                <tr *ngFor="let item of filtrarListaViagens(viagensFinalizadas)" [class.row-menu-open]="openedActionMenuId === item.rawId">
                   <td class="col-id"><span class="badge-system-id">#{{ item.rawId }}</span></td>
                   <td class="col-rota">{{ item.numeroOperacional || '-' }}</td>
                   <td class="col-cliente">{{ item.cliente }}</td>
@@ -416,11 +418,12 @@
                   </td>
                   <td class="col-acoes">
                     <div class="row-dropdown-wrapper">
-                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)" [class.active]="openedActionMenuId === item.id">
+                      <!-- Uso exclusivo de item.rawId no clique e verificação de estado -->
+                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.rawId)" [class.active]="openedActionMenuId === item.rawId">
                         <span>Ações</span>
-                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.rawId" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                       </button>
-                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
+                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.rawId" (click)="$event.stopPropagation()">
                         <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
                         <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'finalizadas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
                         <div class="row-menu-divider"></div>
@@ -605,7 +608,7 @@
             <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
             <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoDoc" (click)="fileInputVeiculoModal.click()" (dragover)="onVeiculoDocDragOver($event)" (dragleave)="onVeiculoDocDragLeave($event)" (drop)="onVeiculoDocDrop($event)">
               <input #fileInputVeiculoModal type="file" (change)="onVeiculoDocSelected($event)" style="display: none;" accept="image/*,.pdf" />
-              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
               <span>{{ novoDocVeiculo.nomeArquivo || 'Clique, arraste o arquivo (PDF/Imagem) ou use Ctrl+V' }}</span>
             </div>
           </div>

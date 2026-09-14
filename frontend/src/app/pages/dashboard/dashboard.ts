@@ -33,7 +33,7 @@ export interface ComprovanteItem {
 
 export interface ViagemItem {
   id: string; // Exibição da coluna
-  rawId: number; // ID Primário interno do banco
+  rawId: number; // ID Primário interno único do banco
   numeroOperacional: string; // Minuta, Romaneio ou Nº Rota
   cliente: string;
   origem: string[];
@@ -135,7 +135,9 @@ export class DashboardComponent implements OnInit {
   isDarkMode: boolean = true;
   isSidebarOpen: boolean = false;
   isManageOpen: boolean = false;
-  openedActionMenuId: string | null = null;
+  
+  // Controle do menu por rawId numérico único para evitar abrir múltiplas linhas
+  openedActionMenuId: number | null = null;
 
   showAndamento: boolean = true;
   showAPagar: boolean = true;
@@ -230,7 +232,7 @@ export class DashboardComponent implements OnInit {
   ];
 
   tripForm = {
-    id: '', // Campo que o usuário digita (Nº Rota / Minuta / Romaneio)
+    id: '', 
     clienteSelect: '',
     origens: [{ local: '', endereco: '' }] as PontoRota[],
     destinos: [{ local: '', endereco: '' }] as PontoRota[],
@@ -371,9 +373,9 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  toggleRowActions(event: Event, id: string): void {
+  toggleRowActions(event: Event, rawId: number): void {
     event.stopPropagation();
-    this.openedActionMenuId = this.openedActionMenuId === id ? null : id;
+    this.openedActionMenuId = this.openedActionMenuId === rawId ? null : rawId;
     this.isManageOpen = false;
     this.cdr.detectChanges();
   }
@@ -532,7 +534,6 @@ export class DashboardComponent implements OnInit {
       dataEnvio: c.dataEnvio || ''
     }));
 
-    // Obtém o número operacional da rota (Romaneio/Minuta inserido pelo usuário)
     const rawNumOp = v.numeroOperacional ?? v.numero_operacional ?? v.numeroCte ?? '';
     const numOpStr = (rawNumOp !== null && rawNumOp !== undefined) ? String(rawNumOp).trim() : '';
     
@@ -1589,7 +1590,7 @@ export class DashboardComponent implements OnInit {
   openNovaViagemModal(): void {
     this.isEditing = false;
     this.tripForm = {
-      id: '', // Usuário digita a Minuta/Romaneio/Nº Rota se tiver
+      id: '', 
       clienteSelect: '',
       origens: [{ local: '', endereco: '' }],
       destinos: [{ local: '', endereco: '' }],

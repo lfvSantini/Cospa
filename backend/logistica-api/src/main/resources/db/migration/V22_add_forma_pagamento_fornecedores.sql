@@ -1,0 +1,1 @@
+ALTER TABLE fornecedores ADD COLUMN forma_pagamento VARCHAR(100) NULL AFTER chave_pix;

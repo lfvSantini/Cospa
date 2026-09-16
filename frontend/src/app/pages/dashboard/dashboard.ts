@@ -32,9 +32,9 @@ export interface ComprovanteItem {
 }
 
 export interface ViagemItem {
-  id: string; // Exibição da coluna
-  rawId: number; // ID Primário interno único do banco
-  numeroOperacional: string; // Minuta, Romaneio ou Nº Rota
+  id: string; 
+  rawId: number; 
+  numeroOperacional: string; 
   cliente: string;
   origem: string[];
   destino: string[];
@@ -56,6 +56,7 @@ export interface FornecedorModel {
   telefone: string;
   email: string;
   chavePix: string;
+  formaPagamento: string;
   situacao: 'ATIVO' | 'INATIVO';
   obs?: string;
 }
@@ -136,7 +137,6 @@ export class DashboardComponent implements OnInit {
   isSidebarOpen: boolean = false;
   isManageOpen: boolean = false;
   
-  // Controle do menu por rawId numérico único para evitar abrir múltiplas linhas
   openedActionMenuId: number | null = null;
 
   showAndamento: boolean = true;
@@ -1479,6 +1479,7 @@ export class DashboardComponent implements OnInit {
           telefone: f.telefone || '',
           email: f.email || '',
           chavePix: f.chavePix || '',
+          formaPagamento: f.formaPagamento || (f as any).forma_pagamento || '',
           situacao: (f.situacao === 'INATIVO' || f.ativo === false) ? 'INATIVO' : 'ATIVO',
           obs: f.obs || f.observacoes || ''
         }));
@@ -1498,12 +1499,13 @@ export class DashboardComponent implements OnInit {
     this.filteredFornecedores = this.fornecedoresList.filter(f =>
       (f.nome || '').toLowerCase().includes(t) ||
       (f.cnpjCpf || '').toLowerCase().includes(t) ||
-      (f.nomeContato || '').toLowerCase().includes(t)
+      (f.nomeContato || '').toLowerCase().includes(t) ||
+      (f.formaPagamento || '').toLowerCase().includes(t)
     );
   }
 
   public getEmptyFornecedor(): FornecedorModel {
-    return { id: 0, nome: '', cnpjCpf: '', nomeContato: '', telefone: '', email: '', chavePix: '', situacao: 'ATIVO', obs: '' };
+    return { id: 0, nome: '', cnpjCpf: '', nomeContato: '', telefone: '', email: '', chavePix: '', formaPagamento: '', situacao: 'ATIVO', obs: '' };
   }
 
   openGerenciarFornecedores(): void {
@@ -1534,7 +1536,7 @@ export class DashboardComponent implements OnInit {
       }
     }
 
-    const payload: Fornecedor = {
+    const payload: any = {
       id: this.isEditingFornecedor ? this.fornecedorForm.id : undefined,
       nome: this.fornecedorForm.nome.toUpperCase(),
       cnpjCpf: this.fornecedorForm.cnpjCpf.toUpperCase(),
@@ -1542,6 +1544,8 @@ export class DashboardComponent implements OnInit {
       telefone: this.fornecedorForm.telefone.toUpperCase(),
       email: this.fornecedorForm.email.toUpperCase(),
       chavePix: this.fornecedorForm.chavePix.toUpperCase(),
+      formaPagamento: (this.fornecedorForm.formaPagamento || '').toUpperCase(),
+      forma_pagamento: (this.fornecedorForm.formaPagamento || '').toUpperCase(),
       situacao: this.fornecedorForm.situacao,
       ativo: this.fornecedorForm.situacao === 'ATIVO',
       obs: this.fornecedorForm.obs

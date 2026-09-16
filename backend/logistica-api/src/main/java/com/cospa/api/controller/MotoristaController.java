@@ -4,6 +4,7 @@ import com.cospa.api.model.Motorista;
 import com.cospa.api.model.MotoristaDocumento;
 import com.cospa.api.repository.MotoristaDocumentoRepository;
 import com.cospa.api.repository.MotoristaRepository;
+import net.coobird.thumbnailator.Thumbnails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -120,17 +122,32 @@ public class MotoristaController {
                         (nome != null && !nome.isBlank()) ? nome :
                                 (descricao != null && !descricao.isBlank()) ? descricao : "Documento";
 
+                String contentType = file.getContentType();
+                boolean isImagem = contentType != null && contentType.startsWith("image/");
+
                 String extensao = "";
                 String nomeOriginal = file.getOriginalFilename();
                 if (nomeOriginal != null && nomeOriginal.contains(".")) {
                     extensao = nomeOriginal.substring(nomeOriginal.lastIndexOf("."));
                 }
 
+                if (isImagem) {
+                    extensao = ".jpg";
+                }
+
                 String nomeArquivo = "motorista_" + id + "_" + UUID.randomUUID().toString().substring(0, 8) + extensao;
                 Path uploadFolder = getUploadPath();
-                Path destino = uploadFolder.resolve(nomeArquivo).normalize();
+                File destinoArquivo = uploadFolder.resolve(nomeArquivo).normalize().toFile();
 
-                Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+                if (isImagem) {
+                    Thumbnails.of(file.getInputStream())
+                            .size(1920, 1080)
+                            .outputFormat("jpg")
+                            .outputQuality(0.75f)
+                            .toFile(destinoArquivo);
+                } else {
+                    Files.copy(file.getInputStream(), destinoArquivo.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
 
                 String urlRelativa = "/uploads/" + nomeArquivo;
 

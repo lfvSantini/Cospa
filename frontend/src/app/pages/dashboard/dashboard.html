@@ -66,7 +66,7 @@
 
     <div class="sidebar-footer">
       <div class="sidebar-version">
-        <span>COSPA v1.4.4</span>
+        <span>COSPA v1.4.6</span>
       </div>
       <button type="button" class="btn-hub" (click)="goToModules()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -238,7 +238,6 @@
                   </td>
                   <td class="col-acoes">
                     <div class="row-dropdown-wrapper">
-                      <!-- Uso exclusivo de item.rawId no clique e verificação de estado -->
                       <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.rawId)" [class.active]="openedActionMenuId === item.rawId">
                         <span>Ações</span>
                         <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.rawId" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -331,7 +330,6 @@
                   </td>
                   <td class="col-acoes">
                     <div class="row-dropdown-wrapper">
-                      <!-- Uso exclusivo de item.rawId no clique e verificação de estado -->
                       <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.rawId)" [class.active]="openedActionMenuId === item.rawId">
                         <span>Ações</span>
                         <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.rawId" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -418,7 +416,6 @@
                   </td>
                   <td class="col-acoes">
                     <div class="row-dropdown-wrapper">
-                      <!-- Uso exclusivo de item.rawId no clique e verificação de estado -->
                       <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.rawId)" [class.active]="openedActionMenuId === item.rawId">
                         <span>Ações</span>
                         <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.rawId" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -942,16 +939,23 @@
 
       <div class="modal-body-container">
         <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarFornecedor()" class="modal-pane-content">
+          <!-- Linha 1: Identificação Básica -->
           <div class="form-row-3">
             <input type="text" [(ngModel)]="fornecedorForm.nome" name="nome" placeholder="NOME DO FORNECEDOR" required />
             <input type="text" [(ngModel)]="fornecedorForm.cnpjCpf" name="cnpjCpf" placeholder="CNPJ / CPF" />
             <input type="text" [(ngModel)]="fornecedorForm.nomeContato" name="nomeContato" placeholder="NOME DE CONTATO" />
           </div>
 
-          <div class="form-row-4">
+          <!-- Linha 2: Contatos -->
+          <div class="form-row-2">
             <input type="text" [(ngModel)]="fornecedorForm.telefone" name="telefone" placeholder="TELEFONE / WHATSAPP" />
             <input type="email" [(ngModel)]="fornecedorForm.email" name="email" placeholder="E-MAIL" />
+          </div>
+
+          <!-- Linha 3: Dados de Pagamento e Situação -->
+          <div class="form-row-3">
             <input type="text" [(ngModel)]="fornecedorForm.chavePix" name="chavePix" placeholder="CHAVE PIX" />
+            <input type="text" [(ngModel)]="fornecedorForm.formaPagamento" name="formaPagamento" placeholder="FORMA DE PAGAMENTO (EX: PIX, BOLETO, TED)" />
             <select [(ngModel)]="fornecedorForm.situacao" name="situacao">
               <option value="ATIVO">Situação: ATIVO</option>
               <option value="INATIVO">Situação: INATIVO</option>
@@ -968,7 +972,7 @@
 
         <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
           <div class="manage-search-bar">
-            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarFornecedores()" placeholder="Buscar por fornecedor, CNPJ ou contato..." />
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarFornecedores()" placeholder="Buscar por fornecedor, CNPJ, contato ou forma de pagamento..." />
           </div>
           <div class="crud-items-list">
             <div class="crud-item-card" *ngFor="let f of filteredFornecedores">
@@ -978,6 +982,7 @@
                   <span class="badge-status" [class.badge-active]="f.situacao === 'ATIVO'" [class.badge-inactive]="f.situacao === 'INATIVO'">{{ f.situacao }}</span>
                 </div>
                 <p class="crud-subtext">{{ f.cnpjCpf }} • Contato: {{ f.nomeContato || '-' }} • {{ f.telefone || '-' }}</p>
+                <p class="crud-subtext" *ngIf="f.formaPagamento">Forma de Pagto: <strong>{{ f.formaPagamento }}</strong></p>
               </div>
               <div class="crud-item-actions">
                 <button type="button" class="btn-edit-inline" (click)="editarFornecedor(f)" title="Editar">

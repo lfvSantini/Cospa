@@ -24,6 +24,9 @@ public class FornecedorController {
 
     @PostMapping
     public ResponseEntity<Fornecedor> criar(@RequestBody Fornecedor fornecedor) {
+        if (fornecedor.getFormaPagamento() != null) {
+            fornecedor.setFormaPagamento(fornecedor.getFormaPagamento().toUpperCase().trim());
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(fornecedorRepository.save(fornecedor));
     }
 
@@ -36,6 +39,13 @@ public class FornecedorController {
             f.setTelefone(dados.getTelefone());
             f.setEmail(dados.getEmail());
             f.setChavePix(dados.getChavePix());
+
+            if (dados.getFormaPagamento() != null) {
+                f.setFormaPagamento(dados.getFormaPagamento().toUpperCase().trim());
+            } else {
+                f.setFormaPagamento(null);
+            }
+
             f.setSituacao(dados.getSituacao() != null ? dados.getSituacao() : "ATIVO");
             f.setObs(dados.getObs());
             f.setObservacoes(dados.getObservacoes());

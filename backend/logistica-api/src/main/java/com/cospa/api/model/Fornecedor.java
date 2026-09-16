@@ -28,6 +28,9 @@ public class Fornecedor {
     @Column(name = "chave_pix", length = 100)
     private String chavePix;
 
+    @Column(name = "forma_pagamento", length = 100)
+    private String formaPagamento;
+
     @Column(name = "situacao", length = 20)
     private String situacao = "ATIVO";
 
@@ -63,6 +66,9 @@ public class Fornecedor {
 
     public String getChavePix() { return chavePix; }
     public void setChavePix(String chavePix) { this.chavePix = chavePix; }
+
+    public String getFormaPagamento() { return formaPagamento; }
+    public void setFormaPagamento(String formaPagamento) { this.formaPagamento = formaPagamento; }
 
     public String getSituacao() { return situacao; }
     public void setSituacao(String situacao) { this.situacao = situacao; }

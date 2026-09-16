@@ -52,7 +52,7 @@
   --border-cell-vertical: rgba(0, 0, 0, 0.08);
   --text-main: #0f172a;
   --text-muted: #64748b;
-  --text-header: #050811; /* Preto forte no modo claro */
+  --text-header: #050811;
   --row-hover: #f8fafc;
   --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 
@@ -598,11 +598,11 @@ textarea {
 
 /* Títulos do cabeçalho centralizados, negrito 800 forte e texto nítido */
 .cospa-table th {
-  padding: 0.95rem 0.5rem;
-  font-size: 0.76rem;
+  padding: 0.95rem 0.35rem;
+  font-size: 0.74rem;
   font-weight: 800;
   color: var(--text-header);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -617,7 +617,7 @@ textarea {
 
 /* Todas as células de dados centralizadas com divisórias verticais */
 .cospa-table td {
-  padding: 0.9rem 0.5rem;
+  padding: 0.85rem 0.4rem;
   border-bottom: 1px solid var(--border-table);
   border-right: 1px solid var(--border-cell-vertical);
   vertical-align: middle;
@@ -641,7 +641,7 @@ textarea {
 }
 
 .cospa-table tbody tr.row-menu-open {
-  z-index: 500 !important;
+  z-index: 1000 !important;
 }
 
 .cospa-table tbody tr:last-child td {
@@ -683,12 +683,12 @@ textarea {
 
 .cospa-table th:nth-child(6),
 .cospa-table td:nth-child(6) {
-  width: 8%; /* COLETA PREVISTA */
+  width: 8.5%; /* COLETA PREVISTA */
 }
 
 .cospa-table th:nth-child(7),
 .cospa-table td:nth-child(7) {
-  width: 8%; /* ENTREGA PREVISTA */
+  width: 8.5%; /* ENTREGA PREVISTA */
 }
 
 .cospa-table th:nth-child(8),
@@ -698,12 +698,12 @@ textarea {
 
 .cospa-table th:nth-child(9),
 .cospa-table td:nth-child(9) {
-  width: 12.5%; /* MOTORISTA */
+  width: 12%; /* MOTORISTA */
 }
 
 .cospa-table th:nth-child(10),
 .cospa-table td:nth-child(10) {
-  width: 11.5%; /* STATUS */
+  width: 11%; /* STATUS */
 }
 
 .cospa-table th:nth-child(11),
@@ -716,9 +716,9 @@ textarea {
   width: 6.5%; /* AÇÕES */
 }
 
-/* Linha de filtros com inputs centralizados */
+/* Linha de filtros com inputs centralizados e cores legíveis */
 .filter-row th {
-  padding: 0.35rem 0.45rem !important;
+  padding: 0.35rem 0.35rem !important;
   background-color: var(--bg-table-card) !important;
   border-bottom: 1px solid var(--border-nav);
   border-right: 1px solid var(--border-cell-vertical);
@@ -731,15 +731,20 @@ textarea {
 
 .table-filter-input {
   width: 100%;
-  padding: 0.35rem 0.4rem;
-  background-color: var(--btn-action-bg);
+  padding: 0.35rem 0.25rem;
+  background-color: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--btn-action-border);
   border-radius: 5px;
   color: var(--text-main);
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   text-align: center;
   outline: none;
   box-sizing: border-box;
+}
+
+.dashboard-wrapper.light-mode .table-filter-input {
+  background-color: #f8fafc;
+  color: #0f172a;
 }
 
 .table-filter-input:focus {
@@ -749,7 +754,7 @@ textarea {
 .table-filter-input::placeholder {
   color: var(--text-muted);
   opacity: 0.75;
-  font-size: 0.72rem;
+  font-size: 0.70rem;
   text-align: center;
 }
 
@@ -765,7 +770,7 @@ textarea {
 .badge-system-id {
   display: inline-block;
   font-family: inherit;
-  font-weight: 500; /* Regular sem negrito */
+  font-weight: 500;
   font-size: 0.82rem;
   padding: 2px 6px;
   border-radius: 4px;
@@ -781,7 +786,7 @@ textarea {
 }
 
 .col-rota {
-  font-weight: 500; /* Regular sem negrito */
+  font-weight: 500;
   color: #0066d6;
   white-space: nowrap;
   text-align: center;
@@ -813,7 +818,7 @@ textarea {
 
 .col-placa {
   font-family: inherit;
-  font-weight: 500; /* Regular sem negrito */
+  font-weight: 500;
   font-size: 0.86rem;
   color: var(--text-muted);
   white-space: nowrap;
@@ -823,7 +828,7 @@ textarea {
 }
 
 .col-motorista {
-  font-weight: 500; /* Regular sem negrito */
+  font-weight: 500;
   word-break: break-word;
   text-align: center;
 }

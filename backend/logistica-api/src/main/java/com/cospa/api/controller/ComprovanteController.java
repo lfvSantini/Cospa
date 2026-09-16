@@ -3,6 +3,7 @@ package com.cospa.api.controller;
 import com.cospa.api.model.Comprovante;
 import com.cospa.api.repository.ComprovanteRepository;
 import com.cospa.api.repository.ViagemRepository;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -62,17 +64,35 @@ public class ComprovanteController {
             }
 
             try {
+                String contentType = file.getContentType();
+                boolean isImagem = contentType != null && contentType.startsWith("image/");
+
                 String extensao = "";
                 String nomeOriginal = file.getOriginalFilename();
                 if (nomeOriginal != null && nomeOriginal.contains(".")) {
                     extensao = nomeOriginal.substring(nomeOriginal.lastIndexOf("."));
                 }
 
+                // Força extensão .jpg se for imagem tratada para padronizar compressão
+                if (isImagem) {
+                    extensao = ".jpg";
+                }
+
                 String nomeArquivo = "viagem_" + viagemId + "_" + UUID.randomUUID().toString().substring(0, 8) + extensao;
                 Path uploadFolder = getUploadPath();
-                Path destino = uploadFolder.resolve(nomeArquivo).normalize();
+                File destinoArquivo = uploadFolder.resolve(nomeArquivo).normalize().toFile();
 
-                Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+                if (isImagem) {
+                    // Redimensiona mantendo proporção (máx 1920x1080) e comprime a 75% de qualidade
+                    Thumbnails.of(file.getInputStream())
+                            .size(1920, 1080)
+                            .outputFormat("jpg")
+                            .outputQuality(0.75f)
+                            .toFile(destinoArquivo);
+                } else {
+                    // Se for PDF ou outro tipo de documento, salva diretamente
+                    Files.copy(file.getInputStream(), destinoArquivo.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
 
                 String urlRelativa = "/uploads/" + nomeArquivo;
                 Comprovante comprovante = new Comprovante(nome, urlRelativa, viagem);
@@ -80,7 +100,7 @@ public class ComprovanteController {
 
                 return ResponseEntity.ok(comprovante);
             } catch (IOException e) {
-                return ResponseEntity.internalServerError().body("Erro ao salvar arquivo.");
+                return ResponseEntity.internalServerError().body("Erro ao salvar e otimizar arquivo.");
             }
         }).orElse(ResponseEntity.notFound().build());
     }

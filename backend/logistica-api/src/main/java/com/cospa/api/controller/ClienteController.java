@@ -4,6 +4,7 @@ import com.cospa.api.model.Cliente;
 import com.cospa.api.model.ClienteDocumento;
 import com.cospa.api.repository.ClienteDocumentoRepository;
 import com.cospa.api.repository.ClienteRepository;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,14 +94,29 @@ public class ClienteController {
         }
 
         String nomeOriginal = file.getOriginalFilename();
+        String contentType = file.getContentType();
+        boolean isImagem = contentType != null && contentType.startsWith("image/");
+
         String extensao = "";
         if (nomeOriginal != null && nomeOriginal.contains(".")) {
             extensao = nomeOriginal.substring(nomeOriginal.lastIndexOf("."));
         }
-        String nomeUnico = UUID.randomUUID().toString() + extensao;
-        Path destino = Paths.get(UPLOAD_DIR + nomeUnico);
+        if (isImagem) {
+            extensao = ".jpg";
+        }
 
-        Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+        String nomeUnico = UUID.randomUUID().toString() + extensao;
+        File destino = new File(pasta, nomeUnico);
+
+        if (isImagem) {
+            Thumbnails.of(file.getInputStream())
+                    .size(1920, 1080)
+                    .outputFormat("jpg")
+                    .outputQuality(0.75f)
+                    .toFile(destino);
+        } else {
+            Files.copy(file.getInputStream(), destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
 
         ClienteDocumento doc = new ClienteDocumento();
         doc.setCliente(cliente);

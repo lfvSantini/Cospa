@@ -49,6 +49,7 @@ public class SecurityConfig {
                             "/api/auth",
                             "/api/auth/**",
                             "/api/admin/backup/**",
+                            "/api/admin/otimizacao/**", // Liberado aqui
                             "/api/veiculos",
                             "/api/veiculos/**",
                             "/api/motoristas",

@@ -5,11 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,6 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/otimizacao")
+@CrossOrigin(origins = "*")
 public class OtimizacaoUploadsController {
 
     private static final Logger log = LoggerFactory.getLogger(OtimizacaoUploadsController.class);
@@ -73,12 +76,16 @@ public class OtimizacaoUploadsController {
                         tamanhoTotalDepois += arquivo.length();
                         totalProcessados++;
                     } else {
-                        Files.deleteIfExists(arquivoTemporario.toPath());
+                        try {
+                            Files.deleteIfExists(arquivoTemporario.toPath());
+                        } catch (IOException ignored) {}
                         tamanhoTotalDepois += tamanhoOriginal;
                     }
                 } catch (Exception e) {
                     log.error("Erro ao comprimir o arquivo {}: {}", arquivo.getName(), e.getMessage());
-                    Files.deleteIfExists(arquivoTemporario.toPath());
+                    try {
+                        Files.deleteIfExists(arquivoTemporario.toPath());
+                    } catch (IOException ignored) {}
                     tamanhoTotalDepois += tamanhoOriginal;
                 }
             } else {

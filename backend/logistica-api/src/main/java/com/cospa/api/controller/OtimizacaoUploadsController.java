@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping("/api/admin/otimizacao")
@@ -31,74 +30,79 @@ public class OtimizacaoUploadsController {
 
     @PostMapping("/comprimir-antigos")
     public ResponseEntity<?> comprimirImagensAntigas() {
-        Path pastaUploads = Paths.get(uploadDirConfig).toAbsolutePath().normalize();
-        if (!Files.exists(pastaUploads)) {
-            pastaUploads = Paths.get(System.getProperty("user.dir"), "uploads").toAbsolutePath().normalize();
-        }
+        AtomicLong tamanhoAntesTotal = new AtomicLong(0);
+        AtomicLong tamanhoDepoisTotal = new AtomicLong(0);
+        AtomicInteger totalProcessados = new AtomicInteger(0);
+        AtomicInteger totalArquivos = new AtomicInteger(0);
 
-        File pasta = pastaUploads.toFile();
-        File[] arquivos = pasta.listFiles();
+        Path[] caminhosBase = new Path[] {
+                Paths.get(uploadDirConfig).toAbsolutePath().normalize(),
+                Paths.get(System.getProperty("user.dir"), "uploads").toAbsolutePath().normalize()
+        };
 
-        if (arquivos == null || arquivos.length == 0) {
-            return ResponseEntity.ok("Nenhum arquivo encontrado na pasta de uploads.");
-        }
+        for (Path base : caminhosBase) {
+            if (!Files.exists(base)) continue;
 
-        long tamanhoTotalAntes = 0;
-        long tamanhoTotalDepois = 0;
-        int totalProcessados = 0;
+            try {
+                Files.walk(base)
+                        .filter(Files::isRegularFile)
+                        .forEach(path -> {
+                            totalArquivos.incrementAndGet();
+                            File arquivo = path.toFile();
+                            String nome = arquivo.getName().toLowerCase();
+                            long tamanhoOriginal = arquivo.length();
 
-        for (File arquivo : arquivos) {
-            if (!arquivo.isFile()) continue;
+                            if (nome.startsWith("temp_opt_")) {
+                                try { Files.deleteIfExists(path); } catch (IOException ignored) {}
+                                return;
+                            }
 
-            String nome = arquivo.getName().toLowerCase();
-            // Processa apenas imagens JPG, JPEG e PNG (ignora PDFs)
-            if (nome.endsWith(".jpg") || nome.endsWith(".jpeg") || nome.endsWith(".png")) {
-                long tamanhoOriginal = arquivo.length();
-                tamanhoTotalAntes += tamanhoOriginal;
+                            tamanhoAntesTotal.addAndGet(tamanhoOriginal);
 
-                // Arquivos menores que 250 KB já estão otimizados
-                if (tamanhoOriginal <= 250 * 1024) {
-                    tamanhoTotalDepois += tamanhoOriginal;
-                    continue;
-                }
+                            if (nome.endsWith(".jpg") || nome.endsWith(".jpeg") || nome.endsWith(".png") || nome.endsWith(".webp")) {
+                                if (tamanhoOriginal <= 200 * 1024) {
+                                    tamanhoDepoisTotal.addAndGet(tamanhoOriginal);
+                                    return;
+                                }
 
-                File arquivoTemporario = new File(arquivo.getParent(), "temp_" + arquivo.getName());
+                                File arquivoTemporario = new File(arquivo.getParent(), "temp_opt_" + arquivo.getName());
 
-                try {
-                    Thumbnails.of(arquivo)
-                            .size(1920, 1080)
-                            .outputQuality(0.75f)
-                            .toFile(arquivoTemporario);
+                                try {
+                                    Thumbnails.of(arquivo)
+                                            .size(1920, 1080)
+                                            .outputQuality(0.70f)
+                                            .toFile(arquivoTemporario);
 
-                    // Substitui o original pelo comprimido se a redução for real
-                    if (arquivoTemporario.length() < tamanhoOriginal) {
-                        Files.move(arquivoTemporario.toPath(), arquivo.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                        tamanhoTotalDepois += arquivo.length();
-                        totalProcessados++;
-                    } else {
-                        try {
-                            Files.deleteIfExists(arquivoTemporario.toPath());
-                        } catch (IOException ignored) {}
-                        tamanhoTotalDepois += tamanhoOriginal;
-                    }
-                } catch (Exception e) {
-                    log.error("Erro ao comprimir o arquivo {}: {}", arquivo.getName(), e.getMessage());
-                    try {
-                        Files.deleteIfExists(arquivoTemporario.toPath());
-                    } catch (IOException ignored) {}
-                    tamanhoTotalDepois += tamanhoOriginal;
-                }
-            } else {
-                tamanhoTotalAntes += arquivo.length();
-                tamanhoTotalDepois += arquivo.length();
+                                    if (arquivoTemporario.exists() && arquivoTemporario.length() < tamanhoOriginal) {
+                                        Files.move(arquivoTemporario.toPath(), arquivo.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                                        tamanhoDepoisTotal.addAndGet(arquivo.length());
+                                        totalProcessados.incrementAndGet();
+                                    } else {
+                                        try { Files.deleteIfExists(arquivoTemporario.toPath()); } catch (IOException ignored) {}
+                                        tamanhoDepoisTotal.addAndGet(tamanhoOriginal);
+                                    }
+                                } catch (Exception e) {
+                                    log.error("Erro ao comprimir arquivo {}: {}", arquivo.getName(), e.getMessage());
+                                    try { Files.deleteIfExists(arquivoTemporario.toPath()); } catch (IOException ignored) {}
+                                    tamanhoDepoisTotal.addAndGet(tamanhoOriginal);
+                                }
+                            } else {
+                                tamanhoDepoisTotal.addAndGet(tamanhoOriginal);
+                            }
+                        });
+            } catch (IOException e) {
+                log.error("Erro ao varrer arquivos no caminho {}: {}", base, e.getMessage());
             }
         }
 
+        long economiaBytes = Math.max(0, tamanhoAntesTotal.get() - tamanhoDepoisTotal.get());
+
         Map<String, Object> resultado = new HashMap<>();
-        resultado.put("arquivos_comprimidos", totalProcessados);
-        resultado.put("tamanho_antes_mb", tamanhoTotalAntes / (1024 * 1024));
-        resultado.put("tamanho_depois_mb", tamanhoTotalDepois / (1024 * 1024));
-        resultado.put("espaco_economizado_mb", (tamanhoTotalAntes - tamanhoTotalDepois) / (1024 * 1024));
+        resultado.put("total_arquivos_varridos", totalArquivos.get());
+        resultado.put("arquivos_comprimidos", totalProcessados.get());
+        resultado.put("tamanho_antes_mb", tamanhoAntesTotal.get() / (1024 * 1024));
+        resultado.put("tamanho_depois_mb", tamanhoDepoisTotal.get() / (1024 * 1024));
+        resultado.put("espaco_economizado_mb", economiaBytes / (1024 * 1024));
 
         return ResponseEntity.ok(resultado);
     }

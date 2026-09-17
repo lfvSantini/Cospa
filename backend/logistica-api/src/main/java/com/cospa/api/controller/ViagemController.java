@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(
         origins = "*",
         allowedHeaders = "*",
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS}
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS}
 )
 public class ViagemController {
 
@@ -49,6 +50,14 @@ public class ViagemController {
     @PutMapping("/{id}")
     public ResponseEntity<ViagemResponseDTO> atualizar(@PathVariable Long id, @RequestBody @Valid ViagemRequestDTO dto) {
         return viagemService.atualizar(id, dto)
+                .map(v -> ResponseEntity.ok(new ViagemResponseDTO(v)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}/cancelar")
+    public ResponseEntity<ViagemResponseDTO> cancelar(@PathVariable Long id, @RequestBody(required = false) Map<String, String> payload) {
+        String motivo = (payload != null) ? payload.get("motivo") : null;
+        return viagemService.cancelar(id, motivo)
                 .map(v -> ResponseEntity.ok(new ViagemResponseDTO(v)))
                 .orElse(ResponseEntity.notFound().build());
     }

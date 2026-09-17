@@ -73,6 +73,29 @@ public class BackupService {
             }
 
             log.info("[BACKUP] Backup compactado criado com sucesso: {}", arquivoZipDestino);
+
+            // --- LIMPEZA AUTOMÁTICA: Remove backups com mais de 3 dias ---
+            try (var stream = Files.list(pastaBackups)) {
+                long limiteDias = 3L * 24 * 60 * 60 * 1000; // 3 dias em milissegundos
+                long agora = System.currentTimeMillis();
+
+                stream.filter(Files::isRegularFile)
+                        .filter(path -> path.getFileName().toString().endsWith(".zip"))
+                        .forEach(path -> {
+                            try {
+                                if (!path.equals(arquivoZipDestino) && (agora - Files.getLastModifiedTime(path).toMillis() > limiteDias)) {
+                                    Files.delete(path);
+                                    log.info("[BACKUP] Backup antigo removido por limpeza automática: {}", path.getFileName());
+                                }
+                            } catch (IOException e) {
+                                log.warn("[BACKUP] Não foi possível remover o backup antigo: {}", path.getFileName(), e);
+                            }
+                        });
+            } catch (Exception e) {
+                log.warn("[BACKUP] Erro ao executar varredura de limpeza de backups antigos: ", e);
+            }
+            // -------------------------------------------------------------
+
         } catch (Exception e) {
             log.error("[BACKUP ERRO] Falha ao gerar backup diário: ", e);
         }
@@ -269,7 +292,6 @@ public class BackupService {
                     continue;
                 }
 
-                // Garante que inserts incompatíveis ou duplicados não abortem a importação
                 if (statementText.toUpperCase().startsWith("INSERT INTO")) {
                     statementText = "INSERT IGNORE INTO" + statementText.substring("INSERT INTO".length());
                 }

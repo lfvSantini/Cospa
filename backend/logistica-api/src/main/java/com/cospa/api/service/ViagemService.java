@@ -31,19 +31,15 @@ public class ViagemService {
     @Transactional
     public Viagem salvar(ViagemRequestDTO dto) {
         Viagem viagem = new Viagem();
-
-        // Garante que o MySQL controle o AUTO_INCREMENT nativo da primary key
         viagem.setId(null);
 
         copiarDtoParaEntidade(dto, viagem);
 
-        // Define o número operacional que o usuário digitou
         String numOp = (dto.getNumeroOperacional() != null) ? dto.getNumeroOperacional().trim() : "";
         viagem.setNumeroOperacional(numOp.isEmpty() ? null : numOp);
 
         Viagem salva = repository.save(viagem);
 
-        // Se o usuário não informou nenhuma minuta/romaneio, define o número operacional como o próprio ID gerado
         if (salva.getNumeroOperacional() == null || salva.getNumeroOperacional().isBlank()) {
             salva.setNumeroOperacional(salva.getId().toString());
             salva = repository.save(salva);
@@ -57,7 +53,6 @@ public class ViagemService {
         return repository.findById(id).map(viagem -> {
             copiarDtoParaEntidade(dto, viagem);
 
-            // Atualiza o número operacional digitado sem tocar na chave primária
             if (dto.getNumeroOperacional() != null && !dto.getNumeroOperacional().isBlank()) {
                 viagem.setNumeroOperacional(dto.getNumeroOperacional().trim());
             }
@@ -78,6 +73,21 @@ public class ViagemService {
     public Optional<Viagem> atualizarObs(Long id, String obs) {
         return repository.findById(id).map(viagem -> {
             viagem.setObservacao(obs);
+            return repository.save(viagem);
+        });
+    }
+
+    @Transactional
+    public Optional<Viagem> cancelar(Long id, String motivo) {
+        return repository.findById(id).map(viagem -> {
+            viagem.setStatus(StatusViagem.CANCELADA);
+
+            String obsAtual = (viagem.getObservacao() != null && !viagem.getObservacao().isBlank())
+                    ? viagem.getObservacao().trim() + " | "
+                    : "";
+            String motivoFormatado = (motivo != null && !motivo.isBlank()) ? motivo.trim() : "Sem motivo informado";
+
+            viagem.setObservacao(obsAtual + "[CANCELADA]: " + motivoFormatado);
             return repository.save(viagem);
         });
     }

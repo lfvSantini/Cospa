@@ -42,7 +42,7 @@ export interface ViagemItem {
   entregaPrevista: string;
   placa: string;
   motorista: string;
-  status: StatusViagem;
+  status: StatusViagem | string;
   obs?: string;
   fotos?: ComprovanteItem[];
   rawViagem?: Viagem;
@@ -157,7 +157,7 @@ export class DashboardComponent implements OnInit {
     obs: ''
   };
 
-  modalType: 'TRIP_FORM' | 'PHOTO' | 'OBS' | 'DELETE' | 'FORNECEDOR' | 'CLIENTE' | 'MOTORISTA' | 'VEICULO' | 'MOTORISTA_PHOTO' | 'VEICULO_PHOTO' | null = null;
+  modalType: 'TRIP_FORM' | 'PHOTO' | 'OBS' | 'CANCELAR' | 'FORNECEDOR' | 'CLIENTE' | 'MOTORISTA' | 'VEICULO' | 'MOTORISTA_PHOTO' | 'VEICULO_PHOTO' | null = null;
   private previousModalType: 'PHOTO' | 'MOTORISTA_PHOTO' | 'VEICULO_PHOTO' | null = null;
 
   activeManageTab: 'CADASTRAR' | 'LISTAR' = 'CADASTRAR';
@@ -262,13 +262,15 @@ export class DashboardComponent implements OnInit {
     pagoSaldo: false,
     dataAdicional: '',
     pagoAdicional: false,
-    statusInicial: 'PROGRAMADO' as StatusViagem,
+    statusInicial: 'PROGRAMADO' as any,
     observacao: ''
   };
 
   selectedViagem: ViagemItem | null = null;
   selectedListOrigin: 'andamento' | 'aPagar' | 'finalizadas' = 'andamento';
   isEditing: boolean = false;
+
+  motivoCancelamento: string = '';
 
   viagensAndamento: ViagemItem[] = [];
   viagensAPagar: ViagemItem[] = [];
@@ -411,6 +413,7 @@ export class DashboardComponent implements OnInit {
     this.activeVeiculoPhotoTab = 'ADICIONAR';
     this.manageSearchTerm = '';
     this.previewImageUrl = null;
+    this.motivoCancelamento = '';
     this.isDraggingComprovante = false;
     this.isDraggingMotoristaDoc = false;
     this.isDraggingVeiculoDoc = false;
@@ -500,7 +503,7 @@ export class DashboardComponent implements OnInit {
           const item = this.mapViagemParaItem(v);
           const st = (item.status || '').toString().toUpperCase().replace(/_/g, ' ').trim();
 
-          if (st === 'FINALIZADO') {
+          if (st === 'FINALIZADO' || st === 'CANCELADA') {
             this.viagensFinalizadas.push(item);
           } else if (st === 'A PAGAR' || st === 'ADIANTAMENTO PAGO' || st === 'SALDO PAGO') {
             this.viagensAPagar.push(item);
@@ -571,7 +574,7 @@ export class DashboardComponent implements OnInit {
       const matchEntrega = !this.filtroColunas.entregaPrevista || item.entregaPrevista.toLowerCase().includes(this.filtroColunas.entregaPrevista.toLowerCase());
       const matchPlaca = !this.filtroColunas.placa || item.placa.toLowerCase().includes(this.filtroColunas.placa.toLowerCase());
       const matchMotorista = !this.filtroColunas.motorista || item.motorista.toLowerCase().includes(this.filtroColunas.motorista.toLowerCase());
-      const matchStatus = !this.filtroColunas.status || item.status.toLowerCase().includes(this.filtroColunas.status.toLowerCase());
+      const matchStatus = !this.filtroColunas.status || item.status.toString().toLowerCase().includes(this.filtroColunas.status.toLowerCase());
       const matchObs = !this.filtroColunas.obs || (item.obs || '').toLowerCase().includes(this.filtroColunas.obs.toLowerCase());
 
       return matchId && matchRota && matchCliente && matchOrigem && matchDestino && matchColeta && matchEntrega && matchPlaca && matchMotorista && matchStatus && matchObs;
@@ -1863,24 +1866,32 @@ export class DashboardComponent implements OnInit {
     this.closeModal();
   }
 
-  openExcluirModal(item: ViagemItem, origin: 'andamento' | 'aPagar' | 'finalizadas'): void {
+  openCancelarModal(item: ViagemItem, origin: 'andamento' | 'aPagar' | 'finalizadas'): void {
     this.selectedViagem = item;
     this.selectedListOrigin = origin;
-    this.modalType = 'DELETE';
+    this.motivoCancelamento = '';
+    this.modalType = 'CANCELAR';
     this.closeRowActions();
     this.cdr.detectChanges();
   }
 
-  confirmarExclusao(): void {
-    if (this.selectedViagem) {
-      this.viagemService.deletar(this.selectedViagem.rawId).subscribe({
-        next: () => {
-          this.carregarViagens();
-          this.closeModal();
-        },
-        error: () => alert('Erro ao excluir rota.')
-      });
-    }
+  confirmarCancelamento(): void {
+    if (!this.selectedViagem) return;
+
+    const rawId = this.selectedViagem.rawId;
+    const motivo = (this.motivoCancelamento || '').trim().toUpperCase();
+
+    this.http.patch(`${environment.apiUrl}/viagens/${rawId}/cancelar`, { motivo }).subscribe({
+      next: () => {
+        this.showFinalizadas = true;
+        this.carregarViagens();
+        this.closeModal();
+      },
+      error: (err) => {
+        console.error('Erro ao cancelar rota:', err);
+        alert('Erro ao cancelar rota.');
+      }
+    });
   }
 
   onFileSelected(event: Event, tipo: 'CNH' | 'CRLV'): void {

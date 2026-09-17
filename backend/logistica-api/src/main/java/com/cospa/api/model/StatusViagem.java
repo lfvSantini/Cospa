@@ -18,7 +18,8 @@ public enum StatusViagem {
     A_PAGAR("A PAGAR"),
     ADIANTAMENTO_PAGO("ADIANTAMENTO PAGO"),
     SALDO_PAGO("SALDO PAGO"),
-    FINALIZADO("FINALIZADO");
+    FINALIZADO("FINALIZADO"),
+    CANCELADA("CANCELADA");
 
     private final String descricao;
 

@@ -596,7 +596,6 @@ textarea {
   background-color: var(--btn-action-bg);
 }
 
-/* Títulos do cabeçalho centralizados, negrito 800 forte e texto nítido */
 .cospa-table th {
   padding: 0.95rem 0.35rem;
   font-size: 0.74rem;
@@ -615,7 +614,6 @@ textarea {
   border-right: none;
 }
 
-/* Todas as células de dados centralizadas com divisórias verticais */
 .cospa-table td {
   padding: 0.85rem 0.4rem;
   border-bottom: 1px solid var(--border-table);
@@ -655,68 +653,31 @@ textarea {
   box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.25) !important;
 }
 
-/* 12 Colunas com larguras proporcionais */
 .cospa-table th:nth-child(1),
-.cospa-table td:nth-child(1) {
-  width: 4.5%; /* ID */
-}
-
+.cospa-table td:nth-child(1) { width: 4.5%; }
 .cospa-table th:nth-child(2),
-.cospa-table td:nth-child(2) {
-  width: 5.5%; /* Nº ROTA */
-}
-
+.cospa-table td:nth-child(2) { width: 5.5%; }
 .cospa-table th:nth-child(3),
-.cospa-table td:nth-child(3) {
-  width: 11%; /* CLIENTE */
-}
-
+.cospa-table td:nth-child(3) { width: 11%; }
 .cospa-table th:nth-child(4),
-.cospa-table td:nth-child(4) {
-  width: 10%; /* ORIGEM */
-}
-
+.cospa-table td:nth-child(4) { width: 10%; }
 .cospa-table th:nth-child(5),
-.cospa-table td:nth-child(5) {
-  width: 10%; /* DESTINO */
-}
-
+.cospa-table td:nth-child(5) { width: 10%; }
 .cospa-table th:nth-child(6),
-.cospa-table td:nth-child(6) {
-  width: 8.5%; /* COLETA PREVISTA */
-}
-
+.cospa-table td:nth-child(6) { width: 8.5%; }
 .cospa-table th:nth-child(7),
-.cospa-table td:nth-child(7) {
-  width: 8.5%; /* ENTREGA PREVISTA */
-}
-
+.cospa-table td:nth-child(7) { width: 8.5%; }
 .cospa-table th:nth-child(8),
-.cospa-table td:nth-child(8) {
-  width: 8.5%; /* PLACA */
-}
-
+.cospa-table td:nth-child(8) { width: 8.5%; }
 .cospa-table th:nth-child(9),
-.cospa-table td:nth-child(9) {
-  width: 12%; /* MOTORISTA */
-}
-
+.cospa-table td:nth-child(9) { width: 12%; }
 .cospa-table th:nth-child(10),
-.cospa-table td:nth-child(10) {
-  width: 11%; /* STATUS */
-}
-
+.cospa-table td:nth-child(10) { width: 11%; }
 .cospa-table th:nth-child(11),
-.cospa-table td:nth-child(11) {
-  width: 4%; /* OBS */
-}
-
+.cospa-table td:nth-child(11) { width: 4%; }
 .cospa-table th:nth-child(12),
-.cospa-table td:nth-child(12) {
-  width: 6.5%; /* AÇÕES */
-}
+.cospa-table td:nth-child(12) { width: 6.5%; }
 
-/* Linha de filtros com inputs centralizados e cores legíveis */
 .filter-row th {
   padding: 0.35rem 0.35rem !important;
   background-color: var(--bg-table-card) !important;
@@ -757,10 +718,6 @@ textarea {
   font-size: 0.70rem;
   text-align: center;
 }
-
-/* ========================================================= */
-/* REMOÇÃO DE NEGRITO CONFORME SETAS DA PATRÍCIA (FONTE REGULAR) */
-/* ========================================================= */
 
 .col-id {
   white-space: nowrap;
@@ -914,41 +871,28 @@ textarea {
   border: 1px solid #10b981;
 }
 
-.dashboard-wrapper:not(.light-mode) .status-contratar {
-  color: #fbbf24;
+/* Badge específica para status CANCELADA (Rosa/Vermelho conforme pedido) */
+.status-cancelada {
+  background-color: rgba(244, 63, 94, 0.18);
+  color: #fb7185;
+  border: 1px solid rgba(244, 63, 94, 0.4);
 }
 
-.dashboard-wrapper:not(.light-mode) .status-programado {
-  color: #60a5fa;
+.dashboard-wrapper.light-mode .status-cancelada {
+  background-color: #ffe4e6;
+  color: #e11d48;
+  border-color: #fda4af;
 }
 
-.dashboard-wrapper:not(.light-mode) .status-carregamento {
-  color: #38bdf8;
-}
-
-.dashboard-wrapper:not(.light-mode) .status-rota {
-  color: #34d399;
-}
-
-.dashboard-wrapper:not(.light-mode) .status-doc {
-  color: #facc15;
-}
-
-.dashboard-wrapper:not(.light-mode) .status-descarga {
-  color: #c084fc;
-}
-
-.dashboard-wrapper:not(.light-mode) .status-adiantamento {
-  color: #f59e0b;
-}
-
-.dashboard-wrapper:not(.light-mode) .status-saldo-pago {
-  color: #10b981;
-}
-
-.dashboard-wrapper:not(.light-mode) .status-finalizado {
-  color: #10b981;
-}
+.dashboard-wrapper:not(.light-mode) .status-contratar { color: #fbbf24; }
+.dashboard-wrapper:not(.light-mode) .status-programado { color: #60a5fa; }
+.dashboard-wrapper:not(.light-mode) .status-carregamento { color: #38bdf8; }
+.dashboard-wrapper:not(.light-mode) .status-rota { color: #34d399; }
+.dashboard-wrapper:not(.light-mode) .status-doc { color: #facc15; }
+.dashboard-wrapper:not(.light-mode) .status-descarga { color: #c084fc; }
+.dashboard-wrapper:not(.light-mode) .status-adiantamento { color: #f59e0b; }
+.dashboard-wrapper:not(.light-mode) .status-saldo-pago { color: #10b981; }
+.dashboard-wrapper:not(.light-mode) .status-finalizado { color: #10b981; }
 
 .col-obs {
   text-align: center !important;
@@ -986,7 +930,6 @@ textarea {
   font-size: 0.9rem;
 }
 
-/* Coluna de Ações 100% centralizada */
 .actions-th {
   text-align: center !important;
   padding-right: 0.65rem !important;
@@ -1068,7 +1011,6 @@ textarea {
     opacity: 0;
     transform: translateY(-4px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1123,13 +1065,17 @@ textarea {
   stroke: #f59e0b;
 }
 
-.row-menu-item.item-excluir:hover {
-  background-color: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
+.row-menu-item.item-cancelar {
+  color: #fb7185;
 }
 
-.row-menu-item.item-excluir svg {
-  stroke: #ef4444;
+.row-menu-item.item-cancelar svg {
+  stroke: #fb7185;
+}
+
+.row-menu-item.item-cancelar:hover {
+  background-color: rgba(244, 63, 94, 0.12);
+  color: #f43f5e;
 }
 
 .row-menu-divider {
@@ -1197,7 +1143,6 @@ textarea {
     opacity: 0;
     transform: scale(0.96) translateY(8px);
   }
-
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -1205,13 +1150,8 @@ textarea {
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal-head {
@@ -1996,15 +1936,20 @@ textarea {
   cursor: pointer;
 }
 
-.btn-danger-cospa {
+.btn-cancelar-viagem {
   padding: 0.75rem 1.5rem;
-  background-color: #ef4444;
+  background-color: #e11d48;
   border: none;
   border-radius: 8px;
   color: #ffffff;
   font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-cancelar-viagem:hover {
+  background-color: #be123c;
 }
 
 .empty-photos {

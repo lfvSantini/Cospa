@@ -695,7 +695,7 @@
 
         <div class="form-row-2">
           <div class="f-group">
-            <label>Cliente * (Digite para buscar)</label>
+            <label>Cliente *</label>
             <input 
               type="text" 
               [(ngModel)]="tripForm.clienteSelect" 
@@ -736,7 +736,7 @@
         <!-- Linha: Motorista, Veículo 1 e Veículo 2 com busca digitável -->
         <div class="form-row-3">
           <div class="f-group">
-            <label>Motorista (Digite para buscar)</label>
+            <label>Motorista </label>
             <input 
               type="text" 
               [(ngModel)]="tripForm.motorista" 
@@ -784,7 +784,7 @@
         <!-- Linha: Fornecedor, Agenciador e Especialista Cospa com busca digitável -->
         <div class="form-row-3">
           <div class="f-group">
-            <label>Fornecedor (Digite para buscar)</label>
+            <label>Fornecedor </label>
             <input 
               type="text" 
               [(ngModel)]="tripForm.agencia" 
@@ -799,7 +799,7 @@
           </div>
 
           <div class="f-group">
-            <label>Agenciador (Digite para buscar)</label>
+            <label>Agenciador </label>
             <input 
               type="text" 
               [(ngModel)]="tripForm.agenciador" 
@@ -814,7 +814,7 @@
           </div>
 
           <div class="f-group">
-            <label>Especialista Cospa (Digite para buscar)</label>
+            <label>Especialista Cospa </label>
             <input 
               type="text" 
               [(ngModel)]="tripForm.especialistaCospa" 
@@ -842,7 +842,7 @@
               <div class="schedule-items-stack">
                 <div class="itinerary-card" *ngFor="let orig of tripForm.origens; let i = index">
                   <div class="itinerary-card-head" *ngIf="tripForm.origens.length > 1">
-                    <span class="itinerary-index-badge">Parada #{{ i + 1 }}</span>
+                    <span class="itinerary-index-badge">COLETA #{{ i + 1 }}</span>
                     <button type="button" class="btn-stop-del" (click)="removeOrigem(i)" title="Remover coleta">✕</button>
                   </div>
 
@@ -890,7 +890,7 @@
               <div class="schedule-items-stack">
                 <div class="itinerary-card" *ngFor="let dest of tripForm.destinos; let j = index">
                   <div class="itinerary-card-head" *ngIf="tripForm.destinos.length > 1">
-                    <span class="itinerary-index-badge">Parada #{{ j + 1 }}</span>
+                    <span class="itinerary-index-badge">ENTREGA #{{ j + 1 }}</span>
                     <button type="button" class="btn-stop-del" (click)="removeDestino(j)" title="Remover entrega">✕</button>
                   </div>
 

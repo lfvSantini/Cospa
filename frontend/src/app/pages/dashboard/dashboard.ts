@@ -9,7 +9,7 @@ import { MotoristaService } from '../../core/services/motorista';
 import { ClienteService } from '../../core/services/cliente';
 import { FornecedorService } from '../../core/services/fornecedor';
 import { VeiculoService } from '../../core/services/veiculo';
-import { RotaService, LocalCliente } from '../../core/services/rota.service';
+import { RotaService, LocalCliente } from '../../core/services/rota';
 import { Viagem, StatusViagem, TipoOperacao, TipoAdicional, ViagemDataItem } from '../../core/models/viagem.model';
 import { Motorista } from '../../core/models/motorista.model';
 import { Cliente } from '../../core/models/cliente.model';

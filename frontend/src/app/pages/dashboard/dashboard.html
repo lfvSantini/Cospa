@@ -18,7 +18,7 @@
       <button type="button" class="sidebar-item active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="1" y="3" width="15" height="13"></rect>
-          <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+          <polygon points="16 8 20 8 23 11 23 16 16 8"></polygon>
           <circle cx="5.5" cy="18.5" r="2.5"></circle>
           <circle cx="18.5" cy="18.5" r="2.5"></circle>
         </svg>
@@ -138,7 +138,7 @@
             <span>Gerenciar Clientes</span>
           </button>
           <button type="button" class="dropdown-item" (click)="openGerenciarFornecedores()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
             <span>Gerenciar Fornecedores</span>
           </button>
           <button type="button" class="dropdown-item" (click)="openGerenciarMotoristas()">
@@ -627,7 +627,7 @@
             <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
             <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoDoc" (click)="fileInputVeiculoModal.click()" (dragover)="$event.preventDefault(); isDraggingVeiculoDoc = true;" (dragleave)="$event.preventDefault(); isDraggingVeiculoDoc = false;" (drop)="onVeiculoDocDrop($event)">
               <input #fileInputVeiculoModal type="file" (change)="onVeiculoDocSelected($event)" style="display: none;" accept="image/*,.pdf" />
-              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
               <span>{{ novoDocVeiculo.nomeArquivo || 'Clique, arraste o arquivo (PDF/Imagem) ou use Ctrl+V' }}</span>
             </div>
           </div>
@@ -865,44 +865,65 @@
           </div>
         </div>
 
-        <!-- Múltiplas Datas de Coleta -->
-        <div class="dynamic-point-group" *ngFor="let col of tripForm.datasColetas; let cIdx = index" style="border: 1px dashed var(--btn-action-border); border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-            <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted);">COLETA #{{ cIdx + 1 }}</span>
-            <div style="display: flex; gap: 0.35rem;">
-              <button type="button" class="btn-add-point" style="width: 28px; height: 28px; font-size: 0.9rem;" (click)="addColetaData()" *ngIf="cIdx === 0" title="Adicionar outra data de coleta">+</button>
-              <button type="button" class="btn-rem-point" style="width: 28px; height: 28px; font-size: 0.8rem;" (click)="removeColetaData(cIdx)" *ngIf="cIdx > 0" title="Remover data">✕</button>
-            </div>
+        <!-- CRONOGRAMA UNIFICADO DE DATAS (COLETA & ENTREGA) -->
+        <div class="schedule-unified-card">
+          <div class="schedule-header">
+            <span class="schedule-main-title">CRONOGRAMA DE DATAS (COLETAS E ENTREGAS)</span>
           </div>
-          <div class="form-row-2">
-            <div class="f-group">
-              <label>Coleta Prevista</label>
-              <input type="text" [(ngModel)]="col.dataPrevista" [name]="'col_prev_' + cIdx" placeholder="EX: 13/08/2026 14:00" />
-            </div>
-            <div class="f-group">
-              <label>Coleta Real</label>
-              <input type="text" [(ngModel)]="col.dataReal" [name]="'col_real_' + cIdx" placeholder="EX: 13/08/2026 14:30" />
-            </div>
-          </div>
-        </div>
 
-        <!-- Múltiplas Datas de Entrega -->
-        <div class="dynamic-point-group" *ngFor="let ent of tripForm.datasEntregas; let eIdx = index" style="border: 1px dashed var(--btn-action-border); border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-            <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted);">ENTREGA #{{ eIdx + 1 }}</span>
-            <div style="display: flex; gap: 0.35rem;">
-              <button type="button" class="btn-add-point" style="width: 28px; height: 28px; font-size: 0.9rem;" (click)="addEntregaData()" *ngIf="eIdx === 0" title="Adicionar outra data de entrega">+</button>
-              <button type="button" class="btn-rem-point" style="width: 28px; height: 28px; font-size: 0.8rem;" (click)="removeEntregaData(eIdx)" *ngIf="eIdx > 0" title="Remover data">✕</button>
+          <div class="schedule-columns-grid">
+            <!-- COLUNA DA ESQUERDA: COLETAS -->
+            <div class="schedule-col">
+              <div class="schedule-col-head">
+                <span class="col-tag tag-coleta">COLETAS ({{ tripForm.datasColetas.length }})</span>
+                <button type="button" class="btn-schedule-add" (click)="addColetaData()" title="Adicionar outra data de coleta">+ Nova Coleta</button>
+              </div>
+
+              <div class="schedule-items-stack">
+                <div class="schedule-item-row" *ngFor="let col of tripForm.datasColetas; let cIdx = index">
+                  <div class="schedule-item-badge">#{{ cIdx + 1 }}</div>
+                  
+                  <div class="schedule-inputs-group">
+                    <div class="f-group">
+                      <label>Prevista</label>
+                      <input type="text" [(ngModel)]="col.dataPrevista" [name]="'col_prev_' + cIdx" placeholder="EX: 13/08/2026 14:00" />
+                    </div>
+                    <div class="f-group">
+                      <label>Realizada</label>
+                      <input type="text" [(ngModel)]="col.dataReal" [name]="'col_real_' + cIdx" placeholder="EX: 13/08/2026 14:30" />
+                    </div>
+                  </div>
+
+                  <button *ngIf="tripForm.datasColetas.length > 1" type="button" class="btn-schedule-del" (click)="removeColetaData(cIdx)" title="Remover coleta">✕</button>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="form-row-2">
-            <div class="f-group">
-              <label>Entrega Prevista</label>
-              <input type="text" [(ngModel)]="ent.dataPrevista" [name]="'ent_prev_' + eIdx" placeholder="EX: 14/08/2026 10:00" />
-            </div>
-            <div class="f-group">
-              <label>Entrega Real</label>
-              <input type="text" [(ngModel)]="ent.dataReal" [name]="'ent_real_' + eIdx" placeholder="EX: 14/08/2026 10:45" />
+
+            <!-- COLUNA DA DIREITA: ENTREGAS -->
+            <div class="schedule-col">
+              <div class="schedule-col-head">
+                <span class="col-tag tag-entrega">ENTREGAS ({{ tripForm.datasEntregas.length }})</span>
+                <button type="button" class="btn-schedule-add" (click)="addEntregaData()" title="Adicionar outra data de entrega">+ Nova Entrega</button>
+              </div>
+
+              <div class="schedule-items-stack">
+                <div class="schedule-item-row" *ngFor="let ent of tripForm.datasEntregas; let eIdx = index">
+                  <div class="schedule-item-badge">#{{ eIdx + 1 }}</div>
+
+                  <div class="schedule-inputs-group">
+                    <div class="f-group">
+                      <label>Prevista</label>
+                      <input type="text" [(ngModel)]="ent.dataPrevista" [name]="'ent_prev_' + eIdx" placeholder="EX: 14/08/2026 10:00" />
+                    </div>
+                    <div class="f-group">
+                      <label>Realizada</label>
+                      <input type="text" [(ngModel)]="ent.dataReal" [name]="'ent_real_' + eIdx" placeholder="EX: 14/08/2026 10:45" />
+                    </div>
+                  </div>
+
+                  <button *ngIf="tripForm.datasEntregas.length > 1" type="button" class="btn-schedule-del" (click)="removeEntregaData(eIdx)" title="Remover entrega">✕</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1272,7 +1293,7 @@
     </div>
   </div>
 
-  <!-- GERENCIAR MOTORISTAS (Sem área de CNH no formulário inicial) -->
+  <!-- GERENCIAR MOTORISTAS -->
   <div class="cospa-modal-overlay" *ngIf="modalType === 'MOTORISTA'" (click)="closeModal()">
     <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">
@@ -1337,7 +1358,7 @@
                 <p class="crud-subtext">CPF: {{ m.cpf || '-' }} • Tel: {{ m.telefone || '-' }} • Vínculo: <strong>{{ m.fornecedorVinculado }}</strong></p>
               </div>
               <div class="crud-item-actions">
-                <button type="button" class="btn-photo-inline" (click)="openMotoristaFotosModal(m)" title="Ver CNH e Documentos">
+                <button type="button" class="btn-photo-inline" (click)="openMotoristaFotosModal(m)" title="Ver Documentos e Fotos">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                   <span>Documentos</span>
                 </button>
@@ -1358,7 +1379,7 @@
     </div>
   </div>
 
-  <!-- GERENCIAR VEÍCULOS (Sem área de CRLV no formulário inicial) -->
+  <!-- GERENCIAR VEÍCULOS -->
   <div class="cospa-modal-overlay" *ngIf="modalType === 'VEICULO'" (click)="closeModal()">
     <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">

@@ -831,27 +831,23 @@
 
         <!-- MÓDULO UNIFICADO: ITINERÁRIO & CRONOGRAMA (ORIGEM/COLETA & DESTINO/ENTREGA) -->
         <div class="schedule-unified-card">
-          <div class="schedule-header">
-            <span class="schedule-main-title">ITINERÁRIO & CRONOGRAMA DE PARADAS</span>
-          </div>
-
           <div class="schedule-columns-grid">
             <!-- COLUNA DA ESQUERDA: COLETAS / ORIGENS -->
             <div class="schedule-col">
               <div class="schedule-col-head">
-                <span class="col-tag tag-coleta">PONTOS DE COLETA / ORIGEM ({{ tripForm.origens.length }})</span>
+                <span class="col-tag">Origem / Coleta ({{ tripForm.origens.length }})</span>
                 <button type="button" class="btn-schedule-add" (click)="addOrigem()" title="Adicionar outra coleta">+ Nova Coleta</button>
               </div>
 
               <div class="schedule-items-stack">
                 <div class="itinerary-card" *ngFor="let orig of tripForm.origens; let i = index">
-                  <div class="itinerary-card-head">
-                    <span class="itinerary-index-badge">Coleta #{{ i + 1 }}</span>
-                    <button *ngIf="tripForm.origens.length > 1" type="button" class="btn-stop-del" (click)="removeOrigem(i)" title="Remover coleta">✕</button>
+                  <div class="itinerary-card-head" *ngIf="tripForm.origens.length > 1">
+                    <span class="itinerary-index-badge">Parada #{{ i + 1 }}</span>
+                    <button type="button" class="btn-stop-del" (click)="removeOrigem(i)" title="Remover coleta">✕</button>
                   </div>
 
                   <div class="f-group">
-                    <label>Local / Ponto de Apoio</label>
+                    <label>Ponto de Coleta</label>
                     <input 
                       type="text" 
                       [(ngModel)]="orig.local" 
@@ -887,19 +883,19 @@
             <!-- COLUNA DA DIREITA: ENTREGAS / DESTINOS -->
             <div class="schedule-col">
               <div class="schedule-col-head">
-                <span class="col-tag tag-entrega">PONTOS DE ENTREGA / DESTINO ({{ tripForm.destinos.length }})</span>
+                <span class="col-tag">Destino / Entrega ({{ tripForm.destinos.length }})</span>
                 <button type="button" class="btn-schedule-add" (click)="addDestino()" title="Adicionar outra entrega">+ Nova Entrega</button>
               </div>
 
               <div class="schedule-items-stack">
                 <div class="itinerary-card" *ngFor="let dest of tripForm.destinos; let j = index">
-                  <div class="itinerary-card-head">
-                    <span class="itinerary-index-badge">Entrega #{{ j + 1 }}</span>
-                    <button *ngIf="tripForm.destinos.length > 1" type="button" class="btn-stop-del" (click)="removeDestino(j)" title="Remover entrega">✕</button>
+                  <div class="itinerary-card-head" *ngIf="tripForm.destinos.length > 1">
+                    <span class="itinerary-index-badge">Parada #{{ j + 1 }}</span>
+                    <button type="button" class="btn-stop-del" (click)="removeDestino(j)" title="Remover entrega">✕</button>
                   </div>
 
                   <div class="f-group">
-                    <label>Local / Ponto de Apoio</label>
+                    <label>Ponto de Entrega</label>
                     <input 
                       type="text" 
                       [(ngModel)]="dest.local" 

@@ -13,6 +13,7 @@ public class VeiculoDTO {
     private String numeroPaletes;
     private String anoFabricacao;
     private String dataVencimento;
+    private String cidadeUf;
     private String fornecedor;
     private String numeroAntt;
     private String tipoRastreador;
@@ -54,6 +55,9 @@ public class VeiculoDTO {
 
     public String getDataVencimento() { return dataVencimento; }
     public void setDataVencimento(String dataVencimento) { this.dataVencimento = dataVencimento; }
+
+    public String getCidadeUf() { return cidadeUf; }
+    public void setCidadeUf(String cidadeUf) { this.cidadeUf = cidadeUf; }
 
     public String getFornecedor() { return fornecedor; }
     public void setFornecedor(String fornecedor) { this.fornecedor = fornecedor; }

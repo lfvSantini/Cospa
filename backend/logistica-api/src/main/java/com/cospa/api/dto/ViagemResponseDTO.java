@@ -2,6 +2,8 @@ package com.cospa.api.dto;
 
 import com.cospa.api.model.Comprovante;
 import com.cospa.api.model.StatusViagem;
+import com.cospa.api.model.TipoAdicional;
+import com.cospa.api.model.TipoOperacao;
 import com.cospa.api.model.Viagem;
 
 import java.math.BigDecimal;
@@ -13,6 +15,7 @@ public record ViagemResponseDTO(
         String cliente,
         String localColeta,
         String localEntrega,
+        TipoOperacao tipoOperacao,
         String origem,
         String destino,
         String origemNome,
@@ -30,7 +33,9 @@ public record ViagemResponseDTO(
         BigDecimal valorAReceber,
         BigDecimal valorAPagar,
         BigDecimal valorAdicionalReceber,
+        TipoAdicional tipoAdicionalReceber,
         BigDecimal valorAdicionalPagar,
+        TipoAdicional tipoAdicionalPagar,
         BigDecimal valorAdicionalAgencia,
         BigDecimal valorAgenciador,
         BigDecimal valorEspecialistaCospa,
@@ -48,7 +53,8 @@ public record ViagemResponseDTO(
         Boolean pagoAdicional,
         StatusViagem status,
         String observacao,
-        List<Comprovante> comprovantes
+        List<Comprovante> comprovantes,
+        List<ViagemDataItemDTO> datas
 ) {
     public ViagemResponseDTO(Viagem viagem) {
         this(
@@ -57,6 +63,7 @@ public record ViagemResponseDTO(
                 viagem.getCliente(),
                 viagem.getLocalColeta(),
                 viagem.getLocalEntrega(),
+                viagem.getTipoOperacao(),
                 viagem.getOrigem(),
                 viagem.getDestino(),
                 viagem.getOrigemNome(),
@@ -74,7 +81,9 @@ public record ViagemResponseDTO(
                 viagem.getValorAReceber(),
                 viagem.getValorAPagar(),
                 viagem.getValorAdicionalReceber(),
+                viagem.getTipoAdicionalReceber(),
                 viagem.getValorAdicionalPagar(),
+                viagem.getTipoAdicionalPagar(),
                 viagem.getValorAdicionalAgencia(),
                 viagem.getValorAgenciador(),
                 viagem.getValorEspecialistaCospa(),
@@ -92,7 +101,10 @@ public record ViagemResponseDTO(
                 viagem.getPagoAdicional(),
                 viagem.getStatus(),
                 viagem.getObservacao(),
-                viagem.getComprovantes()
+                viagem.getComprovantes(),
+                viagem.getDatas() != null
+                        ? viagem.getDatas().stream().map(ViagemDataItemDTO::new).toList()
+                        : List.of()
         );
     }
 }

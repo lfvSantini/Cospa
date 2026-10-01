@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS locais_cliente (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    cliente_id BIGINT NOT NULL,
+    nome_local VARCHAR(150) NOT NULL,
+    endereco VARCHAR(255) NOT NULL,
+    cep VARCHAR(20) NULL,
+    cidade VARCHAR(100) NOT NULL,
+    uf VARCHAR(10) NOT NULL,
+    complemento VARCHAR(150) NULL,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_locais_cliente_cliente FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -49,7 +49,7 @@ public class SecurityConfig {
                             "/api/auth",
                             "/api/auth/**",
                             "/api/admin/backup/**",
-                            "/api/admin/otimizacao/**", // Liberado aqui
+                            "/api/admin/otimizacao/**",
                             "/api/veiculos",
                             "/api/veiculos/**",
                             "/api/motoristas",
@@ -59,7 +59,9 @@ public class SecurityConfig {
                             "/api/fornecedores",
                             "/api/fornecedores/**",
                             "/api/viagens",
-                            "/api/viagens/**"
+                            "/api/viagens/**",
+                            "/api/rotas",
+                            "/api/rotas/**"
                     ).permitAll();
                     req.anyRequest().authenticated();
                 })

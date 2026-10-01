@@ -10,7 +10,11 @@ export type StatusViagem =
   | 'A PAGAR' 
   | 'ADIANTAMENTO PAGO' 
   | 'SALDO PAGO' 
-  | 'FINALIZADO';
+  | 'FINALIZADO'
+  | 'CANCELADA';
+
+export type TipoOperacao = 'Transferência' | 'Coleta' | 'Entrega' | 'Devolução';
+export type TipoAdicional = 'Ajudante' | 'Diária' | 'Multa' | 'Complemento de frete';
 
 export interface Comprovante {
   id?: number;
@@ -18,6 +22,14 @@ export interface Comprovante {
   urlArquivo: string;
   descricao?: string;
   dataEnvio?: string;
+}
+
+export interface ViagemDataItem {
+  id?: number;
+  tipo: 'COLETA' | 'ENTREGA';
+  dataPrevista?: string;
+  dataReal?: string;
+  ordem?: number;
 }
 
 export interface Viagem {
@@ -37,6 +49,9 @@ export interface Viagem {
   destino_nome?: string;
   localEntrega?: string;
   local_entrega?: string;
+
+  tipoOperacao?: TipoOperacao;
+  tipo_operacao?: TipoOperacao;
   
   perfilVeiculo?: string;
   perfil_veiculo?: string;
@@ -70,10 +85,16 @@ export interface Viagem {
   valor_a_receber?: number;
   valorAdicionalReceber?: number;
   valor_adicional_receber?: number;
+  tipoAdicionalReceber?: TipoAdicional;
+  tipo_adicional_receber?: TipoAdicional;
+
   valorAPagar?: number;
   valor_a_pagar?: number;
   valorAdicionalPagar?: number;
   valor_adicional_pagar?: number;
+  tipoAdicionalPagar?: TipoAdicional;
+  tipo_adicional_pagar?: TipoAdicional;
+
   valorAdicionalAgencia?: number;
   valor_adicional_agencia?: number;
   valorAgenciador?: number;
@@ -106,4 +127,5 @@ export interface Viagem {
   status: StatusViagem;
   observacao?: string;
   comprovantes?: Comprovante[];
+  datas?: ViagemDataItem[];
 }

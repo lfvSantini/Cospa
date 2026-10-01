@@ -44,6 +44,9 @@ public class Veiculo {
     @Column(name = "data_vencimento", length = 50)
     private String dataVencimento;
 
+    @Column(name = "cidade_uf", length = 100)
+    private String cidadeUf;
+
     @Column(length = 255)
     private String fornecedor;
 
@@ -107,6 +110,9 @@ public class Veiculo {
 
     public String getDataVencimento() { return dataVencimento; }
     public void setDataVencimento(String dataVencimento) { this.dataVencimento = dataVencimento; }
+
+    public String getCidadeUf() { return cidadeUf; }
+    public void setCidadeUf(String cidadeUf) { this.cidadeUf = cidadeUf; }
 
     public String getFornecedor() { return fornecedor; }
     public void setFornecedor(String fornecedor) { this.fornecedor = fornecedor; }

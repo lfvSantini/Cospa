@@ -3,6 +3,7 @@ package com.cospa.api.service;
 import com.cospa.api.dto.ViagemRequestDTO;
 import com.cospa.api.model.StatusViagem;
 import com.cospa.api.model.Viagem;
+import com.cospa.api.model.ViagemData;
 import com.cospa.api.repository.ViagemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -113,6 +114,7 @@ public class ViagemService {
         v.setCliente(dto.getCliente());
         v.setLocalColeta(dto.getLocalColeta());
         v.setLocalEntrega(dto.getLocalEntrega());
+        v.setTipoOperacao(dto.getTipoOperacao());
         v.setOrigem(dto.getOrigem());
         v.setDestino(dto.getDestino());
         v.setOrigemNome(dto.getOrigemNome());
@@ -138,7 +140,9 @@ public class ViagemService {
         v.setValorAReceber(dto.getValorAReceber() != null ? dto.getValorAReceber() : BigDecimal.ZERO);
         v.setValorAPagar(dto.getValorAPagar() != null ? dto.getValorAPagar() : BigDecimal.ZERO);
         v.setValorAdicionalReceber(dto.getValorAdicionalReceber() != null ? dto.getValorAdicionalReceber() : BigDecimal.ZERO);
+        v.setTipoAdicionalReceber(dto.getTipoAdicionalReceber());
         v.setValorAdicionalPagar(dto.getValorAdicionalPagar() != null ? dto.getValorAdicionalPagar() : BigDecimal.ZERO);
+        v.setTipoAdicionalPagar(dto.getTipoAdicionalPagar());
         v.setValorAdicionalAgencia(dto.getValorAdicionalAgencia() != null ? dto.getValorAdicionalAgencia() : BigDecimal.ZERO);
         v.setValorAgenciador(dto.getValorAgenciador() != null ? dto.getValorAgenciador() : BigDecimal.ZERO);
         v.setValorEspecialistaCospa(dto.getValorEspecialistaCospa() != null ? dto.getValorEspecialistaCospa() : BigDecimal.ZERO);
@@ -161,6 +165,22 @@ public class ViagemService {
         v.setPagoAdicional(dto.getPagoAdicional() != null ? dto.getPagoAdicional() : false);
 
         v.setObservacao(dto.getObservacao());
+
+        // Sincronização da lista relacional 1:N de datas
+        if (dto.getDatas() != null) {
+            v.getDatas().clear();
+            int idx = 0;
+            for (var item : dto.getDatas()) {
+                ViagemData vd = new ViagemData(
+                        item.tipo() != null ? item.tipo().toUpperCase() : "COLETA",
+                        item.dataPrevista() != null ? item.dataPrevista().trim() : "",
+                        item.dataReal() != null ? item.dataReal().trim() : "",
+                        idx++,
+                        v
+                );
+                v.getDatas().add(vd);
+            }
+        }
 
         if (dto.getStatus() != null) {
             v.setStatus(dto.getStatus());

@@ -18,6 +18,7 @@ export interface Veiculo {
   numeroPaletes?: string;
   anoFabricacao?: string;
   dataVencimento?: string;
+  cidadeUf?: string;
   fornecedor?: string;
   agenciador?: string;
   numeroAntt?: string;

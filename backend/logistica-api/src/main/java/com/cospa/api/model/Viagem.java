@@ -34,6 +34,10 @@ public class Viagem {
     @Column(name = "local_entrega", length = 255)
     private String localEntrega;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_operacao", length = 30)
+    private TipoOperacao tipoOperacao;
+
     @Column(columnDefinition = "TEXT")
     private String origem;
 
@@ -97,9 +101,17 @@ public class Viagem {
     @Column(name = "valor_adicional_receber", precision = 10, scale = 2)
     private BigDecimal valorAdicionalReceber = BigDecimal.ZERO;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_adicional_receber", length = 50)
+    private TipoAdicional tipoAdicionalReceber;
+
     @Builder.Default
     @Column(name = "valor_adicional_pagar", precision = 10, scale = 2)
     private BigDecimal valorAdicionalPagar = BigDecimal.ZERO;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_adicional_pagar", length = 50)
+    private TipoAdicional tipoAdicionalPagar;
 
     @Builder.Default
     @Column(name = "valor_adicional_agencia", precision = 10, scale = 2)
@@ -157,4 +169,18 @@ public class Viagem {
     @JsonManagedReference
     @Builder.Default
     private List<Comprovante> comprovantes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "viagem", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @Builder.Default
+    private List<ViagemData> datas = new ArrayList<>();
+
+    public List<ViagemData> getDatas() {
+        if (datas == null) datas = new ArrayList<>();
+        return datas;
+    }
+
+    public void setDatas(List<ViagemData> datas) {
+        this.datas = datas;
+    }
 }

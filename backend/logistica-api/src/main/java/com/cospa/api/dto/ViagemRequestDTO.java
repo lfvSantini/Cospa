@@ -1,12 +1,15 @@
 package com.cospa.api.dto;
 
 import com.cospa.api.model.StatusViagem;
+import com.cospa.api.model.TipoAdicional;
+import com.cospa.api.model.TipoOperacao;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -25,6 +28,7 @@ public class ViagemRequestDTO {
     private String destinoNome;
     private String localColeta;
     private String localEntrega;
+    private TipoOperacao tipoOperacao;
 
     private String perfilVeiculo;
     private String carroceriaVeiculo;
@@ -45,7 +49,9 @@ public class ViagemRequestDTO {
     private BigDecimal valorAReceber;
     private BigDecimal valorAPagar;
     private BigDecimal valorAdicionalReceber;
+    private TipoAdicional tipoAdicionalReceber;
     private BigDecimal valorAdicionalPagar;
+    private TipoAdicional tipoAdicionalPagar;
     private BigDecimal valorAdicionalAgencia;
     private BigDecimal valorAgenciador;
     private BigDecimal valorEspecialistaCospa;
@@ -63,4 +69,6 @@ public class ViagemRequestDTO {
 
     private StatusViagem status;
     private String observacao;
+
+    private List<ViagemDataItemDTO> datas;
 }

@@ -9,18 +9,22 @@ import { MotoristaService } from '../../core/services/motorista';
 import { ClienteService } from '../../core/services/cliente';
 import { FornecedorService } from '../../core/services/fornecedor';
 import { VeiculoService } from '../../core/services/veiculo';
-import { Viagem, StatusViagem } from '../../core/models/viagem.model';
+import { RotaService, LocalCliente } from '../../core/services/rota.service';
+import { Viagem, StatusViagem, TipoOperacao, TipoAdicional, ViagemDataItem } from '../../core/models/viagem.model';
 import { Motorista } from '../../core/models/motorista.model';
 import { Cliente } from '../../core/models/cliente.model';
 import { Fornecedor } from '../../core/models/fornecedor.model';
 import { Veiculo } from '../../core/models/veiculo.model';
 import { environment } from '../../../environments/environment';
 
-export type TipoPagamentoRealizado = 'Não Realizado' | 'Adiantamento pago' | 'Saldo pago';
-
 export interface PontoRota {
   local: string;
   endereco: string;
+}
+
+export interface DataItemForm {
+  dataPrevista: string;
+  dataReal: string;
 }
 
 export interface ComprovanteItem {
@@ -83,8 +87,6 @@ export interface MotoristaModel {
   fornecedorVinculado: string;
   situacao: 'ATIVO' | 'INATIVO';
   informacoesAdicionais?: string;
-  cnhFile?: File | null;
-  cnhPreviewName?: string;
   documentos?: ComprovanteItem[];
 }
 
@@ -100,6 +102,7 @@ export interface VeiculoModel {
   numeroPaletes: string;
   anoFabricacao: string;
   dataVencimento: string;
+  cidadeUf: string;
   fornecedor: string;
   agenciador: string;
   numeroAntt: string;
@@ -107,8 +110,6 @@ export interface VeiculoModel {
   idRastreador: string;
   tagPedagio: string;
   situacao: 'ATIVO' | 'INATIVO';
-  crlvFile?: File | null;
-  crlvPreviewName?: string;
   documentos?: ComprovanteItem[];
 }
 
@@ -128,6 +129,7 @@ export class DashboardComponent implements OnInit {
   private clienteService = inject(ClienteService);
   private fornecedorService = inject(FornecedorService);
   private veiculoService = inject(VeiculoService);
+  private rotaService = inject(RotaService);
   private cdr = inject(ChangeDetectorRef);
 
   uploadsUrl = environment.uploadsUrl || environment.apiUrl;
@@ -157,7 +159,7 @@ export class DashboardComponent implements OnInit {
     obs: ''
   };
 
-  modalType: 'TRIP_FORM' | 'PHOTO' | 'OBS' | 'CANCELAR' | 'FORNECEDOR' | 'CLIENTE' | 'MOTORISTA' | 'VEICULO' | 'MOTORISTA_PHOTO' | 'VEICULO_PHOTO' | null = null;
+  modalType: 'TRIP_FORM' | 'PHOTO' | 'OBS' | 'CANCELAR' | 'FORNECEDOR' | 'CLIENTE' | 'MOTORISTA' | 'VEICULO' | 'MOTORISTA_PHOTO' | 'VEICULO_PHOTO' | 'ROTA' | null = null;
   private previousModalType: 'PHOTO' | 'MOTORISTA_PHOTO' | 'VEICULO_PHOTO' | null = null;
 
   activeManageTab: 'CADASTRAR' | 'LISTAR' = 'CADASTRAR';
@@ -171,8 +173,6 @@ export class DashboardComponent implements OnInit {
   isDraggingComprovante: boolean = false;
   isDraggingMotoristaDoc: boolean = false;
   isDraggingVeiculoDoc: boolean = false;
-  isDraggingCnh: boolean = false;
-  isDraggingVeiculoCrlv: boolean = false;
 
   novoComprovante = {
     descricao: '',
@@ -217,6 +217,13 @@ export class DashboardComponent implements OnInit {
   veiculoForm: VeiculoModel = this.getEmptyVeiculo();
   isEditingVeiculo: boolean = false;
 
+  // Gestão de Rotas & Locais
+  rotasList: LocalCliente[] = [];
+  filteredRotas: LocalCliente[] = [];
+  locaisDoClienteSelecionado: LocalCliente[] = [];
+  rotaForm: LocalCliente = this.getEmptyRota();
+  isEditingRota: boolean = false;
+
   tiposVeiculosOpcoes: string[] = [
     'Carro de passeio', 'Fiorino', 'Van', 'HR', 'Vuc', '3.4',
     'Toco', 'Truck', 'Bitruck', 'Cavalo', 'Bau reboque', 'Bitrem', 'Rodotrem'
@@ -231,9 +238,18 @@ export class DashboardComponent implements OnInit {
     'Nenhum', 'Sem Parar', 'Veloe', 'ConectCar', 'Move Mais', 'Taggy', 'Outro'
   ];
 
+  tiposOperacaoOpcoes: TipoOperacao[] = [
+    'Transferência', 'Coleta', 'Entrega', 'Devolução'
+  ];
+
+  tiposAdicionalOpcoes: TipoAdicional[] = [
+    'Ajudante', 'Diária', 'Multa', 'Complemento de frete'
+  ];
+
   tripForm = {
     id: '', 
     clienteSelect: '',
+    tipoOperacao: 'Coleta' as TipoOperacao,
     origens: [{ local: '', endereco: '' }] as PontoRota[],
     destinos: [{ local: '', endereco: '' }] as PontoRota[],
     perfilVeiculo: '',
@@ -244,18 +260,17 @@ export class DashboardComponent implements OnInit {
     agencia: 'Frota Própria',
     agenciador: '',
     especialistaCospa: '',
-    coletaPrevista: '',
-    coletaReal: '',
-    entregaPrevista: '',
-    entregaReal: '',
+    datasColetas: [{ dataPrevista: '', dataReal: '' }] as DataItemForm[],
+    datasEntregas: [{ dataPrevista: '', dataReal: '' }] as DataItemForm[],
     valorReceber: 0,
     adicionalReceber: 0,
+    tipoAdicionalReceber: '' as TipoAdicional | '',
     valorPagarMotorista: 0,
     adicionalPagarMotorista: 0,
+    tipoAdicionalPagar: '' as TipoAdicional | '',
     valorAgenciador: 0,
     valorEspecialistaCospa: 0,
     pagamentoLiberado: false,
-    pagamentoRealizado: 'Não Realizado' as TipoPagamentoRealizado,
     dataAdiantamento: '',
     pagoAdiantamento: false,
     dataSaldo: '',
@@ -323,18 +338,6 @@ export class DashboardComponent implements OnInit {
               this.novoDocVeiculo.nome = 'Documento Colado';
             }
             this.activeVeiculoPhotoTab = 'ADICIONAR';
-            this.cdr.detectChanges();
-            event.preventDefault();
-            break;
-          } else if (this.modalType === 'MOTORISTA') {
-            this.motoristaForm.cnhFile = pastedFile;
-            this.motoristaForm.cnhPreviewName = pastedFile.name;
-            this.cdr.detectChanges();
-            event.preventDefault();
-            break;
-          } else if (this.modalType === 'VEICULO') {
-            this.veiculoForm.crlvFile = pastedFile;
-            this.veiculoForm.crlvPreviewName = pastedFile.name;
             this.cdr.detectChanges();
             event.preventDefault();
             break;
@@ -417,8 +420,6 @@ export class DashboardComponent implements OnInit {
     this.isDraggingComprovante = false;
     this.isDraggingMotoristaDoc = false;
     this.isDraggingVeiculoDoc = false;
-    this.isDraggingCnh = false;
-    this.isDraggingVeiculoCrlv = false;
     this.cdr.detectChanges();
   }
 
@@ -491,6 +492,233 @@ export class DashboardComponent implements OnInit {
     return this.sanitizarUrlArquivo(url);
   }
 
+  // Preenchimentos automáticos com suporte a seleção direta e via Datalist
+  onMotoristaSelectChange(): void {
+    if (!this.tripForm.motorista) return;
+    let nomeBusca = this.tripForm.motorista.trim().toLowerCase();
+
+    if (nomeBusca.includes(' (cpf:')) {
+      nomeBusca = nomeBusca.split(' (cpf:')[0].trim();
+      const motEncontrado = this.motoristasList.find(m => m.nome.toLowerCase() === nomeBusca);
+      if (motEncontrado) {
+        this.tripForm.motorista = motEncontrado.nome;
+      }
+    }
+
+    const mot = this.motoristasList.find(m => m.nome.toLowerCase() === nomeBusca);
+    if (mot && mot.fornecedorVinculado) {
+      this.tripForm.agencia = mot.fornecedorVinculado;
+      
+      // Reseta a placa se ela não pertencer aos veículos do novo fornecedor
+      const veiculoValido1 = this.veiculosFiltradosPorFornecedor.some(v => v.placa === this.tripForm.placa);
+      if (!veiculoValido1) {
+        this.tripForm.placa = '';
+      }
+      const veiculoValido2 = this.veiculosFiltradosPorFornecedor.some(v => v.placa === this.tripForm.placaSecundaria);
+      if (!veiculoValido2) {
+        this.tripForm.placaSecundaria = '';
+      }
+    }
+    this.cdr.detectChanges();
+  }
+
+  // Getter reativo para filtrar veículos do fornecedor do motorista
+  get veiculosFiltradosPorFornecedor(): VeiculoModel[] {
+    if (!this.tripForm.agencia || this.tripForm.agencia.trim() === '') {
+      return this.veiculosList;
+    }
+    const fornecedorAlvo = this.tripForm.agencia.trim().toLowerCase();
+    const filtrados = this.veiculosList.filter(
+      v => (v.fornecedor || '').trim().toLowerCase() === fornecedorAlvo
+    );
+    return filtrados.length > 0 ? filtrados : this.veiculosList;
+  }
+
+  onPlacaSelectChange(): void {
+    if (!this.tripForm.placa) return;
+    let placaBusca = this.tripForm.placa.trim().toUpperCase();
+
+    if (placaBusca.includes(' - ')) {
+      placaBusca = placaBusca.split(' - ')[0].trim();
+      this.tripForm.placa = placaBusca;
+    }
+
+    const veic = this.veiculosList.find(v => v.placa.toUpperCase() === placaBusca);
+    if (veic && veic.fornecedor) {
+      this.tripForm.agenciador = veic.fornecedor;
+    }
+  }
+
+  // Gestão dinâmica de múltiplas datas
+  addColetaData(): void {
+    this.tripForm.datasColetas.push({ dataPrevista: '', dataReal: '' });
+    this.cdr.detectChanges();
+  }
+
+  removeColetaData(index: number): void {
+    if (this.tripForm.datasColetas.length > 1) {
+      this.tripForm.datasColetas.splice(index, 1);
+      this.cdr.detectChanges();
+    }
+  }
+
+  addEntregaData(): void {
+    this.tripForm.datasEntregas.push({ dataPrevista: '', dataReal: '' });
+    this.cdr.detectChanges();
+  }
+
+  removeEntregaData(index: number): void {
+    if (this.tripForm.datasEntregas.length > 1) {
+      this.tripForm.datasEntregas.splice(index, 1);
+      this.cdr.detectChanges();
+    }
+  }
+
+  // ==================== GESTÃO DE ROTAS & LOCAIS ====================
+  getEmptyRota(): LocalCliente {
+    return {
+      clienteId: 0,
+      nomeLocal: '',
+      endereco: '',
+      cep: '',
+      cidade: '',
+      uf: '',
+      complemento: '',
+      ativo: true
+    };
+  }
+
+  openGerenciarRotas(): void {
+    this.rotaForm = this.getEmptyRota();
+    this.isEditingRota = false;
+    this.activeManageTab = 'CADASTRAR';
+    this.modalType = 'ROTA';
+    this.isManageOpen = false;
+    this.carregarRotas();
+    this.cdr.detectChanges();
+  }
+
+  carregarRotas(): void {
+    this.rotaService.listar().subscribe({
+      next: (data) => {
+        this.rotasList = data || [];
+        this.filtrarRotas();
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Erro ao carregar rotas:', err)
+    });
+  }
+
+  filtrarRotas(): void {
+    const t = (this.manageSearchTerm || '').toLowerCase().trim();
+    if (!t) {
+      this.filteredRotas = [...this.rotasList];
+      return;
+    }
+    this.filteredRotas = this.rotasList.filter(r =>
+      (r.nomeLocal || '').toLowerCase().includes(t) ||
+      (r.clienteNome || '').toLowerCase().includes(t) ||
+      (r.cidade || '').toLowerCase().includes(t) ||
+      (r.endereco || '').toLowerCase().includes(t)
+    );
+  }
+
+  salvarRota(): void {
+    if (!this.rotaForm.clienteId || !this.rotaForm.nomeLocal.trim() || !this.rotaForm.endereco.trim()) {
+      alert('Selecione o cliente e informe o nome do local e o endereço.');
+      return;
+    }
+
+    const payload: LocalCliente = {
+      ...this.rotaForm,
+      clienteId: Number(this.rotaForm.clienteId),
+      nomeLocal: this.rotaForm.nomeLocal.toUpperCase().trim(),
+      endereco: this.rotaForm.endereco.toUpperCase().trim(),
+      cidade: (this.rotaForm.cidade || '').toUpperCase().trim(),
+      uf: (this.rotaForm.uf || '').toUpperCase().trim(),
+      complemento: (this.rotaForm.complemento || '').toUpperCase().trim()
+    };
+
+    this.rotaService.salvar(payload).subscribe({
+      next: () => {
+        this.carregarRotas();
+        this.activeManageTab = 'LISTAR';
+        this.rotaForm = this.getEmptyRota();
+        this.isEditingRota = false;
+        if (this.tripForm.clienteSelect) {
+          this.onClienteSelectChange(this.tripForm.clienteSelect);
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => alert('Erro ao salvar local da rota: ' + (err.error?.message || err.message))
+    });
+  }
+
+  editarRota(r: LocalCliente): void {
+    this.rotaForm = { ...r };
+    this.isEditingRota = true;
+    this.activeManageTab = 'CADASTRAR';
+    this.cdr.detectChanges();
+  }
+
+  cancelarEdicaoRota(): void {
+    this.rotaForm = this.getEmptyRota();
+    this.isEditingRota = false;
+    this.cdr.detectChanges();
+  }
+
+  excluirRota(id?: number): void {
+    if (!id || !confirm('Deseja realmente excluir este local de rota?')) return;
+    this.rotaService.deletar(id).subscribe({
+      next: () => {
+        this.carregarRotas();
+        if (this.tripForm.clienteSelect) {
+          this.onClienteSelectChange(this.tripForm.clienteSelect);
+        }
+      },
+      error: () => alert('Erro ao excluir local da rota.')
+    });
+  }
+
+  onClienteSelectChange(nomeCliente: string): void {
+    if (!nomeCliente || !nomeCliente.trim()) {
+      this.locaisDoClienteSelecionado = [];
+      return;
+    }
+    const nomeLimpo = nomeCliente.trim();
+    this.rotaService.buscarPorNomeCliente(nomeLimpo).subscribe({
+      next: (locais) => {
+        this.locaisDoClienteSelecionado = locais || [];
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Erro ao buscar locais do cliente selecionado:', err)
+    });
+  }
+
+  onOrigemLocalSelect(origIndex: number, nomeLocal: string): void {
+    const encontrado = this.locaisDoClienteSelecionado.find(
+      l => l.nomeLocal.trim().toUpperCase() === (nomeLocal || '').trim().toUpperCase()
+    );
+    if (encontrado) {
+      const compl = encontrado.complemento ? ` - ${encontrado.complemento}` : '';
+      const cepStr = encontrado.cep ? `, CEP: ${encontrado.cep}` : '';
+      this.tripForm.origens[origIndex].local = encontrado.nomeLocal;
+      this.tripForm.origens[origIndex].endereco = `${encontrado.endereco}${compl} - ${encontrado.cidade}/${encontrado.uf}${cepStr}`;
+    }
+  }
+
+  onDestinoLocalSelect(destIndex: number, nomeLocal: string): void {
+    const encontrado = this.locaisDoClienteSelecionado.find(
+      l => l.nomeLocal.trim().toUpperCase() === (nomeLocal || '').trim().toUpperCase()
+    );
+    if (encontrado) {
+      const compl = encontrado.complemento ? ` - ${encontrado.complemento}` : '';
+      const cepStr = encontrado.cep ? `, CEP: ${encontrado.cep}` : '';
+      this.tripForm.destinos[destIndex].local = encontrado.nomeLocal;
+      this.tripForm.destinos[destIndex].endereco = `${encontrado.endereco}${compl} - ${encontrado.cidade}/${encontrado.uf}${cepStr}`;
+    }
+  }
+
   carregarViagens(): void {
     this.isLoading = true;
     this.viagemService.listarTodas().subscribe({
@@ -539,7 +767,6 @@ export class DashboardComponent implements OnInit {
 
     const rawNumOp = v.numeroOperacional ?? v.numero_operacional ?? v.numeroCte ?? '';
     const numOpStr = (rawNumOp !== null && rawNumOp !== undefined) ? String(rawNumOp).trim() : '';
-    
     const displayId = numOpStr ? numOpStr : `#${v.id}`;
 
     return {
@@ -959,7 +1186,6 @@ export class DashboardComponent implements OnInit {
       fornecedorVinculado: '', 
       situacao: 'ATIVO', 
       informacoesAdicionais: '', 
-      cnhPreviewName: '', 
       documentos: [] 
     };
   }
@@ -1005,10 +1231,7 @@ export class DashboardComponent implements OnInit {
     };
 
     this.motoristaService.salvar(payload).subscribe({
-      next: (motSalvo: Motorista) => {
-        if (this.motoristaForm.cnhFile && motSalvo.id) {
-          this.motoristaService.uploadDocumento(motSalvo.id, 'CNH', this.motoristaForm.cnhFile).subscribe();
-        }
+      next: () => {
         this.carregarMotoristas();
         this.activeManageTab = 'LISTAR';
         this.cancelarEdicaoMotorista();
@@ -1041,18 +1264,6 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  onCnhDrop(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDraggingCnh = false;
-    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
-      const file = event.dataTransfer.files[0];
-      this.motoristaForm.cnhFile = file;
-      this.motoristaForm.cnhPreviewName = file.name;
-      this.cdr.detectChanges();
-    }
-  }
-
   // ==================== VEÍCULOS ====================
   carregarVeiculos(): void {
     this.veiculoService.listar().subscribe({
@@ -1069,6 +1280,7 @@ export class DashboardComponent implements OnInit {
           numeroPaletes: v.numeroPaletes || '',
           anoFabricacao: v.anoFabricacao || '',
           dataVencimento: v.dataVencimento || '',
+          cidadeUf: v.cidadeUf || v.cidade_uf || '',
           fornecedor: v.fornecedor || 'Frota Própria',
           agenciador: v.agenciador || '',
           numeroAntt: v.numeroAntt || '',
@@ -1101,6 +1313,7 @@ export class DashboardComponent implements OnInit {
       (v.placa || '').toLowerCase().includes(t) ||
       (v.tipoVeiculo || '').toLowerCase().includes(t) ||
       (v.tipoCarroceria || '').toLowerCase().includes(t) ||
+      (v.cidadeUf || '').toLowerCase().includes(t) ||
       (v.fornecedor || '').toLowerCase().includes(t) ||
       (v.agenciador || '').toLowerCase().includes(t) ||
       (v.idRastreador || '').toLowerCase().includes(t)
@@ -1120,6 +1333,7 @@ export class DashboardComponent implements OnInit {
       numeroPaletes: '',
       anoFabricacao: '',
       dataVencimento: '',
+      cidadeUf: '',
       fornecedor: 'Frota Própria',
       agenciador: '',
       numeroAntt: '',
@@ -1127,8 +1341,6 @@ export class DashboardComponent implements OnInit {
       idRastreador: '',
       tagPedagio: 'Nenhum',
       situacao: 'ATIVO',
-      crlvFile: null,
-      crlvPreviewName: '',
       documentos: []
     };
   }
@@ -1172,6 +1384,7 @@ export class DashboardComponent implements OnInit {
       numeroPaletes: this.veiculoForm.numeroPaletes || '',
       anoFabricacao: this.veiculoForm.anoFabricacao || '',
       dataVencimento: this.veiculoForm.dataVencimento || '',
+      cidadeUf: (this.veiculoForm.cidadeUf || '').toUpperCase().trim(),
       fornecedor: this.veiculoForm.fornecedor || 'Frota Própria',
       agenciador: this.veiculoForm.agenciador || '',
       numeroAntt: this.veiculoForm.numeroAntt || '',
@@ -1182,13 +1395,7 @@ export class DashboardComponent implements OnInit {
     };
 
     this.veiculoService.salvar(payload).subscribe({
-      next: (veicSalvo: any) => {
-        const veicId = veicSalvo?.id || payload.id;
-        if (this.veiculoForm.crlvFile && veicId) {
-          this.veiculoService.uploadDocumento(veicId, 'CRLV', this.veiculoForm.crlvFile).subscribe({
-            next: () => this.carregarVeiculos()
-          });
-        }
+      next: () => {
         this.carregarVeiculos();
         this.activeManageTab = 'LISTAR';
         this.cancelarEdicaoVeiculo();
@@ -1203,7 +1410,7 @@ export class DashboardComponent implements OnInit {
   }
 
   editarVeiculo(v: VeiculoModel): void {
-    this.veiculoForm = { ...v, crlvFile: null, crlvPreviewName: '' };
+    this.veiculoForm = { ...v };
     this.isEditingVeiculo = true;
     this.activeManageTab = 'CADASTRAR';
     this.cdr.detectChanges();
@@ -1223,18 +1430,6 @@ export class DashboardComponent implements OnInit {
     this.veiculoForm = this.getEmptyVeiculo();
     this.isEditingVeiculo = false;
     this.cdr.detectChanges();
-  }
-
-  onVeiculoCrlvDrop(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDraggingVeiculoCrlv = false;
-    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
-      const file = event.dataTransfer.files[0];
-      this.veiculoForm.crlvFile = file;
-      this.veiculoForm.crlvPreviewName = file.name;
-      this.cdr.detectChanges();
-    }
   }
 
   openVeiculoFotosModal(v: VeiculoModel): void {
@@ -1596,9 +1791,11 @@ export class DashboardComponent implements OnInit {
 
   openNovaViagemModal(): void {
     this.isEditing = false;
+    this.locaisDoClienteSelecionado = [];
     this.tripForm = {
       id: '', 
       clienteSelect: '',
+      tipoOperacao: 'Coleta',
       origens: [{ local: '', endereco: '' }],
       destinos: [{ local: '', endereco: '' }],
       perfilVeiculo: '',
@@ -1609,18 +1806,17 @@ export class DashboardComponent implements OnInit {
       agencia: 'Frota Própria',
       agenciador: '',
       especialistaCospa: '',
-      coletaPrevista: '',
-      coletaReal: '',
-      entregaPrevista: '',
-      entregaReal: '',
+      datasColetas: [{ dataPrevista: '', dataReal: '' }],
+      datasEntregas: [{ dataPrevista: '', dataReal: '' }],
       valorReceber: 0,
       adicionalReceber: 0,
+      tipoAdicionalReceber: '',
       valorPagarMotorista: 0,
       adicionalPagarMotorista: 0,
+      tipoAdicionalPagar: '',
       valorAgenciador: 0,
       valorEspecialistaCospa: 0,
       pagamentoLiberado: false,
-      pagamentoRealizado: 'Não Realizado',
       dataAdiantamento: '',
       pagoAdiantamento: false,
       dataSaldo: '',
@@ -1660,9 +1856,47 @@ export class DashboardComponent implements OnInit {
 
     const valorParaInput = item.numeroOperacional || item.rawId.toString();
 
+    // Mapeamento dinâmico de múltiplas datas
+    let arrColetas: DataItemForm[] = [];
+    let arrEntregas: DataItemForm[] = [];
+
+    if (raw?.datas && raw.datas.length > 0) {
+      arrColetas = raw.datas
+        .filter((d: any) => (d.tipo || '').toUpperCase() === 'COLETA')
+        .map((d: any) => ({ dataPrevista: d.dataPrevista || '', dataReal: d.dataReal || '' }));
+      arrEntregas = raw.datas
+        .filter((d: any) => (d.tipo || '').toUpperCase() === 'ENTREGA')
+        .map((d: any) => ({ dataPrevista: d.dataPrevista || '', dataReal: d.dataReal || '' }));
+    }
+
+    if (arrColetas.length === 0) {
+      const coletasPrev = (raw?.dataColetaPrevista || '').split(';').map((s: string) => s.trim());
+      const coletasReal = (raw?.dataColetaReal || '').split(';').map((s: string) => s.trim());
+      const totalC = Math.max(coletasPrev.length, coletasReal.length, 1);
+      for (let k = 0; k < totalC; k++) {
+        arrColetas.push({
+          dataPrevista: coletasPrev[k] === 'A confirmar' ? '' : (coletasPrev[k] || ''),
+          dataReal: coletasReal[k] === 'A confirmar' ? '' : (coletasReal[k] || '')
+        });
+      }
+    }
+
+    if (arrEntregas.length === 0) {
+      const entregasPrev = (raw?.dataEntregaPrevista || '').split(';').map((s: string) => s.trim());
+      const entregasReal = (raw?.dataEntregaReal || '').split(';').map((s: string) => s.trim());
+      const totalE = Math.max(entregasPrev.length, entregasReal.length, 1);
+      for (let k = 0; k < totalE; k++) {
+        arrEntregas.push({
+          dataPrevista: entregasPrev[k] === 'A confirmar' ? '' : (entregasPrev[k] || ''),
+          dataReal: entregasReal[k] === 'A confirmar' ? '' : (entregasReal[k] || '')
+        });
+      }
+    }
+
     this.tripForm = {
       id: valorParaInput,
       clienteSelect: item.cliente,
+      tipoOperacao: raw?.tipoOperacao || raw?.tipo_operacao || 'Coleta',
       origens: origensMapeadas.length > 0 ? origensMapeadas : [{ local: '', endereco: '' }],
       destinos: destinosMapeados.length > 0 ? destinosMapeados : [{ local: '', endereco: '' }],
       perfilVeiculo: raw?.perfilVeiculo || raw?.perfil_veiculo || '',
@@ -1673,18 +1907,17 @@ export class DashboardComponent implements OnInit {
       agencia: raw?.fornecedorAgencia || raw?.fornecedor_agencia || 'Frota Própria',
       agenciador: raw?.agenciador || '',
       especialistaCospa: raw?.especialistaCospa || raw?.especialista_cospa || '',
-      coletaPrevista: (raw?.dataColetaPrevista || raw?.data_coleta_prevista || '') === 'A confirmar' ? '' : (raw?.dataColetaPrevista || raw?.data_coleta_prevista || ''),
-      coletaReal: (raw?.dataColetaReal || raw?.data_coleta_real || '') === 'A confirmar' ? '' : (raw?.dataColetaReal || raw?.data_coleta_real || ''),
-      entregaPrevista: (raw?.dataEntregaPrevista || raw?.data_entrega_prevista || '') === 'A confirmar' ? '' : (raw?.dataEntregaPrevista || raw?.data_entrega_prevista || ''),
-      entregaReal: (raw?.dataEntregaReal || raw?.data_entrega_real || '') === 'A confirmar' ? '' : (raw?.dataEntregaReal || raw?.data_entrega_real || ''),
+      datasColetas: arrColetas.length > 0 ? arrColetas : [{ dataPrevista: '', dataReal: '' }],
+      datasEntregas: arrEntregas.length > 0 ? arrEntregas : [{ dataPrevista: '', dataReal: '' }],
       valorReceber: raw?.valorAReceber || raw?.valor_a_receber || 0,
       adicionalReceber: raw?.valorAdicionalReceber || raw?.valor_adicional_receber || 0,
+      tipoAdicionalReceber: raw?.tipoAdicionalReceber || raw?.tipo_adicional_receber || '',
       valorPagarMotorista: raw?.valorAPagar || raw?.valor_a_pagar || 0,
       adicionalPagarMotorista: raw?.valorAdicionalPagar || raw?.valor_adicional_pagar || 0,
+      tipoAdicionalPagar: raw?.tipoAdicionalPagar || raw?.tipo_adicional_pagar || '',
       valorAgenciador: raw?.valorAgenciador || raw?.valor_agenciador || raw?.valorAdicionalAgencia || raw?.valor_adicional_agencia || 0,
       valorEspecialistaCospa: raw?.valorEspecialistaCospa || raw?.valor_especialista_cospa || 0,
       pagamentoLiberado: raw?.pagamentoLiberado ?? raw?.pagamento_liberado ?? false,
-      pagamentoRealizado: (raw?.pagamentoRealizadoStatus || raw?.pagamento_realizado_status as TipoPagamentoRealizado) || 'Não Realizado',
       dataAdiantamento: raw?.dataAdiantamento || raw?.data_adiantamento || '',
       pagoAdiantamento: !!(raw?.pagoAdiantamento ?? raw?.pago_adiantamento ?? false),
       dataSaldo: raw?.dataSaldo || raw?.data_saldo || '',
@@ -1694,6 +1927,10 @@ export class DashboardComponent implements OnInit {
       statusInicial: item.status,
       observacao: item.obs === '-' ? '' : (item.obs || '')
     };
+
+    if (item.cliente) {
+      this.onClienteSelectChange(item.cliente);
+    }
 
     this.modalType = 'TRIP_FORM';
     this.closeRowActions();
@@ -1732,13 +1969,18 @@ export class DashboardComponent implements OnInit {
     let cpfFinal = '';
 
     if (this.tripForm.motorista && this.tripForm.motorista.trim() !== '') {
-      const motSelected = this.motoristasList.find(m => m.nome.toLowerCase() === this.tripForm.motorista.toLowerCase());
+      let motBusca = this.tripForm.motorista.trim().toLowerCase();
+      if (motBusca.includes(' (cpf:')) {
+        motBusca = motBusca.split(' (cpf:')[0].trim();
+      }
+      const motSelected = this.motoristasList.find(m => m.nome.toLowerCase() === motBusca);
       motoristaFinal = motSelected ? motSelected.nome : this.tripForm.motorista.toUpperCase();
       cpfFinal = motSelected ? (motSelected.cpf || '') : '';
     }
 
-    const p1 = (this.tripForm.placa || '').trim().toUpperCase();
-    const p2 = (this.tripForm.placaSecundaria || '').trim().toUpperCase();
+    // Limpeza de sufixos provenientes das opções do datalist
+    const p1 = (this.tripForm.placa || '').split(' - ')[0].trim().toUpperCase();
+    const p2 = (this.tripForm.placaSecundaria || '').split(' - ')[0].trim().toUpperCase();
     
     let placaFinal = '-';
     if (p1 && p2) {
@@ -1749,11 +1991,38 @@ export class DashboardComponent implements OnInit {
       placaFinal = p2;
     }
 
+    // Processamento das múltiplas datas (coletas e entregas)
+    const strColetaPrevista = this.tripForm.datasColetas.map(d => d.dataPrevista.trim()).filter(Boolean).join('; ');
+    const strColetaReal = this.tripForm.datasColetas.map(d => d.dataReal.trim()).filter(Boolean).join('; ');
+    const strEntregaPrevista = this.tripForm.datasEntregas.map(d => d.dataPrevista.trim()).filter(Boolean).join('; ');
+    const strEntregaReal = this.tripForm.datasEntregas.map(d => d.dataReal.trim()).filter(Boolean).join('; ');
+
+    const datasArrayPayload: ViagemDataItem[] = [
+      ...this.tripForm.datasColetas
+        .filter(d => d.dataPrevista.trim() || d.dataReal.trim())
+        .map((d, idx) => ({
+          tipo: 'COLETA' as const,
+          dataPrevista: d.dataPrevista.trim().toUpperCase(),
+          dataReal: d.dataReal.trim().toUpperCase(),
+          ordem: idx
+        })),
+      ...this.tripForm.datasEntregas
+        .filter(d => d.dataPrevista.trim() || d.dataReal.trim())
+        .map((d, idx) => ({
+          tipo: 'ENTREGA' as const,
+          dataPrevista: d.dataPrevista.trim().toUpperCase(),
+          dataReal: d.dataReal.trim().toUpperCase(),
+          ordem: idx
+        }))
+    ];
+
     const payload: any = {
       ...(this.isEditing ? { id: idOriginal } : {}),
       numeroOperacional: rawIdInput,
       numero_operacional: rawIdInput,
       cliente: nomeClienteFinal.toUpperCase(),
+      tipoOperacao: this.tripForm.tipoOperacao,
+      tipo_operacao: this.tripForm.tipoOperacao,
 
       origem: strOrigemLocal,
       origemNome: strOrigemLocal,
@@ -1786,25 +2055,31 @@ export class DashboardComponent implements OnInit {
       especialistaCospa: this.tripForm.especialistaCospa || '',
       especialista_cospa: this.tripForm.especialistaCospa || '',
 
-      dataColetaPrevista: (this.tripForm.coletaPrevista || '').toUpperCase(),
-      data_coleta_prevista: (this.tripForm.coletaPrevista || '').toUpperCase(),
-      dataColetaReal: (this.tripForm.coletaReal || '').toUpperCase(),
-      data_coleta_real: (this.tripForm.coletaReal || '').toUpperCase(),
+      dataColetaPrevista: strColetaPrevista.toUpperCase(),
+      data_coleta_prevista: strColetaPrevista.toUpperCase(),
+      dataColetaReal: strColetaReal.toUpperCase(),
+      data_coleta_real: strColetaReal.toUpperCase(),
 
-      dataEntregaPrevista: (this.tripForm.entregaPrevista || '').toUpperCase(),
-      data_entrega_prevista: (this.tripForm.entregaPrevista || '').toUpperCase(),
-      dataEntregaReal: (this.tripForm.entregaReal || '').toUpperCase(),
-      data_entrega_real: (this.tripForm.entregaReal || '').toUpperCase(),
+      dataEntregaPrevista: strEntregaPrevista.toUpperCase(),
+      data_entrega_prevista: strEntregaPrevista.toUpperCase(),
+      dataEntregaReal: strEntregaReal.toUpperCase(),
+      data_entrega_real: strEntregaReal.toUpperCase(),
+
+      datas: datasArrayPayload,
 
       valorAReceber: Number(this.tripForm.valorReceber) || 0,
       valor_a_receber: Number(this.tripForm.valorReceber) || 0,
       valorAdicionalReceber: Number(this.tripForm.adicionalReceber) || 0,
       valor_adicional_receber: Number(this.tripForm.adicionalReceber) || 0,
+      tipoAdicionalReceber: this.tripForm.tipoAdicionalReceber || null,
+      tipo_adicional_receber: this.tripForm.tipoAdicionalReceber || null,
 
       valorAPagar: Number(this.tripForm.valorPagarMotorista) || 0,
       valor_a_pagar: Number(this.tripForm.valorPagarMotorista) || 0,
       valorAdicionalPagar: Number(this.tripForm.adicionalPagarMotorista) || 0,
       valor_adicional_pagar: Number(this.tripForm.adicionalPagarMotorista) || 0,
+      tipoAdicionalPagar: this.tripForm.tipoAdicionalPagar || null,
+      tipo_adicional_pagar: this.tripForm.tipoAdicionalPagar || null,
 
       valorAgenciador: Number(this.tripForm.valorAgenciador) || 0,
       valor_agenciador: Number(this.tripForm.valorAgenciador) || 0,
@@ -1813,8 +2088,6 @@ export class DashboardComponent implements OnInit {
 
       pagamentoLiberado: !!this.tripForm.pagamentoLiberado,
       pagamento_liberado: !!this.tripForm.pagamentoLiberado,
-      pagamentoRealizadoStatus: this.tripForm.pagamentoRealizado || 'Não Realizado',
-      pagamento_realizado_status: this.tripForm.pagamentoRealizado || 'Não Realizado',
 
       dataAdiantamento: (this.tripForm.dataAdiantamento || '').toUpperCase(),
       data_adiantamento: (this.tripForm.dataAdiantamento || '').toUpperCase(),
@@ -1892,20 +2165,5 @@ export class DashboardComponent implements OnInit {
         alert('Erro ao cancelar rota.');
       }
     });
-  }
-
-  onFileSelected(event: Event, tipo: 'CNH' | 'CRLV'): void {
-    const target = event.target as HTMLInputElement;
-    if (target.files && target.files.length > 0) {
-      const file = target.files[0];
-      if (tipo === 'CNH') {
-        this.motoristaForm.cnhFile = file;
-        this.motoristaForm.cnhPreviewName = file.name;
-      } else {
-        this.veiculoForm.crlvFile = file;
-        this.veiculoForm.crlvPreviewName = file.name;
-      }
-      this.cdr.detectChanges();
-    }
   }
 }

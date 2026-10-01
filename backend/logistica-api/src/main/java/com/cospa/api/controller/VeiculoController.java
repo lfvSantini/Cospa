@@ -129,6 +129,7 @@ public class VeiculoController {
             veiculo.setNumeroPaletes(getMapString(payload, "numeroPaletes", ""));
             veiculo.setAnoFabricacao(getMapString(payload, "anoFabricacao", ""));
             veiculo.setDataVencimento(getMapString(payload, "dataVencimento", ""));
+            veiculo.setCidadeUf(getMapString(payload, "cidadeUf", ""));
             veiculo.setFornecedor(getMapString(payload, "fornecedor", "Frota Própria"));
             veiculo.setNumeroAntt(getMapString(payload, "numeroAntt", ""));
             veiculo.setTipoRastreador(getMapString(payload, "tipoRastreador", ""));
@@ -168,6 +169,7 @@ public class VeiculoController {
             veiculo.setNumeroPaletes(getMapString(payload, "numeroPaletes", ""));
             veiculo.setAnoFabricacao(getMapString(payload, "anoFabricacao", ""));
             veiculo.setDataVencimento(getMapString(payload, "dataVencimento", ""));
+            veiculo.setCidadeUf(getMapString(payload, "cidadeUf", veiculo.getCidadeUf()));
             veiculo.setFornecedor(getMapString(payload, "fornecedor", "Frota Própria"));
             veiculo.setNumeroAntt(getMapString(payload, "numeroAntt", ""));
             veiculo.setTipoRastreador(getMapString(payload, "tipoRastreador", ""));

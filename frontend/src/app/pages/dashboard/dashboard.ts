@@ -508,8 +508,8 @@ export class DashboardComponent implements OnInit {
     const mot = this.motoristasList.find(m => m.nome.toLowerCase() === nomeBusca);
     if (mot && mot.fornecedorVinculado) {
       this.tripForm.agencia = mot.fornecedorVinculado;
-      
-      // Reseta a placa se ela não pertencer aos veículos do novo fornecedor
+
+      // Reseta a seleção das placas se não pertencerem aos veículos do fornecedor selecionado
       const veiculoValido1 = this.veiculosFiltradosPorFornecedor.some(v => v.placa === this.tripForm.placa);
       if (!veiculoValido1) {
         this.tripForm.placa = '';
@@ -600,12 +600,12 @@ export class DashboardComponent implements OnInit {
 
   carregarRotas(): void {
     this.rotaService.listar().subscribe({
-      next: (data) => {
+      next: (data: LocalCliente[]) => {
         this.rotasList = data || [];
         this.filtrarRotas();
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Erro ao carregar rotas:', err)
+      error: (err: unknown) => console.error('Erro ao carregar rotas:', err)
     });
   }
 
@@ -650,7 +650,7 @@ export class DashboardComponent implements OnInit {
         }
         this.cdr.detectChanges();
       },
-      error: (err) => alert('Erro ao salvar local da rota: ' + (err.error?.message || err.message))
+      error: (err: any) => alert('Erro ao salvar local da rota: ' + (err?.error?.message || err?.message || 'Erro desconhecido'))
     });
   }
 
@@ -687,11 +687,11 @@ export class DashboardComponent implements OnInit {
     }
     const nomeLimpo = nomeCliente.trim();
     this.rotaService.buscarPorNomeCliente(nomeLimpo).subscribe({
-      next: (locais) => {
+      next: (locais: LocalCliente[]) => {
         this.locaisDoClienteSelecionado = locais || [];
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Erro ao buscar locais do cliente selecionado:', err)
+      error: (err: unknown) => console.error('Erro ao buscar locais do cliente selecionado:', err)
     });
   }
 

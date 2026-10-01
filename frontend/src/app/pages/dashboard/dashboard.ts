@@ -435,35 +435,35 @@ export class DashboardComponent implements OnInit {
 
   onRestaurarBackupSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
-    if (!target || !target.files || target.files.length === 0) return;
+    if (!target.files || target.files.length > 0) {
+      const file = target.files[0];
+      if (!file.name.endsWith('.zip')) {
+        alert('Por favor, selecione um arquivo no formato .zip');
+        return;
+      }
 
-    const file = target.files[0];
-    if (!file.name.endsWith('.zip')) {
-      alert('Por favor, selecione um arquivo no formato .zip');
-      return;
+      if (!confirm('Deseja restaurar este backup completo? As fotos e o banco de dados serão atualizados com o conteúdo do .zip.')) {
+        target.value = '';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      this.http.post(`${environment.apiUrl}/admin/backup/restaurar-zip`, formData, { responseType: 'text' })
+        .subscribe({
+          next: (res) => {
+            alert(res);
+            this.carregarTodosDados();
+            target.value = '';
+            this.closeSidebar();
+          },
+          error: (err) => {
+            alert('Erro ao restaurar backup: ' + (err.error || err.message));
+            target.value = '';
+          }
+        });
     }
-
-    if (!confirm('Deseja restaurar este backup completo? As fotos e o banco de dados serão atualizados com o conteúdo do .zip.')) {
-      target.value = '';
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    this.http.post(`${environment.apiUrl}/admin/backup/restaurar-zip`, formData, { responseType: 'text' })
-      .subscribe({
-        next: (res) => {
-          alert(res);
-          this.carregarTodosDados();
-          target.value = '';
-          this.closeSidebar();
-        },
-        error: (err) => {
-          alert('Erro ao restaurar backup: ' + (err.error || err.message));
-          target.value = '';
-        }
-      });
   }
 
   public isPdf(url: string | null | undefined): boolean {
@@ -1773,5 +1773,373 @@ export class DashboardComponent implements OnInit {
     this.fornecedorForm = this.getEmptyFornecedor();
     this.isEditingFornecedor = false;
     this.cdr.detectChanges();
+  }
+
+  // ==================== VIAGENS ====================
+  openNovaViagemModal(): void {
+    this.isEditing = false;
+    this.locaisDoClienteSelecionado = [];
+    this.tripForm = {
+      id: '', 
+      clienteSelect: '',
+      tipoOperacao: 'Coleta',
+      origens: [{ local: '', endereco: '', dataPrevista: '', dataReal: '' }],
+      destinos: [{ local: '', endereco: '', dataPrevista: '', dataReal: '' }],
+      perfilVeiculo: '',
+      carroceriaVeiculo: 'Nenhum',
+      motorista: '',
+      placa: '',
+      placaSecundaria: '',
+      agencia: 'Frota Própria',
+      agenciador: '',
+      especialistaCospa: '',
+      valorReceber: 0,
+      adicionalReceber: 0,
+      tipoAdicionalReceber: '',
+      valorPagarMotorista: 0,
+      adicionalPagarMotorista: 0,
+      tipoAdicionalPagar: '',
+      valorAgenciador: 0,
+      valorEspecialistaCospa: 0,
+      pagamentoLiberado: false,
+      dataAdiantamento: '',
+      pagoAdiantamento: false,
+      dataSaldo: '',
+      pagoSaldo: false,
+      dataAdicional: '',
+      pagoAdicional: false,
+      statusInicial: 'PROGRAMADO',
+      observacao: ''
+    };
+    this.modalType = 'TRIP_FORM';
+    this.cdr.detectChanges();
+  }
+
+  openEditarModal(item: ViagemItem, origin: 'andamento' | 'aPagar' | 'finalizadas'): void {
+    this.isEditing = true;
+    this.selectedViagem = item;
+    this.selectedListOrigin = origin;
+
+    const raw: any = item.rawViagem;
+    
+    // 1. Extração de coletas (locais, endereços e datas)
+    const rawColetaLocais = item.origem.map(o => o === '-' ? '' : o);
+    const rawColetaEnds = (raw?.localColeta || raw?.local_coleta || '').split(';').map((s: string) => s.trim());
+    const rawColetaPrev = (raw?.dataColetaPrevista || raw?.data_coleta_prevista || '').split(';').map((s: string) => s.trim());
+    const rawColetaReal = (raw?.dataColetaReal || raw?.data_coleta_real || '').split(';').map((s: string) => s.trim());
+
+    const datasRelacionaisColeta = (raw?.datas || []).filter((d: any) => (d.tipo || '').toUpperCase() === 'COLETA');
+
+    const totalColetas = Math.max(rawColetaLocais.length, rawColetaEnds.length, datasRelacionaisColeta.length, 1);
+    const origensMapeadas: PontoRotaCompleto[] = [];
+
+    for (let i = 0; i < totalColetas; i++) {
+      const dRel = datasRelacionaisColeta[i];
+      origensMapeadas.push({
+        local: rawColetaLocais[i] || '',
+        endereco: rawColetaEnds[i] || (rawColetaEnds.length === 1 && rawColetaEnds[0] !== rawColetaLocais[i] ? rawColetaEnds[0] : ''),
+        dataPrevista: dRel?.dataPrevista || (rawColetaPrev[i] === 'A confirmar' ? '' : (rawColetaPrev[i] || '')),
+        dataReal: dRel?.dataReal || (rawColetaReal[i] === 'A confirmar' ? '' : (rawColetaReal[i] || ''))
+      });
+    }
+
+    // 2. Extração de entregas (locais, endereços e datas)
+    const rawEntregaLocais = item.destino.map(d => d === '-' ? '' : d);
+    const rawEntregaEnds = (raw?.localEntrega || raw?.local_entrega || '').split(';').map((s: string) => s.trim());
+    const rawEntregaPrev = (raw?.dataEntregaPrevista || raw?.data_entrega_prevista || '').split(';').map((s: string) => s.trim());
+    const rawEntregaReal = (raw?.dataEntregaReal || raw?.data_entrega_real || '').split(';').map((s: string) => s.trim());
+
+    const datasRelacionaisEntrega = (raw?.datas || []).filter((d: any) => (d.tipo || '').toUpperCase() === 'ENTREGA');
+
+    const totalEntregas = Math.max(rawEntregaLocais.length, rawEntregaEnds.length, datasRelacionaisEntrega.length, 1);
+    const destinosMapeados: PontoRotaCompleto[] = [];
+
+    for (let j = 0; j < totalEntregas; j++) {
+      const dRel = datasRelacionaisEntrega[j];
+      destinosMapeados.push({
+        local: rawEntregaLocais[j] || '',
+        endereco: rawEntregaEnds[j] || (rawEntregaEnds.length === 1 && rawEntregaEnds[0] !== rawEntregaLocais[j] ? rawEntregaEnds[0] : ''),
+        dataPrevista: dRel?.dataPrevista || (rawEntregaPrev[j] === 'A confirmar' ? '' : (rawEntregaPrev[j] || '')),
+        dataReal: dRel?.dataReal || (rawEntregaReal[j] === 'A confirmar' ? '' : (rawEntregaReal[j] || ''))
+      });
+    }
+
+    const rawPlaca = item.placa || '';
+    const placasSplit = rawPlaca.split(' / ').map(p => p.trim());
+    const placa1 = placasSplit[0] && placasSplit[0] !== '-' ? placasSplit[0] : '';
+    const placa2 = placasSplit[1] || (raw?.placaSecundaria || raw?.placa_secundaria || '');
+
+    const valorParaInput = item.numeroOperacional || item.rawId.toString();
+
+    this.tripForm = {
+      id: valorParaInput,
+      clienteSelect: item.cliente,
+      tipoOperacao: raw?.tipoOperacao || raw?.tipo_operacao || 'Coleta',
+      origens: origensMapeadas.length > 0 ? origensMapeadas : [{ local: '', endereco: '', dataPrevista: '', dataReal: '' }],
+      destinos: destinosMapeados.length > 0 ? destinosMapeados : [{ local: '', endereco: '', dataPrevista: '', dataReal: '' }],
+      perfilVeiculo: raw?.perfilVeiculo || raw?.perfil_veiculo || '',
+      carroceriaVeiculo: raw?.carroceriaVeiculo || raw?.carroceria_veiculo || 'Nenhum',
+      motorista: item.motorista === 'A Contratar' ? '' : item.motorista,
+      placa: placa1,
+      placaSecundaria: placa2,
+      agencia: raw?.fornecedorAgencia || raw?.fornecedor_agencia || 'Frota Própria',
+      agenciador: raw?.agenciador || '',
+      especialistaCospa: raw?.especialistaCospa || raw?.especialista_cospa || '',
+      valorReceber: raw?.valorAReceber || raw?.valor_a_receber || 0,
+      adicionalReceber: raw?.valorAdicionalReceber || raw?.valor_adicional_receber || 0,
+      tipoAdicionalReceber: raw?.tipoAdicionalReceber || raw?.tipo_adicional_receber || '',
+      valorPagarMotorista: raw?.valorAPagar || raw?.valor_a_pagar || 0,
+      adicionalPagarMotorista: raw?.valorAdicionalPagar || raw?.valor_adicional_pagar || 0,
+      tipoAdicionalPagar: raw?.tipoAdicionalPagar || raw?.tipo_adicional_pagar || '',
+      valorAgenciador: raw?.valorAgenciador || raw?.valor_agenciador || raw?.valorAdicionalAgencia || raw?.valor_adicional_agencia || 0,
+      valorEspecialistaCospa: raw?.valorEspecialistaCospa || raw?.valor_especialista_cospa || 0,
+      pagamentoLiberado: raw?.pagamentoLiberado ?? raw?.pagamento_liberado ?? false,
+      dataAdiantamento: raw?.dataAdiantamento || raw?.data_adiantamento || '',
+      pagoAdiantamento: !!(raw?.pagoAdiantamento ?? raw?.pago_adiantamento ?? false),
+      dataSaldo: raw?.dataSaldo || raw?.data_saldo || '',
+      pagoSaldo: !!(raw?.pagoSaldo ?? raw?.pago_saldo ?? false),
+      dataAdicional: raw?.dataAdicional || raw?.data_adicional || '',
+      pagoAdicional: !!(raw?.pagoAdicional ?? raw?.pago_adicional ?? false),
+      statusInicial: item.status,
+      observacao: item.obs === '-' ? '' : (item.obs || '')
+    };
+
+    if (item.cliente) {
+      this.onClienteSelectChange(item.cliente);
+    }
+
+    this.modalType = 'TRIP_FORM';
+    this.closeRowActions();
+    this.cdr.detectChanges();
+  }
+
+  salvarViagemForm(): void {
+    const rawIdInput = (this.tripForm.id || '').toString().trim();
+    const idOriginal = this.isEditing && this.selectedViagem ? this.selectedViagem.rawId : null;
+
+    const nomeClienteFinal = (this.tripForm.clienteSelect || '').trim();
+    if (!nomeClienteFinal) {
+      alert('Por favor, selecione o Cliente.');
+      return;
+    }
+
+    const origensLocaisArray = (this.tripForm.origens || [])
+      .map(o => (o.local || '').trim().toUpperCase())
+      .filter(o => o.length > 0);
+    const origensEnderecosArray = (this.tripForm.origens || [])
+      .map(o => (o.endereco || '').trim().toUpperCase());
+
+    const destinosLocaisArray = (this.tripForm.destinos || [])
+      .map(d => (d.local || '').trim().toUpperCase())
+      .filter(d => d.length > 0);
+    const destinosEnderecosArray = (this.tripForm.destinos || [])
+      .map(d => (d.endereco || '').trim().toUpperCase());
+
+    const strOrigemLocal = origensLocaisArray.join('; ') || 'ORIGEM NÃO INFORMADA';
+    const strOrigemEndereco = origensEnderecosArray.join('; ') || strOrigemLocal;
+
+    const strDestinoLocal = destinosLocaisArray.join('; ') || 'DESTINO NÃO INFORMADO';
+    const strDestinoEndereco = destinosEnderecosArray.join('; ') || strDestinoLocal;
+
+    let motoristaFinal = 'A Contratar';
+    let cpfFinal = '';
+
+    if (this.tripForm.motorista && this.tripForm.motorista.trim() !== '') {
+      let motBusca = this.tripForm.motorista.trim().toLowerCase();
+      if (motBusca.includes(' (cpf:')) {
+        motBusca = motBusca.split(' (cpf:')[0].trim();
+      }
+      const motSelected = this.motoristasList.find(m => m.nome.toLowerCase() === motBusca);
+      motoristaFinal = motSelected ? motSelected.nome : this.tripForm.motorista.toUpperCase();
+      cpfFinal = motSelected ? (motSelected.cpf || '') : '';
+    }
+
+    // Limpeza de sufixos provenientes das opções do datalist
+    const p1 = (this.tripForm.placa || '').split(' - ')[0].trim().toUpperCase();
+    const p2 = (this.tripForm.placaSecundaria || '').split(' - ')[0].trim().toUpperCase();
+    
+    let placaFinal = '-';
+    if (p1 && p2) {
+      placaFinal = `${p1} / ${p2}`;
+    } else if (p1) {
+      placaFinal = p1;
+    } else if (p2) {
+      placaFinal = p2;
+    }
+
+    // Processamento agregado e estruturado das datas
+    const strColetaPrevista = this.tripForm.origens.map(o => (o.dataPrevista || '').trim()).filter(Boolean).join('; ');
+    const strColetaReal = this.tripForm.origens.map(o => (o.dataReal || '').trim()).filter(Boolean).join('; ');
+    const strEntregaPrevista = this.tripForm.destinos.map(d => (d.dataPrevista || '').trim()).filter(Boolean).join('; ');
+    const strEntregaReal = this.tripForm.destinos.map(d => (d.dataReal || '').trim()).filter(Boolean).join('; ');
+
+    const datasArrayPayload: ViagemDataItem[] = [
+      ...this.tripForm.origens
+        .filter(o => o.dataPrevista?.trim() || o.dataReal?.trim())
+        .map((o, idx) => ({
+          tipo: 'COLETA' as const,
+          dataPrevista: (o.dataPrevista || '').trim().toUpperCase(),
+          dataReal: (o.dataReal || '').trim().toUpperCase(),
+          ordem: idx
+        })),
+      ...this.tripForm.destinos
+        .filter(d => d.dataPrevista?.trim() || d.dataReal?.trim())
+        .map((d, idx) => ({
+          tipo: 'ENTREGA' as const,
+          dataPrevista: (d.dataPrevista || '').trim().toUpperCase(),
+          dataReal: (d.dataReal || '').trim().toUpperCase(),
+          ordem: idx
+        }))
+    ];
+
+    const payload: any = {
+      ...(this.isEditing ? { id: idOriginal } : {}),
+      numeroOperacional: rawIdInput,
+      numero_operacional: rawIdInput,
+      cliente: nomeClienteFinal.toUpperCase(),
+      tipoOperacao: this.tripForm.tipoOperacao,
+      tipo_operacao: this.tripForm.tipoOperacao,
+
+      origem: strOrigemLocal,
+      origemNome: strOrigemLocal,
+      origem_nome: strOrigemLocal,
+      localColeta: strOrigemEndereco,
+      local_coleta: strOrigemEndereco,
+
+      destino: strDestinoLocal,
+      destinoNome: strDestinoLocal,
+      destino_nome: strDestinoLocal,
+      localEntrega: strDestinoEndereco,
+      local_entrega: strDestinoEndereco,
+
+      perfilVeiculo: this.tripForm.perfilVeiculo,
+      perfil_veiculo: this.tripForm.perfilVeiculo,
+      carroceriaVeiculo: this.tripForm.carroceriaVeiculo,
+      carroceria_veiculo: this.tripForm.carroceriaVeiculo,
+
+      nomeMotorista: motoristaFinal,
+      nome_motorista: motoristaFinal,
+      cpfMotorista: cpfFinal,
+      cpf_motorista: cpfFinal,
+      placa: placaFinal,
+      placaSecundaria: p2,
+      placa_secundaria: p2,
+
+      fornecedorAgencia: this.tripForm.agencia || 'Frota Própria',
+      fornecedor_agencia: this.tripForm.agencia || 'Frota Própria',
+      agenciador: this.tripForm.agenciador || '',
+      especialistaCospa: this.tripForm.especialistaCospa || '',
+      especialista_cospa: this.tripForm.especialistaCospa || '',
+
+      dataColetaPrevista: strColetaPrevista.toUpperCase(),
+      data_coleta_prevista: strColetaPrevista.toUpperCase(),
+      dataColetaReal: strColetaReal.toUpperCase(),
+      data_coleta_real: strColetaReal.toUpperCase(),
+
+      dataEntregaPrevista: strEntregaPrevista.toUpperCase(),
+      data_entrega_prevista: strEntregaPrevista.toUpperCase(),
+      dataEntregaReal: strEntregaReal.toUpperCase(),
+      data_entrega_real: strEntregaReal.toUpperCase(),
+
+      datas: datasArrayPayload,
+
+      valorAReceber: Number(this.tripForm.valorReceber) || 0,
+      valor_a_receber: Number(this.tripForm.valorReceber) || 0,
+      valorAdicionalReceber: Number(this.tripForm.adicionalReceber) || 0,
+      valor_adicional_receber: Number(this.tripForm.adicionalReceber) || 0,
+      tipoAdicionalReceber: this.tripForm.tipoAdicionalReceber || null,
+      tipo_adicional_receber: this.tripForm.tipoAdicionalReceber || null,
+
+      valorAPagar: Number(this.tripForm.valorPagarMotorista) || 0,
+      valor_a_pagar: Number(this.tripForm.valorPagarMotorista) || 0,
+      valorAdicionalPagar: Number(this.tripForm.adicionalPagarMotorista) || 0,
+      valor_adicional_pagar: Number(this.tripForm.adicionalPagarMotorista) || 0,
+      tipoAdicionalPagar: this.tripForm.tipoAdicionalPagar || null,
+      tipo_adicional_pagar: this.tripForm.tipoAdicionalPagar || null,
+
+      valorAgenciador: Number(this.tripForm.valorAgenciador) || 0,
+      valor_agenciador: Number(this.tripForm.valorAgenciador) || 0,
+      valorEspecialistaCospa: Number(this.tripForm.valorEspecialistaCospa) || 0,
+      valor_especialista_cospa: Number(this.tripForm.valorEspecialistaCospa) || 0,
+
+      pagamentoLiberado: !!this.tripForm.pagamentoLiberado,
+      pagamento_liberado: !!this.tripForm.pagamentoLiberado,
+
+      dataAdiantamento: (this.tripForm.dataAdiantamento || '').toUpperCase(),
+      data_adiantamento: (this.tripForm.dataAdiantamento || '').toUpperCase(),
+      pagoAdiantamento: !!this.tripForm.pagoAdiantamento,
+      pago_adiantamento: !!this.tripForm.pagoAdiantamento,
+
+      dataSaldo: (this.tripForm.dataSaldo || '').toUpperCase(),
+      data_saldo: (this.tripForm.dataSaldo || '').toUpperCase(),
+      pagoSaldo: !!this.tripForm.pagoSaldo,
+      pago_saldo: !!this.tripForm.pagoSaldo,
+
+      dataAdicional: (this.tripForm.dataAdicional || '').toUpperCase(),
+      data_adicional: (this.tripForm.dataAdicional || '').toUpperCase(),
+      pagoAdicional: !!this.tripForm.pagoAdicional,
+      pago_adicional: !!this.tripForm.pagoAdicional,
+
+      status: this.tripForm.statusInicial || 'PROGRAMADO',
+      observacao: (this.tripForm.observacao || '').trim().toUpperCase()
+    };
+
+    this.viagemService.salvar(payload, this.isEditing, idOriginal).subscribe({
+      next: () => {
+        this.carregarViagens();
+        this.closeModal();
+      },
+      error: (err: any) => {
+        console.error('Erro ao salvar rota:', err);
+        const msg = err.error?.message || err.error?.reason || (typeof err.error === 'string' ? err.error : 'Erro ao salvar rota.');
+        alert('Erro ao salvar rota: ' + msg);
+      }
+    });
+  }
+
+  openObsModal(item: ViagemItem): void {
+    this.selectedViagem = item;
+    this.modalType = 'OBS';
+    this.closeRowActions();
+    this.cdr.detectChanges();
+  }
+
+  salvarObs(): void {
+    if (this.selectedViagem && this.selectedViagem.rawViagem) {
+      const payload: any = { ...this.selectedViagem.rawViagem, observacao: (this.selectedViagem.obs || '').toUpperCase() };
+      this.viagemService.salvar(payload, true, this.selectedViagem.rawId).subscribe({
+        next: () => this.carregarViagens(),
+        error: () => alert('Erro ao salvar observação.')
+      });
+    }
+    this.closeModal();
+  }
+
+  openCancelarModal(item: ViagemItem, origin: 'andamento' | 'aPagar' | 'finalizadas'): void {
+    this.selectedViagem = item;
+    this.selectedListOrigin = origin;
+    this.motivoCancelamento = '';
+    this.modalType = 'CANCELAR';
+    this.closeRowActions();
+    this.cdr.detectChanges();
+  }
+
+  confirmarCancelamento(): void {
+    if (!this.selectedViagem) return;
+
+    const rawId = this.selectedViagem.rawId;
+    const motivo = (this.motivoCancelamento || '').trim().toUpperCase();
+
+    this.http.patch(`${environment.apiUrl}/viagens/${rawId}/cancelar`, { motivo }).subscribe({
+      next: () => {
+        this.showFinalizadas = true;
+        this.carregarViagens();
+        this.closeModal();
+      },
+      error: (err) => {
+        console.error('Erro ao cancelar rota:', err);
+        alert('Erro ao cancelar rota.');
+      }
+    });
   }
 }

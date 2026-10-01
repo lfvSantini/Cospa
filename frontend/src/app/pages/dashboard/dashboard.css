@@ -70,6 +70,8 @@
 }
 
 input[type="text"],
+input[type="number"],
+input[type="email"],
 textarea {
   text-transform: uppercase;
 }
@@ -1127,7 +1129,7 @@ textarea {
 }
 
 .cospa-modal-box.modal-trip-form {
-  width: 820px;
+  width: 860px;
   max-width: 95vw;
   max-height: 90vh;
 }
@@ -1957,15 +1959,17 @@ textarea {
   color: var(--text-muted);
 }
 
-/* Card Unificado de Cronograma */
+/* =========================================================
+   MÓDULO UNIFICADO: ITINERÁRIO & CRONOGRAMA DE PARADAS
+   ========================================================= */
 .schedule-unified-card {
   background-color: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--btn-action-border);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 1rem 1.15rem;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.9rem;
   box-sizing: border-box;
 }
 
@@ -1977,11 +1981,11 @@ textarea {
   display: flex;
   align-items: center;
   border-bottom: 1px solid var(--border-nav);
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.55rem;
 }
 
 .schedule-main-title {
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-weight: 800;
   color: var(--text-muted);
   letter-spacing: 0.05em;
@@ -1991,7 +1995,7 @@ textarea {
 .schedule-columns-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
+  gap: 1.15rem;
   align-items: flex-start;
 }
 
@@ -2005,26 +2009,27 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 0.15rem;
 }
 
 .col-tag {
   font-size: 0.72rem;
   font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 5px;
   letter-spacing: 0.04em;
 }
 
 .tag-coleta {
   background-color: rgba(59, 130, 246, 0.15);
   color: #60a5fa;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.35);
 }
 
 .tag-entrega {
   background-color: rgba(16, 185, 129, 0.15);
   color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(16, 185, 129, 0.35);
 }
 
 .btn-schedule-add {
@@ -2032,9 +2037,9 @@ textarea {
   border: 1px dashed #0066d6;
   color: #60a5fa;
   border-radius: 6px;
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   font-weight: 600;
-  padding: 3px 8px;
+  padding: 3px 9px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -2047,61 +2052,68 @@ textarea {
 .schedule-items-stack {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
-.schedule-item-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.5rem;
+.itinerary-card {
   background-color: var(--btn-action-bg);
   border: 1px solid var(--btn-action-border);
-  border-radius: 8px;
-  padding: 0.6rem 0.65rem;
+  border-radius: 9px;
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
   box-sizing: border-box;
 }
 
-.schedule-item-badge {
-  font-size: 0.75rem;
+.itinerary-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding-bottom: 0.3rem;
+}
+
+.itinerary-index-badge {
+  font-size: 0.74rem;
   font-weight: 700;
   color: var(--text-muted);
-  align-self: center;
-  padding-bottom: 2px;
 }
 
-.schedule-inputs-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-  flex: 1;
-}
-
-.schedule-inputs-group .f-group label {
-  font-size: 0.72rem;
-}
-
-.schedule-inputs-group .f-group input {
-  padding: 0.55rem 0.65rem;
-  font-size: 0.82rem;
-}
-
-.btn-schedule-del {
+.btn-stop-del {
   background-color: rgba(239, 68, 68, 0.12);
   border: 1px solid rgba(239, 68, 68, 0.25);
   color: #ef4444;
-  border-radius: 6px;
-  width: 28px;
-  height: 34px;
+  border-radius: 5px;
+  width: 22px;
+  height: 22px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.78rem;
-  margin-bottom: 1px;
+  font-size: 0.75rem;
+  padding: 0;
   transition: all 0.15s ease;
 }
 
-.btn-schedule-del:hover {
+.btn-stop-del:hover {
   background-color: #ef4444;
   color: #ffffff;
+}
+
+.itinerary-card .f-group label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.itinerary-card .f-group input {
+  padding: 0.55rem 0.65rem;
+  font-size: 0.82rem;
+}
+
+.stop-dates-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.15rem;
 }

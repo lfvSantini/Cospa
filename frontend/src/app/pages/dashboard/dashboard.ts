@@ -17,12 +17,9 @@ import { Fornecedor } from '../../core/models/fornecedor.model';
 import { Veiculo } from '../../core/models/veiculo.model';
 import { environment } from '../../../environments/environment';
 
-export interface PontoRota {
+export interface PontoRotaCompleto {
   local: string;
   endereco: string;
-}
-
-export interface DataItemForm {
   dataPrevista: string;
   dataReal: string;
 }
@@ -250,8 +247,8 @@ export class DashboardComponent implements OnInit {
     id: '', 
     clienteSelect: '',
     tipoOperacao: 'Coleta' as TipoOperacao,
-    origens: [{ local: '', endereco: '' }] as PontoRota[],
-    destinos: [{ local: '', endereco: '' }] as PontoRota[],
+    origens: [{ local: '', endereco: '', dataPrevista: '', dataReal: '' }] as PontoRotaCompleto[],
+    destinos: [{ local: '', endereco: '', dataPrevista: '', dataReal: '' }] as PontoRotaCompleto[],
     perfilVeiculo: '',
     carroceriaVeiculo: 'Nenhum',
     motorista: '',
@@ -260,8 +257,6 @@ export class DashboardComponent implements OnInit {
     agencia: 'Frota Própria',
     agenciador: '',
     especialistaCospa: '',
-    datasColetas: [{ dataPrevista: '', dataReal: '' }] as DataItemForm[],
-    datasEntregas: [{ dataPrevista: '', dataReal: '' }] as DataItemForm[],
     valorReceber: 0,
     adicionalReceber: 0,
     tipoAdicionalReceber: '' as TipoAdicional | '',
@@ -440,35 +435,35 @@ export class DashboardComponent implements OnInit {
 
   onRestaurarBackupSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
-    if (!target.files || target.files.length === 0) return;
+    if (!target.files || target.files.length > 0) {
+      const file = target.files[0];
+      if (!file.name.endsWith('.zip')) {
+        alert('Por favor, selecione um arquivo no formato .zip');
+        return;
+      }
 
-    const file = target.files[0];
-    if (!file.name.endsWith('.zip')) {
-      alert('Por favor, selecione um arquivo no formato .zip');
-      return;
+      if (!confirm('Deseja restaurar este backup completo? As fotos e o banco de dados serão atualizados com o conteúdo do .zip.')) {
+        target.value = '';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      this.http.post(`${environment.apiUrl}/admin/backup/restaurar-zip`, formData, { responseType: 'text' })
+        .subscribe({
+          next: (res) => {
+            alert(res);
+            this.carregarTodosDados();
+            target.value = '';
+            this.closeSidebar();
+          },
+          error: (err) => {
+            alert('Erro ao restaurar backup: ' + (err.error || err.message));
+            target.value = '';
+          }
+        });
     }
-
-    if (!confirm('Deseja restaurar este backup completo? As fotos e o banco de dados serão atualizados com o conteúdo do .zip.')) {
-      target.value = '';
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    this.http.post(`${environment.apiUrl}/admin/backup/restaurar-zip`, formData, { responseType: 'text' })
-      .subscribe({
-        next: (res) => {
-          alert(res);
-          this.carregarTodosDados();
-          target.value = '';
-          this.closeSidebar();
-        },
-        error: (err) => {
-          alert('Erro ao restaurar backup: ' + (err.error || err.message));
-          target.value = '';
-        }
-      });
   }
 
   public isPdf(url: string | null | undefined): boolean {
@@ -492,7 +487,6 @@ export class DashboardComponent implements OnInit {
     return this.sanitizarUrlArquivo(url);
   }
 
-  // Preenchimentos automáticos com suporte a seleção direta e via Datalist
   onMotoristaSelectChange(): void {
     if (!this.tripForm.motorista) return;
     let nomeBusca = this.tripForm.motorista.trim().toLowerCase();
@@ -509,7 +503,6 @@ export class DashboardComponent implements OnInit {
     if (mot && mot.fornecedorVinculado) {
       this.tripForm.agencia = mot.fornecedorVinculado;
 
-      // Reseta a seleção das placas se não pertencerem aos veículos do fornecedor selecionado
       const veiculoValido1 = this.veiculosFiltradosPorFornecedor.some(v => v.placa === this.tripForm.placa);
       if (!veiculoValido1) {
         this.tripForm.placa = '';
@@ -522,7 +515,6 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // Getter reativo para filtrar veículos do fornecedor do motorista
   get veiculosFiltradosPorFornecedor(): VeiculoModel[] {
     if (!this.tripForm.agencia || this.tripForm.agencia.trim() === '') {
       return this.veiculosList;
@@ -549,28 +541,28 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // Gestão dinâmica de múltiplas datas
-  addColetaData(): void {
-    this.tripForm.datasColetas.push({ dataPrevista: '', dataReal: '' });
-    this.cdr.detectChanges();
+  // ==================== GESTÃO DE PARAGENS (LOCAL + MORADA + DATAS) ====================
+  addOrigem(): void { 
+    this.tripForm.origens.push({ local: '', endereco: '', dataPrevista: '', dataReal: '' }); 
+    this.cdr.detectChanges(); 
   }
 
-  removeColetaData(index: number): void {
-    if (this.tripForm.datasColetas.length > 1) {
-      this.tripForm.datasColetas.splice(index, 1);
-      this.cdr.detectChanges();
+  removeOrigem(index: number): void { 
+    if (this.tripForm.origens.length > 1) {
+      this.tripForm.origens.splice(index, 1); 
+      this.cdr.detectChanges(); 
     }
   }
 
-  addEntregaData(): void {
-    this.tripForm.datasEntregas.push({ dataPrevista: '', dataReal: '' });
-    this.cdr.detectChanges();
+  addDestino(): void { 
+    this.tripForm.destinos.push({ local: '', endereco: '', dataPrevista: '', dataReal: '' }); 
+    this.cdr.detectChanges(); 
   }
 
-  removeEntregaData(index: number): void {
-    if (this.tripForm.datasEntregas.length > 1) {
-      this.tripForm.datasEntregas.splice(index, 1);
-      this.cdr.detectChanges();
+  removeDestino(index: number): void { 
+    if (this.tripForm.destinos.length > 1) {
+      this.tripForm.destinos.splice(index, 1); 
+      this.cdr.detectChanges(); 
     }
   }
 
@@ -1784,11 +1776,6 @@ export class DashboardComponent implements OnInit {
   }
 
   // ==================== VIAGENS ====================
-  addOrigem(): void { this.tripForm.origens.push({ local: '', endereco: '' }); this.cdr.detectChanges(); }
-  removeOrigem(index: number): void { if (this.tripForm.origens.length > 1) this.tripForm.origens.splice(index, 1); this.cdr.detectChanges(); }
-  addDestino(): void { this.tripForm.destinos.push({ local: '', endereco: '' }); this.cdr.detectChanges(); }
-  removeDestino(index: number): void { if (this.tripForm.destinos.length > 1) this.tripForm.destinos.splice(index, 1); this.cdr.detectChanges(); }
-
   openNovaViagemModal(): void {
     this.isEditing = false;
     this.locaisDoClienteSelecionado = [];
@@ -1796,8 +1783,8 @@ export class DashboardComponent implements OnInit {
       id: '', 
       clienteSelect: '',
       tipoOperacao: 'Coleta',
-      origens: [{ local: '', endereco: '' }],
-      destinos: [{ local: '', endereco: '' }],
+      origens: [{ local: '', endereco: '', dataPrevista: '', dataReal: '' }],
+      destinos: [{ local: '', endereco: '', dataPrevista: '', dataReal: '' }],
       perfilVeiculo: '',
       carroceriaVeiculo: 'Nenhum',
       motorista: '',
@@ -1806,8 +1793,6 @@ export class DashboardComponent implements OnInit {
       agencia: 'Frota Própria',
       agenciador: '',
       especialistaCospa: '',
-      datasColetas: [{ dataPrevista: '', dataReal: '' }],
-      datasEntregas: [{ dataPrevista: '', dataReal: '' }],
       valorReceber: 0,
       adicionalReceber: 0,
       tipoAdicionalReceber: '',
@@ -1837,17 +1822,47 @@ export class DashboardComponent implements OnInit {
 
     const raw: any = item.rawViagem;
     
-    const rawColetaArr = (raw?.localColeta || raw?.local_coleta || '').split(';').map((s: string) => s.trim());
-    const origensMapeadas: PontoRota[] = item.origem.map((o, idx) => ({
-      local: o === '-' ? '' : o,
-      endereco: rawColetaArr[idx] || (rawColetaArr.length === 1 && rawColetaArr[0] !== o ? rawColetaArr[0] : '')
-    }));
+    // 1. Extração de coletas (locais, endereços e datas)
+    const rawColetaLocais = item.origem.map(o => o === '-' ? '' : o);
+    const rawColetaEnds = (raw?.localColeta || raw?.local_coleta || '').split(';').map((s: string) => s.trim());
+    const rawColetaPrev = (raw?.dataColetaPrevista || raw?.data_coleta_prevista || '').split(';').map((s: string) => s.trim());
+    const rawColetaReal = (raw?.dataColetaReal || raw?.data_coleta_real || '').split(';').map((s: string) => s.trim());
 
-    const rawEntregaArr = (raw?.localEntrega || raw?.local_entrega || '').split(';').map((s: string) => s.trim());
-    const destinosMapeados: PontoRota[] = item.destino.map((d, idx) => ({
-      local: d === '-' ? '' : d,
-      endereco: rawEntregaArr[idx] || (rawEntregaArr.length === 1 && rawEntregaArr[0] !== d ? rawEntregaArr[0] : '')
-    }));
+    const datasRelacionaisColeta = (raw?.datas || []).filter((d: any) => (d.tipo || '').toUpperCase() === 'COLETA');
+
+    const totalColetas = Math.max(rawColetaLocais.length, rawColetaEnds.length, datasRelacionaisColeta.length, 1);
+    const origensMapeadas: PontoRotaCompleto[] = [];
+
+    for (let i = 0; i < totalColetas; i++) {
+      const dRel = datasRelacionaisColeta[i];
+      origensMapeadas.push({
+        local: rawColetaLocais[i] || '',
+        endereco: rawColetaEnds[i] || (rawColetaEnds.length === 1 && rawColetaEnds[0] !== rawColetaLocais[i] ? rawColetaEnds[0] : ''),
+        dataPrevista: dRel?.dataPrevista || (rawColetaPrev[i] === 'A confirmar' ? '' : (rawColetaPrev[i] || '')),
+        dataReal: dRel?.dataReal || (rawColetaReal[i] === 'A confirmar' ? '' : (rawColetaReal[i] || ''))
+      });
+    }
+
+    // 2. Extração de entregas (locais, endereços e datas)
+    const rawEntregaLocais = item.destino.map(d => d === '-' ? '' : d);
+    const rawEntregaEnds = (raw?.localEntrega || raw?.local_entrega || '').split(';').map((s: string) => s.trim());
+    const rawEntregaPrev = (raw?.dataEntregaPrevista || raw?.data_entrega_prevista || '').split(';').map((s: string) => s.trim());
+    const rawEntregaReal = (raw?.dataEntregaReal || raw?.data_entrega_real || '').split(';').map((s: string) => s.trim());
+
+    const datasRelacionaisEntrega = (raw?.datas || []).filter((d: any) => (d.tipo || '').toUpperCase() === 'ENTREGA');
+
+    const totalEntregas = Math.max(rawEntregaLocais.length, rawEntregaEnds.length, datasRelacionaisEntrega.length, 1);
+    const destinosMapeados: PontoRotaCompleto[] = [];
+
+    for (let j = 0; j < totalEntregas; j++) {
+      const dRel = datasRelacionaisEntrega[j];
+      destinosMapeados.push({
+        local: rawEntregaLocais[j] || '',
+        endereco: rawEntregaEnds[j] || (rawEntregaEnds.length === 1 && rawEntregaEnds[0] !== rawEntregaLocais[j] ? rawEntregaEnds[0] : ''),
+        dataPrevista: dRel?.dataPrevista || (rawEntregaPrev[j] === 'A confirmar' ? '' : (rawEntregaPrev[j] || '')),
+        dataReal: dRel?.dataReal || (rawEntregaReal[j] === 'A confirmar' ? '' : (rawEntregaReal[j] || ''))
+      });
+    }
 
     const rawPlaca = item.placa || '';
     const placasSplit = rawPlaca.split(' / ').map(p => p.trim());
@@ -1856,49 +1871,12 @@ export class DashboardComponent implements OnInit {
 
     const valorParaInput = item.numeroOperacional || item.rawId.toString();
 
-    // Mapeamento dinâmico de múltiplas datas
-    let arrColetas: DataItemForm[] = [];
-    let arrEntregas: DataItemForm[] = [];
-
-    if (raw?.datas && raw.datas.length > 0) {
-      arrColetas = raw.datas
-        .filter((d: any) => (d.tipo || '').toUpperCase() === 'COLETA')
-        .map((d: any) => ({ dataPrevista: d.dataPrevista || '', dataReal: d.dataReal || '' }));
-      arrEntregas = raw.datas
-        .filter((d: any) => (d.tipo || '').toUpperCase() === 'ENTREGA')
-        .map((d: any) => ({ dataPrevista: d.dataPrevista || '', dataReal: d.dataReal || '' }));
-    }
-
-    if (arrColetas.length === 0) {
-      const coletasPrev = (raw?.dataColetaPrevista || '').split(';').map((s: string) => s.trim());
-      const coletasReal = (raw?.dataColetaReal || '').split(';').map((s: string) => s.trim());
-      const totalC = Math.max(coletasPrev.length, coletasReal.length, 1);
-      for (let k = 0; k < totalC; k++) {
-        arrColetas.push({
-          dataPrevista: coletasPrev[k] === 'A confirmar' ? '' : (coletasPrev[k] || ''),
-          dataReal: coletasReal[k] === 'A confirmar' ? '' : (coletasReal[k] || '')
-        });
-      }
-    }
-
-    if (arrEntregas.length === 0) {
-      const entregasPrev = (raw?.dataEntregaPrevista || '').split(';').map((s: string) => s.trim());
-      const entregasReal = (raw?.dataEntregaReal || '').split(';').map((s: string) => s.trim());
-      const totalE = Math.max(entregasPrev.length, entregasReal.length, 1);
-      for (let k = 0; k < totalE; k++) {
-        arrEntregas.push({
-          dataPrevista: entregasPrev[k] === 'A confirmar' ? '' : (entregasPrev[k] || ''),
-          dataReal: entregasReal[k] === 'A confirmar' ? '' : (entregasReal[k] || '')
-        });
-      }
-    }
-
     this.tripForm = {
       id: valorParaInput,
       clienteSelect: item.cliente,
       tipoOperacao: raw?.tipoOperacao || raw?.tipo_operacao || 'Coleta',
-      origens: origensMapeadas.length > 0 ? origensMapeadas : [{ local: '', endereco: '' }],
-      destinos: destinosMapeados.length > 0 ? destinosMapeados : [{ local: '', endereco: '' }],
+      origens: origensMapeadas.length > 0 ? origensMapeadas : [{ local: '', endereco: '', dataPrevista: '', dataReal: '' }],
+      destinos: destinosMapeados.length > 0 ? destinosMapeados : [{ local: '', endereco: '', dataPrevista: '', dataReal: '' }],
       perfilVeiculo: raw?.perfilVeiculo || raw?.perfil_veiculo || '',
       carroceriaVeiculo: raw?.carroceriaVeiculo || raw?.carroceria_veiculo || 'Nenhum',
       motorista: item.motorista === 'A Contratar' ? '' : item.motorista,
@@ -1907,8 +1885,6 @@ export class DashboardComponent implements OnInit {
       agencia: raw?.fornecedorAgencia || raw?.fornecedor_agencia || 'Frota Própria',
       agenciador: raw?.agenciador || '',
       especialistaCospa: raw?.especialistaCospa || raw?.especialista_cospa || '',
-      datasColetas: arrColetas.length > 0 ? arrColetas : [{ dataPrevista: '', dataReal: '' }],
-      datasEntregas: arrEntregas.length > 0 ? arrEntregas : [{ dataPrevista: '', dataReal: '' }],
       valorReceber: raw?.valorAReceber || raw?.valor_a_receber || 0,
       adicionalReceber: raw?.valorAdicionalReceber || raw?.valor_adicional_receber || 0,
       tipoAdicionalReceber: raw?.tipoAdicionalReceber || raw?.tipo_adicional_receber || '',
@@ -1991,27 +1967,27 @@ export class DashboardComponent implements OnInit {
       placaFinal = p2;
     }
 
-    // Processamento das múltiplas datas (coletas e entregas)
-    const strColetaPrevista = this.tripForm.datasColetas.map(d => d.dataPrevista.trim()).filter(Boolean).join('; ');
-    const strColetaReal = this.tripForm.datasColetas.map(d => d.dataReal.trim()).filter(Boolean).join('; ');
-    const strEntregaPrevista = this.tripForm.datasEntregas.map(d => d.dataPrevista.trim()).filter(Boolean).join('; ');
-    const strEntregaReal = this.tripForm.datasEntregas.map(d => d.dataReal.trim()).filter(Boolean).join('; ');
+    // Processamento agregado e estruturado das datas
+    const strColetaPrevista = this.tripForm.origens.map(o => (o.dataPrevista || '').trim()).filter(Boolean).join('; ');
+    const strColetaReal = this.tripForm.origens.map(o => (o.dataReal || '').trim()).filter(Boolean).join('; ');
+    const strEntregaPrevista = this.tripForm.destinos.map(d => (d.dataPrevista || '').trim()).filter(Boolean).join('; ');
+    const strEntregaReal = this.tripForm.destinos.map(d => (d.dataReal || '').trim()).filter(Boolean).join('; ');
 
     const datasArrayPayload: ViagemDataItem[] = [
-      ...this.tripForm.datasColetas
-        .filter(d => d.dataPrevista.trim() || d.dataReal.trim())
-        .map((d, idx) => ({
+      ...this.tripForm.origens
+        .filter(o => o.dataPrevista?.trim() || o.dataReal?.trim())
+        .map((o, idx) => ({
           tipo: 'COLETA' as const,
-          dataPrevista: d.dataPrevista.trim().toUpperCase(),
-          dataReal: d.dataReal.trim().toUpperCase(),
+          dataPrevista: (o.dataPrevista || '').trim().toUpperCase(),
+          dataReal: (o.dataReal || '').trim().toUpperCase(),
           ordem: idx
         })),
-      ...this.tripForm.datasEntregas
-        .filter(d => d.dataPrevista.trim() || d.dataReal.trim())
+      ...this.tripForm.destinos
+        .filter(d => d.dataPrevista?.trim() || d.dataReal?.trim())
         .map((d, idx) => ({
           tipo: 'ENTREGA' as const,
-          dataPrevista: d.dataPrevista.trim().toUpperCase(),
-          dataReal: d.dataReal.trim().toUpperCase(),
+          dataPrevista: (d.dataPrevista || '').trim().toUpperCase(),
+          dataReal: (d.dataReal || '').trim().toUpperCase(),
           ordem: idx
         }))
     ];

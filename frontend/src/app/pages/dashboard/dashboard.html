@@ -627,7 +627,7 @@
             <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
             <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoDoc" (click)="fileInputVeiculoModal.click()" (dragover)="$event.preventDefault(); isDraggingVeiculoDoc = true;" (dragleave)="$event.preventDefault(); isDraggingVeiculoDoc = false;" (drop)="onVeiculoDocDrop($event)">
               <input #fileInputVeiculoModal type="file" (change)="onVeiculoDocSelected($event)" style="display: none;" accept="image/*,.pdf" />
-              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
               <span>{{ novoDocVeiculo.nomeArquivo || 'Clique, arraste o arquivo (PDF/Imagem) ou use Ctrl+V' }}</span>
             </div>
           </div>
@@ -718,40 +718,6 @@
         </div>
 
         <div class="form-row-2">
-          <!-- Origem com dropdown de locais cadastrados do cliente -->
-          <div class="f-group">
-            <label>Origem / Coleta</label>
-            <div class="dynamic-point-group" *ngFor="let orig of tripForm.origens; let i = index">
-              <div class="input-with-action">
-                <input type="text" [(ngModel)]="orig.local" (ngModelChange)="onOrigemLocalSelect(i, $event)" [attr.list]="'locais_orig_' + i" [name]="'orig_local_' + i" placeholder="SELECIONE OU DIGITE O LOCAL" />
-                <datalist [id]="'locais_orig_' + i">
-                  <option *ngFor="let loc of locaisDoClienteSelecionado" [value]="loc.nomeLocal">{{ loc.cidade }}/{{ loc.uf }} - {{ loc.endereco }}</option>
-                </datalist>
-                <button type="button" class="btn-add-point" (click)="addOrigem()" *ngIf="i === 0">+</button>
-                <button type="button" class="btn-rem-point" (click)="removeOrigem(i)" *ngIf="i > 0">✕</button>
-              </div>
-              <input type="text" [(ngModel)]="orig.endereco" [name]="'orig_end_' + i" placeholder="ENDEREÇO PREENCHIDO AUTOMATICAMENTE OU DIGITE MANUAL" />
-            </div>
-          </div>
-
-          <!-- Destino com dropdown de locais cadastrados do cliente -->
-          <div class="f-group">
-            <label>Destino / Entrega</label>
-            <div class="dynamic-point-group" *ngFor="let dest of tripForm.destinos; let j = index">
-              <div class="input-with-action">
-                <input type="text" [(ngModel)]="dest.local" (ngModelChange)="onDestinoLocalSelect(j, $event)" [attr.list]="'locais_dest_' + j" [name]="'dest_local_' + j" placeholder="SELECIONE OU DIGITE O LOCAL" />
-                <datalist [id]="'locais_dest_' + j">
-                  <option *ngFor="let loc of locaisDoClienteSelecionado" [value]="loc.nomeLocal">{{ loc.cidade }}/{{ loc.uf }} - {{ loc.endereco }}</option>
-                </datalist>
-                <button type="button" class="btn-add-point" (click)="addDestino()" *ngIf="j === 0">+</button>
-                <button type="button" class="btn-rem-point" (click)="removeDestino(j)" *ngIf="j > 0">✕</button>
-              </div>
-              <input type="text" [(ngModel)]="dest.endereco" [name]="'dest_end_' + j" placeholder="ENDEREÇO PREENCHIDO AUTOMATICAMENTE OU DIGITE MANUAL" />
-            </div>
-          </div>
-        </div>
-
-        <div class="form-row-2">
           <div class="f-group">
             <label>Perfil do Veículo</label>
             <select [(ngModel)]="tripForm.perfilVeiculo" name="perfilVeiculo">
@@ -785,7 +751,6 @@
             </datalist>
           </div>
 
-          <!-- Veículo 1 (Filtrado automaticamente pelo fornecedor vinculado ao motorista) -->
           <div class="f-group">
             <label>Veículo 1 - Cavalo/Tração (Digite a placa)</label>
             <input 
@@ -801,7 +766,6 @@
             </datalist>
           </div>
 
-          <!-- Veículo 2 (Filtrado automaticamente pelo fornecedor vinculado ao motorista) -->
           <div class="f-group">
             <label>Veículo 2 - Baú/Carreta (Digite a placa)</label>
             <input 
@@ -865,63 +829,105 @@
           </div>
         </div>
 
-        <!-- CRONOGRAMA UNIFICADO DE DATAS (COLETA & ENTREGA) -->
+        <!-- MÓDULO UNIFICADO: ITINERÁRIO & CRONOGRAMA (ORIGEM/COLETA & DESTINO/ENTREGA) -->
         <div class="schedule-unified-card">
           <div class="schedule-header">
-            <span class="schedule-main-title">CRONOGRAMA DE DATAS (COLETAS E ENTREGAS)</span>
+            <span class="schedule-main-title">ITINERÁRIO & CRONOGRAMA DE PARADAS</span>
           </div>
 
           <div class="schedule-columns-grid">
-            <!-- COLUNA DA ESQUERDA: COLETAS -->
+            <!-- COLUNA DA ESQUERDA: COLETAS / ORIGENS -->
             <div class="schedule-col">
               <div class="schedule-col-head">
-                <span class="col-tag tag-coleta">COLETAS ({{ tripForm.datasColetas.length }})</span>
-                <button type="button" class="btn-schedule-add" (click)="addColetaData()" title="Adicionar outra data de coleta">+ Nova Coleta</button>
+                <span class="col-tag tag-coleta">PONTOS DE COLETA / ORIGEM ({{ tripForm.origens.length }})</span>
+                <button type="button" class="btn-schedule-add" (click)="addOrigem()" title="Adicionar outra coleta">+ Nova Coleta</button>
               </div>
 
               <div class="schedule-items-stack">
-                <div class="schedule-item-row" *ngFor="let col of tripForm.datasColetas; let cIdx = index">
-                  <div class="schedule-item-badge">#{{ cIdx + 1 }}</div>
-                  
-                  <div class="schedule-inputs-group">
-                    <div class="f-group">
-                      <label>Prevista</label>
-                      <input type="text" [(ngModel)]="col.dataPrevista" [name]="'col_prev_' + cIdx" placeholder="EX: 13/08/2026 14:00" />
-                    </div>
-                    <div class="f-group">
-                      <label>Realizada</label>
-                      <input type="text" [(ngModel)]="col.dataReal" [name]="'col_real_' + cIdx" placeholder="EX: 13/08/2026 14:30" />
-                    </div>
+                <div class="itinerary-card" *ngFor="let orig of tripForm.origens; let i = index">
+                  <div class="itinerary-card-head">
+                    <span class="itinerary-index-badge">Coleta #{{ i + 1 }}</span>
+                    <button *ngIf="tripForm.origens.length > 1" type="button" class="btn-stop-del" (click)="removeOrigem(i)" title="Remover coleta">✕</button>
                   </div>
 
-                  <button *ngIf="tripForm.datasColetas.length > 1" type="button" class="btn-schedule-del" (click)="removeColetaData(cIdx)" title="Remover coleta">✕</button>
+                  <div class="f-group">
+                    <label>Local / Ponto de Apoio</label>
+                    <input 
+                      type="text" 
+                      [(ngModel)]="orig.local" 
+                      (ngModelChange)="onOrigemLocalSelect(i, $event)" 
+                      [attr.list]="'locais_orig_' + i" 
+                      [name]="'orig_local_' + i" 
+                      placeholder="SELECIONE OU DIGITE O LOCAL" 
+                    />
+                    <datalist [id]="'locais_orig_' + i">
+                      <option *ngFor="let loc of locaisDoClienteSelecionado" [value]="loc.nomeLocal">{{ loc.cidade }}/{{ loc.uf }} - {{ loc.endereco }}</option>
+                    </datalist>
+                  </div>
+
+                  <div class="f-group">
+                    <label>Endereço Completo</label>
+                    <input type="text" [(ngModel)]="orig.endereco" [name]="'orig_end_' + i" placeholder="ENDEREÇO PREENCHIDO AUTOMATICAMENTE OU DIGITE MANUAL" />
+                  </div>
+
+                  <div class="stop-dates-row">
+                    <div class="f-group">
+                      <label>Data Prevista</label>
+                      <input type="text" [(ngModel)]="orig.dataPrevista" [name]="'orig_prev_' + i" placeholder="EX: 13/08/2026 14:00" />
+                    </div>
+                    <div class="f-group">
+                      <label>Data Realizada</label>
+                      <input type="text" [(ngModel)]="orig.dataReal" [name]="'orig_real_' + i" placeholder="EX: 13/08/2026 14:30" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- COLUNA DA DIREITA: ENTREGAS -->
+            <!-- COLUNA DA DIREITA: ENTREGAS / DESTINOS -->
             <div class="schedule-col">
               <div class="schedule-col-head">
-                <span class="col-tag tag-entrega">ENTREGAS ({{ tripForm.datasEntregas.length }})</span>
-                <button type="button" class="btn-schedule-add" (click)="addEntregaData()" title="Adicionar outra data de entrega">+ Nova Entrega</button>
+                <span class="col-tag tag-entrega">PONTOS DE ENTREGA / DESTINO ({{ tripForm.destinos.length }})</span>
+                <button type="button" class="btn-schedule-add" (click)="addDestino()" title="Adicionar outra entrega">+ Nova Entrega</button>
               </div>
 
               <div class="schedule-items-stack">
-                <div class="schedule-item-row" *ngFor="let ent of tripForm.datasEntregas; let eIdx = index">
-                  <div class="schedule-item-badge">#{{ eIdx + 1 }}</div>
-
-                  <div class="schedule-inputs-group">
-                    <div class="f-group">
-                      <label>Prevista</label>
-                      <input type="text" [(ngModel)]="ent.dataPrevista" [name]="'ent_prev_' + eIdx" placeholder="EX: 14/08/2026 10:00" />
-                    </div>
-                    <div class="f-group">
-                      <label>Realizada</label>
-                      <input type="text" [(ngModel)]="ent.dataReal" [name]="'ent_real_' + eIdx" placeholder="EX: 14/08/2026 10:45" />
-                    </div>
+                <div class="itinerary-card" *ngFor="let dest of tripForm.destinos; let j = index">
+                  <div class="itinerary-card-head">
+                    <span class="itinerary-index-badge">Entrega #{{ j + 1 }}</span>
+                    <button *ngIf="tripForm.destinos.length > 1" type="button" class="btn-stop-del" (click)="removeDestino(j)" title="Remover entrega">✕</button>
                   </div>
 
-                  <button *ngIf="tripForm.datasEntregas.length > 1" type="button" class="btn-schedule-del" (click)="removeEntregaData(eIdx)" title="Remover entrega">✕</button>
+                  <div class="f-group">
+                    <label>Local / Ponto de Apoio</label>
+                    <input 
+                      type="text" 
+                      [(ngModel)]="dest.local" 
+                      (ngModelChange)="onDestinoLocalSelect(j, $event)" 
+                      [attr.list]="'locais_dest_' + j" 
+                      [name]="'dest_local_' + j" 
+                      placeholder="SELECIONE OU DIGITE O LOCAL" 
+                    />
+                    <datalist [id]="'locais_dest_' + j">
+                      <option *ngFor="let loc of locaisDoClienteSelecionado" [value]="loc.nomeLocal">{{ loc.cidade }}/{{ loc.uf }} - {{ loc.endereco }}</option>
+                    </datalist>
+                  </div>
+
+                  <div class="f-group">
+                    <label>Endereço Completo</label>
+                    <input type="text" [(ngModel)]="dest.endereco" [name]="'dest_end_' + j" placeholder="ENDEREÇO PREENCHIDO AUTOMATICAMENTE OU DIGITE MANUAL" />
+                  </div>
+
+                  <div class="stop-dates-row">
+                    <div class="f-group">
+                      <label>Data Prevista</label>
+                      <input type="text" [(ngModel)]="dest.dataPrevista" [name]="'dest_prev_' + j" placeholder="EX: 14/08/2026 10:00" />
+                    </div>
+                    <div class="f-group">
+                      <label>Data Realizada</label>
+                      <input type="text" [(ngModel)]="dest.dataReal" [name]="'dest_real_' + j" placeholder="EX: 14/08/2026 10:45" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

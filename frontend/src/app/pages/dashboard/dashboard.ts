@@ -362,6 +362,10 @@ export class DashboardComponent implements OnInit {
   }
 
   closeSidebar(): void {
+    this.closeSidebarInternal();
+  }
+
+  private closeSidebarInternal(): void {
     this.isSidebarOpen = false;
     this.cdr.detectChanges();
   }
@@ -430,40 +434,40 @@ export class DashboardComponent implements OnInit {
   baixarBackupZip(): void {
     const urlBackup = `${environment.apiUrl}/admin/backup/uploads-zip`;
     window.open(urlBackup, '_blank');
-    this.closeSidebar();
+    this.closeSidebarInternal();
   }
 
   onRestaurarBackupSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
-    if (!target.files || target.files.length > 0) {
-      const file = target.files[0];
-      if (!file.name.endsWith('.zip')) {
-        alert('Por favor, selecione um arquivo no formato .zip');
-        return;
-      }
+    if (!target || !target.files || target.files.length === 0) return;
 
-      if (!confirm('Deseja restaurar este backup completo? As fotos e o banco de dados serão atualizados com o conteúdo do .zip.')) {
-        target.value = '';
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      this.http.post(`${environment.apiUrl}/admin/backup/restaurar-zip`, formData, { responseType: 'text' })
-        .subscribe({
-          next: (res) => {
-            alert(res);
-            this.carregarTodosDados();
-            target.value = '';
-            this.closeSidebar();
-          },
-          error: (err) => {
-            alert('Erro ao restaurar backup: ' + (err.error || err.message));
-            target.value = '';
-          }
-        });
+    const file = target.files[0];
+    if (!file.name.endsWith('.zip')) {
+      alert('Por favor, selecione um arquivo no formato .zip');
+      return;
     }
+
+    if (!confirm('Deseja restaurar este backup completo? As fotos e o banco de dados serão atualizados com o conteúdo do .zip.')) {
+      target.value = '';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.http.post(`${environment.apiUrl}/admin/backup/restaurar-zip`, formData, { responseType: 'text' })
+      .subscribe({
+        next: (res) => {
+          alert(res);
+          this.carregarTodosDados();
+          target.value = '';
+          this.closeSidebarInternal();
+        },
+        error: (err) => {
+          alert('Erro ao restaurar backup: ' + (err.error || err.message));
+          target.value = '';
+        }
+      });
   }
 
   public isPdf(url: string | null | undefined): boolean {
@@ -1954,7 +1958,6 @@ export class DashboardComponent implements OnInit {
       cpfFinal = motSelected ? (motSelected.cpf || '') : '';
     }
 
-    // Limpeza de sufixos provenientes das opções do datalist
     const p1 = (this.tripForm.placa || '').split(' - ')[0].trim().toUpperCase();
     const p2 = (this.tripForm.placaSecundaria || '').split(' - ')[0].trim().toUpperCase();
     

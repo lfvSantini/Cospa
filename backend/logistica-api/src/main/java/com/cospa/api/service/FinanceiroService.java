@@ -1,6 +1,7 @@
 package com.cospa.api.service;
 
 import com.cospa.api.model.LancamentoFinanceiro;
+import com.cospa.api.model.StatusViagem;
 import com.cospa.api.model.TituloFinanceiro;
 import com.cospa.api.model.Viagem;
 import com.cospa.api.repository.LancamentoFinanceiroRepository;
@@ -216,7 +217,6 @@ public class FinanceiroService {
         }
 
         if (arquivo != null && !arquivo.isEmpty()) {
-            // Utiliza o método existente salvarArquivo(file, subpasta) do ArquivoService
             String url = arquivoService.salvarArquivo(arquivo, "comprovantes");
             lancamento.setComprovanteUrl(url);
         }
@@ -235,6 +235,15 @@ public class FinanceiroService {
 
             if (titulo.getSaldoEmAberto().compareTo(BigDecimal.ZERO) == 0) {
                 titulo.setStatus("QUITADO");
+
+                // === AUTOMATIZAÇÃO: Finaliza a viagem operacionalmente se estiver paga ===
+                if ("A PAGAR".equals(titulo.getTipo()) && titulo.getViagemId() != null) {
+                    viagemRepo.findById(titulo.getViagemId()).ifPresent(viagem -> {
+                        viagem.setStatus(StatusViagem.FINALIZADO);
+                        viagem.setPagoSaldo(true);
+                        viagemRepo.save(viagem);
+                    });
+                }
             } else if (somaRealizada.compareTo(BigDecimal.ZERO) > 0) {
                 titulo.setStatus("PARCIAL");
             } else {

@@ -315,11 +315,11 @@ export class FinanceiroComponent implements OnInit {
       error: (err) => console.error('Erro ao listar contas a pagar:', err)
     });
 
-    this.financeiroService.listarLancamentos().subscribe({
+this.financeiroService.listarLancamentos().subscribe({
       next: (dados) => {
         this.lancamentos = (dados || []).map(l => ({
           idLancamento: l.id,
-          idTitulo: l.titulo ? l.titulo.idTitulo : '-',
+          idTitulo: l.titulo ? ((l.titulo as any).idTitulo || (l.titulo as any).id || '-') : '-',
           idViagem: l.viagemId ? l.viagemId.toString() : '-',
           tipo: (l.tipo as TipoLancamento) || 'A RECEBER',
           etapa: (l.etapa as EtapaLancamento) || 'SALDO',
@@ -344,7 +344,7 @@ export class FinanceiroComponent implements OnInit {
 
   filtrarReceber(lista: TituloFinanceiro[]): TituloFinanceiro[] {
     return (lista || []).filter(item => {
-      const matchId = !this.filtroReceber.id || item.id.includes(this.filtroReceber.id.trim());
+      const matchId = !this.filtroReceber.id || item.id.includes(this.filtroReceber.id.trim().replace('#', ''));
       const matchCliente = !this.filtroReceber.cliente || item.cliente.toLowerCase().includes(this.filtroReceber.cliente.toLowerCase());
       const matchOp = !this.filtroReceber.operacao || item.operacao.toLowerCase().includes(this.filtroReceber.operacao.toLowerCase());
       const matchRota = !this.filtroReceber.numeroRota || item.numeroRota.toLowerCase().includes(this.filtroReceber.numeroRota.toLowerCase());
@@ -361,7 +361,7 @@ export class FinanceiroComponent implements OnInit {
 
   filtrarPagar(lista: TituloFinanceiro[]): TituloFinanceiro[] {
     return (lista || []).filter(item => {
-      const matchId = !this.filtroPagar.id || item.id.includes(this.filtroPagar.id.trim());
+      const matchId = !this.filtroPagar.id || item.id.includes(this.filtroPagar.id.trim().replace('#', ''));
       const matchCliente = !this.filtroPagar.cliente || item.cliente.toLowerCase().includes(this.filtroPagar.cliente.toLowerCase());
       const matchForn = !this.filtroPagar.fornecedor || (item.fornecedor || '').toLowerCase().includes(this.filtroPagar.fornecedor.toLowerCase());
       const matchRota = !this.filtroPagar.numeroRota || item.numeroRota.toLowerCase().includes(this.filtroPagar.numeroRota.toLowerCase());
@@ -375,9 +375,13 @@ export class FinanceiroComponent implements OnInit {
 
   filtrarLancamentos(lista: LancamentoItem[]): LancamentoItem[] {
     return (lista || []).filter(item => {
-      const matchId = !this.filtroLancamentos.idLancamento || item.idLancamento.toString().includes(this.filtroLancamentos.idLancamento);
+      const matchId = !this.filtroLancamentos.idLancamento || item.idLancamento.toString().includes(this.filtroLancamentos.idLancamento.trim().replace('#', ''));
       const matchTit = !this.filtroLancamentos.idTitulo || item.idTitulo.toLowerCase().includes(this.filtroLancamentos.idTitulo.toLowerCase());
-      const matchViagem = !this.filtroLancamentos.idViagem || item.idViagem.includes(this.filtroLancamentos.idViagem);
+      
+      const filtroViagem = this.filtroLancamentos.idViagem.trim().replace('#', '');
+      const itemViagem = (item.idViagem || '').replace('#', '').trim();
+      const matchViagem = !filtroViagem || itemViagem === filtroViagem;
+
       const matchTipo = !this.filtroLancamentos.tipo || item.tipo.toLowerCase().includes(this.filtroLancamentos.tipo.toLowerCase());
       const matchEtapa = !this.filtroLancamentos.etapa || item.etapa.toLowerCase().includes(this.filtroLancamentos.etapa.toLowerCase());
       const matchEnt = !this.filtroLancamentos.entidade || item.entidade.toLowerCase().includes(this.filtroLancamentos.entidade.toLowerCase());
@@ -396,8 +400,14 @@ export class FinanceiroComponent implements OnInit {
   }
 
   verLancamentosTitulo(item: TituloFinanceiro): void {
+    this.openedActionMenuId = null;
     this.activeTab = 'LANCAMENTOS';
-    this.filtroLancamentos.idTitulo = item.idTitulo;
+    
+    this.filtroLancamentos.idTitulo = '';
+    const idRotaLimpo = (item.id || '').replace('#', '').trim();
+    this.filtroLancamentos.idViagem = idRotaLimpo;
+
+    this.cdr.detectChanges();
   }
 
   abrirArquivo(url?: string): void {

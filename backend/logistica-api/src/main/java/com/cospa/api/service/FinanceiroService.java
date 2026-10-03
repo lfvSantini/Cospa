@@ -216,7 +216,8 @@ public class FinanceiroService {
         }
 
         if (arquivo != null && !arquivo.isEmpty()) {
-            String url = arquivoService.salvarComprovante(arquivo);
+            // Utiliza o método existente salvarArquivo(file, subpasta) do ArquivoService
+            String url = arquivoService.salvarArquivo(arquivo, "comprovantes");
             lancamento.setComprovanteUrl(url);
         }
 

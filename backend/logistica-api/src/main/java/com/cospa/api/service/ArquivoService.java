@@ -4,73 +4,60 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
 public class ArquivoService {
 
-    // Define a pasta onde os arquivos serão salvos (padrão 'uploads' na raiz da aplicação)
     @Value("${app.upload.dir:uploads}")
     private String uploadDir;
 
-    /**
-     * Salva o arquivo enviado no disco e retorna a URL relativa
-     */
-    public String salvarArquivo(MultipartFile file, String subpasta) {
+    public String salvarArquivo(MultipartFile file, String subdiretorio) {
         if (file == null || file.isEmpty()) {
-            throw new RuntimeException("O arquivo enviado está vazio.");
+            return null;
         }
 
         try {
-            // Cria o diretório se não existir (ex: uploads/comprovantes)
-            Path diretorioPath = Paths.get(uploadDir, subpasta);
-            if (!Files.exists(diretorioPath)) {
-                Files.createDirectories(diretorioPath);
+            Path diretorioDestino = Paths.get(uploadDir, subdiretorio).toAbsolutePath().normalize();
+            Files.createDirectories(diretorioDestino);
+
+            String nomeOriginal = file.getOriginalFilename();
+            String extensao = "";
+            if (nomeOriginal != null && nomeOriginal.contains(".")) {
+                extensao = nomeOriginal.substring(nomeOriginal.lastIndexOf("."));
             }
 
-            // Gera um nome único para o arquivo para evitar sobreposição
-            String extensao = getExtensaoArquivo(file.getOriginalFilename());
-            String nomeArquivoUnico = UUID.randomUUID().toString() + extensao;
+            String nomeArquivo = UUID.randomUUID().toString() + extensao;
+            Path caminhoArquivo = diretorioDestino.resolve(nomeArquivo);
 
-            Path destinoPath = diretorioPath.resolve(nomeArquivoUnico);
-            Files.copy(file.getInputStream(), destinoPath);
+            Files.copy(file.getInputStream(), caminhoArquivo, StandardCopyOption.REPLACE_EXISTING);
 
-            // Retorna a rota relativa para acesso via API
-            return "/" + uploadDir + "/" + subpasta + "/" + nomeArquivoUnico;
-
+            return "/uploads/" + (subdiretorio != null && !subdiretorio.isBlank() ? subdiretorio + "/" : "") + nomeArquivo;
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao salvar o arquivo no disco: " + e.getMessage(), e);
+            throw new RuntimeException("Falha ao salvar arquivo: " + e.getMessage(), e);
         }
     }
 
-    /**
-     * Deleta o arquivo físico do disco dado o caminho relativo
-     */
-    public void deletarArquivo(String urlArquivo) {
-        if (urlArquivo == null || urlArquivo.isBlank()) return;
+    public String salvarComprovante(MultipartFile file) {
+        return salvarArquivo(file, "comprovantes");
+    }
+
+    public boolean deletarArquivo(String caminhoRelativo) {
+        if (caminhoRelativo == null || caminhoRelativo.isBlank()) {
+            return false;
+        }
 
         try {
-            // Remove a barra inicial se houver para resolver o caminho
-            String caminhoRelativo = urlArquivo.startsWith("/") ? urlArquivo.substring(1) : urlArquivo;
-            Path caminhoPath = Paths.get(caminhoRelativo);
-
-            if (Files.exists(caminhoPath)) {
-                Files.delete(caminhoPath);
-            }
+            String caminhoLimpo = caminhoRelativo.replaceFirst("^/uploads/", "");
+            Path arquivo = Paths.get(uploadDir).resolve(caminhoLimpo).toAbsolutePath().normalize();
+            return Files.deleteIfExists(arquivo);
         } catch (IOException e) {
-            System.err.println("Aviso: Não foi possível deletar o arquivo físico: " + urlArquivo);
+            return false;
         }
-    }
-
-    private String getExtensaoArquivo(String nomeOriginal) {
-        if (nomeOriginal != null && nomeOriginal.contains(".")) {
-            return nomeOriginal.substring(nomeOriginal.lastIndexOf("."));
-        }
-        return ".dat";
     }
 }

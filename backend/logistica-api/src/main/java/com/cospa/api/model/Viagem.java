@@ -158,7 +158,7 @@ public class Viagem {
     private Boolean pagoAdicional = false;
 
     @Builder.Default
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = StatusViagemConverter.class)
     @Column(name = "status", length = 30, nullable = false)
     private StatusViagem status = StatusViagem.PROGRAMADO;
 

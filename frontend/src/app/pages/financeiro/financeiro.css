@@ -451,6 +451,13 @@
   overflow: visible;
 }
 
+/* Força o alinhamento à esquerda e espaçamento correto do cabeçalho da 3ª coluna na tabela de quitadas */
+.accordion-section[ng-reflect-ng-if*="QUITADAS"] .table-scrollable thead tr:first-child th:nth-child(3),
+.table-scrollable thead tr:first-child th:nth-child(3) {
+  text-align: left !important;
+  padding-left: 1.25rem !important;
+}
+
 .accordion-collapse {
   display: block;
   padding: 1rem;
@@ -573,16 +580,20 @@
 
 .col-actions-header,
 .col-actions-cell {
-  width: 110px !important;
-  min-width: 110px !important;
-  max-width: 110px !important;
+  width: 130px !important;
+  min-width: 130px !important;
+  max-width: 130px !important;
   position: relative;
   overflow: visible !important;
+  text-align: center !important;
 }
 
+/* ALINHAMENTO CORRETO DA COLUNA DE CLIENTE / FORNECEDOR */
 .col-principal-cell {
   font-weight: 700;
-  min-width: 190px !important;
+  min-width: 280px !important;
+  text-align: left !important;
+  padding-left: 1.25rem !important;
 }
 
 .table-filter-input {

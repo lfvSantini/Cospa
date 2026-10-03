@@ -86,7 +86,7 @@ export class FinanceiroComponent implements OnInit {
 
   isDarkMode: boolean = true;
   isSidebarOpen: boolean = false;
-  activeTab: 'RECEBER' | 'PAGAR' | 'LANCAMENTOS' = 'RECEBER';
+  activeTab: 'RECEBER' | 'PAGAR' | 'QUITADAS' | 'LANCAMENTOS' = 'RECEBER';
 
   openedActionMenuId: string | null = null;
 
@@ -182,19 +182,6 @@ export class FinanceiroComponent implements OnInit {
     this.carregarDadosFinanceiros();
   }
 
-  @HostListener('wheel', ['$event'])
-  onTableWheel(event: WheelEvent): void {
-    const target = event.target as HTMLElement;
-    const container = target.closest('.scrollable-table-container') as HTMLElement;
-
-    if (container && container.scrollWidth > container.clientWidth) {
-      if (!event.shiftKey && Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
-        container.scrollLeft += event.deltaY * 1.2;
-        event.preventDefault();
-      }
-    }
-  }
-
   toggleTheme(): void {
     this.isDarkMode = !this.isDarkMode;
     localStorage.setItem('cospa_theme', this.isDarkMode ? 'dark' : 'light');
@@ -235,6 +222,19 @@ export class FinanceiroComponent implements OnInit {
     event.stopPropagation();
     this.openedActionMenuId = this.openedActionMenuId === id ? null : id;
     this.cdr.detectChanges();
+  }
+  // Retorna apenas títulos em aberto para as abas principais
+  get receberAbertas(): TituloFinanceiro[] {
+    return this.contasReceber.filter(t => t.status !== 'QUITADO');
+  }
+
+  get pagarAbertas(): TituloFinanceiro[] {
+    return this.contasPagar.filter(t => t.status !== 'QUITADO');
+  }
+
+  // Retorna apenas o histórico de quitadas
+  get contasQuitadas(): TituloFinanceiro[] {
+    return [...this.contasReceber, ...this.contasPagar].filter(t => t.status === 'QUITADO');
   }
 
   get totalAReceber(): number {

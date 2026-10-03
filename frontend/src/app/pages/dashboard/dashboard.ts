@@ -141,10 +141,9 @@ export class DashboardComponent implements OnInit {
   openedActionMenuId: number | null = null;
 
   showAndamento: boolean = true;
-  showAPagar: boolean = true;
   showFinalizadas: boolean = false;
 
-  // OS 11 STATUS PADRONIZADOS
+  // 11 STATUS PADRONIZADOS
   listaStatus: string[] = [
     'PROGRAMADO',
     'A CONTRATAR',
@@ -277,12 +276,11 @@ export class DashboardComponent implements OnInit {
   };
 
   selectedViagem: ViagemItem | null = null;
-  selectedListOrigin: 'andamento' | 'aPagar' | 'finalizadas' = 'andamento';
+  selectedListOrigin: 'andamento' | 'finalizadas' = 'andamento';
   isEditing: boolean = false;
   motivoCancelamento: string = '';
 
   viagensAndamento: ViagemItem[] = [];
-  viagensAPagar: ViagemItem[] = [];
   viagensFinalizadas: ViagemItem[] = [];
 
   ngOnInit(): void {
@@ -293,7 +291,7 @@ export class DashboardComponent implements OnInit {
 
   // Contagem dinâmica para a barra superior
   contarPorStatus(st: string): number {
-    const todas = [...this.viagensAndamento, ...this.viagensAPagar, ...this.viagensFinalizadas];
+    const todas = [...this.viagensAndamento, ...this.viagensFinalizadas];
     return todas.filter(v => (v.status || '').toString().trim().toUpperCase() === st.trim().toUpperCase()).length;
   }
 
@@ -454,6 +452,33 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  trocarAbaFoto(aba: 'ADICIONAR' | 'LISTAR', event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.activePhotoTab = aba;
+    this.cdr.detectChanges();
+  }
+
+  trocarAbaMotoristaFoto(aba: 'ADICIONAR' | 'LISTAR', event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.activeMotoristaPhotoTab = aba;
+    this.cdr.detectChanges();
+  }
+
+  trocarAbaVeiculoFoto(aba: 'ADICIONAR' | 'LISTAR', event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.activeVeiculoPhotoTab = aba;
+    this.cdr.detectChanges();
+  }
+
   baixarBackupZip(): void {
     window.open(`${environment.apiUrl}/admin/backup/uploads-zip`, '_blank');
     this.closeSidebar();
@@ -532,7 +557,6 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // Preenchimento automático ao selecionar qualquer placa (Resolve a limitação apontada por Deymon)
   onPlacaSelectChange(): void {
     if (!this.tripForm.placa) return;
     let placaBusca = this.tripForm.placa.trim().toUpperCase();
@@ -688,7 +712,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // Busca de locais segura para nomes com barras (ex: 'AMBEV S/A')
   onClienteSelectChange(nomeCliente: string): void {
     if (!nomeCliente || !nomeCliente.trim()) {
       this.locaisDoClienteSelecionado = [];
@@ -739,12 +762,12 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  // ==================== CARREGAMENTO DAS VIAGENS (SIMPLIFICADO EM 2 LISTAS) ====================
   carregarViagens(): void {
     this.isLoading = true;
     this.viagemService.listarTodas().subscribe({
       next: (viagens: Viagem[]) => {
         this.viagensAndamento = [];
-        this.viagensAPagar = [];
         this.viagensFinalizadas = [];
 
         (viagens || []).forEach((v: Viagem) => {
@@ -753,8 +776,6 @@ export class DashboardComponent implements OnInit {
 
           if (st === 'FINALIZADO' || st === 'CANCELADA') {
             this.viagensFinalizadas.push(item);
-          } else if (st === 'A PAGAR' || st === 'ADIANTAMENTO PAGO' || st === 'SALDO PAGO') {
-            this.viagensAPagar.push(item);
           } else {
             this.viagensAndamento.push(item);
           }
@@ -828,20 +849,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  passarParaAPagar(item: ViagemItem): void {
-    if (!item.rawViagem) return;
-    const atualizada: any = { ...item.rawViagem, id: item.rawId, status: 'A PAGAR' };
-
-    this.viagemService.salvar(atualizada, true, item.rawId).subscribe({
-      next: () => {
-        this.showAPagar = true;
-        this.closeRowActions();
-        this.carregarViagens();
-      },
-      error: () => alert('Erro ao atualizar status para A PAGAR.')
-    });
-  }
-
   finalizarViagem(item: ViagemItem): void {
     if (!item.rawViagem) return;
     const atualizada: any = { ...item.rawViagem, id: item.rawId, status: 'FINALIZADO' };
@@ -865,33 +872,6 @@ export class DashboardComponent implements OnInit {
     this.activePhotoTab = (this.selectedViagem.fotos && this.selectedViagem.fotos.length > 0) ? 'LISTAR' : 'ADICIONAR';
     this.modalType = 'PHOTO';
     this.closeRowActions();
-    this.cdr.detectChanges();
-  }
-
-  trocarAbaFoto(aba: 'ADICIONAR' | 'LISTAR', event?: Event): void {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    this.activePhotoTab = aba;
-    this.cdr.detectChanges();
-  }
-
-  trocarAbaMotoristaFoto(aba: 'ADICIONAR' | 'LISTAR', event?: Event): void {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    this.activeMotoristaPhotoTab = aba;
-    this.cdr.detectChanges();
-  }
-
-  trocarAbaVeiculoFoto(aba: 'ADICIONAR' | 'LISTAR', event?: Event): void {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    this.activeVeiculoPhotoTab = aba;
     this.cdr.detectChanges();
   }
 
@@ -1757,7 +1737,7 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // ==================== VIAGENS ====================
+  // ==================== VIAGENS (FORMULÁRIO) ====================
   openNovaViagemModal(): void {
     this.isEditing = false;
     this.locaisDoClienteSelecionado = [];
@@ -1797,14 +1777,14 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  openEditarModal(item: ViagemItem, origin: 'andamento' | 'aPagar' | 'finalizadas'): void {
+  openEditarModal(item: ViagemItem, origin: 'andamento' | 'finalizadas'): void {
     this.isEditing = true;
     this.selectedViagem = item;
     this.selectedListOrigin = origin;
 
     const raw: any = item.rawViagem;
     
-    // 1. Extração de coletas (locais, endereços, links e datas)
+    // Coletas
     const rawColetaLocais = item.origem.map(o => o === '-' ? '' : o);
     const rawColetaEnds = (raw?.localColeta || raw?.local_coleta || '').split(';').map((s: string) => s.trim());
     const rawColetaPrev = (raw?.dataColetaPrevista || raw?.data_coleta_prevista || '').split(';').map((s: string) => s.trim());
@@ -1826,7 +1806,7 @@ export class DashboardComponent implements OnInit {
       });
     }
 
-    // 2. Extração de entregas (locais, endereços, links e datas)
+    // Entregas
     const rawEntregaLocais = item.destino.map(d => d === '-' ? '' : d);
     const rawEntregaEnds = (raw?.localEntrega || raw?.local_entrega || '').split(';').map((s: string) => s.trim());
     const rawEntregaPrev = (raw?.dataEntregaPrevista || raw?.data_entrega_prevista || '').split(';').map((s: string) => s.trim());
@@ -2085,7 +2065,7 @@ export class DashboardComponent implements OnInit {
     this.closeModal();
   }
 
-  openCancelarModal(item: ViagemItem, origin: 'andamento' | 'aPagar' | 'finalizadas'): void {
+  openCancelarModal(item: ViagemItem, origin: 'andamento' | 'finalizadas'): void {
     this.selectedViagem = item;
     this.selectedListOrigin = origin;
     this.motivoCancelamento = '';

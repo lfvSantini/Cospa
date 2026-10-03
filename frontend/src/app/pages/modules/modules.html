@@ -32,19 +32,19 @@
     <p class="page-subtitle">Escolha o ambiente de trabalho que deseja acessar</p>
 
     <div class="modules-grid">
-      <!-- Módulo Ativo: Gestão de Viagens -->
+      <!-- Módulo 1: Gestão de Viagens -->
       <div class="module-card active-card" (click)="selectModule('/dashboard')">
         <div class="card-icon-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="1" y="3" width="15" height="13"></rect>
-            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+            <polygon points="16 8 20 8 23 11 23 16 16 8"></polygon>
             <circle cx="5.5" cy="18.5" r="2.5"></circle>
             <circle cx="18.5" cy="18.5" r="2.5"></circle>
           </svg>
         </div>
         <div class="card-info">
           <h3>Gestão de Viagens</h3>
-          <p>Controle operacional de frotas, motoristas, rotas e lançamentos.</p>
+          <p>Controle operacional de frotas, motoristas, rotas e painéis.</p>
         </div>
         <div class="card-arrow">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -53,8 +53,8 @@
         </div>
       </div>
 
-      <!-- Módulo Futuro 1: Financeiro -->
-      <div class="module-card disabled-card">
+      <!-- Módulo 2: Financeiro & Faturamento -->
+      <div class="module-card active-card" (click)="selectModule('/financeiro')">
         <div class="card-icon-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="12" y1="1" x2="12" y2="23"></line>
@@ -64,13 +64,17 @@
         <div class="card-info">
           <div class="card-title-row">
             <h3>Financeiro & Faturamento</h3>
-            <span class="badge-soon">Em Breve</span>
           </div>
-          <p>Contas a pagar, fluxo de caixa e relatórios fiscais.</p>
+          <p>Contas a pagar, contas a receber, liquidações e extrato de lançamentos.</p>
+        </div>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </div>
       </div>
 
-      <!-- Módulo Futuro 2: Gestão de Pátio -->
+      <!-- Módulo 3: Gestão de Pátio -->
       <div class="module-card disabled-card">
         <div class="card-icon-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -90,7 +94,7 @@
     </div>
 
     <div class="footer-action">
-      <button class="btn-logout" (click)="authService.logout()">
+      <button type="button" class="btn-logout" (click)="logout()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
           <polyline points="16 17 21 12 16 7"></polyline>

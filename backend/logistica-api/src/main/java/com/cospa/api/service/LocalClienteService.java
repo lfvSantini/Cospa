@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LocalClienteService {
@@ -59,6 +58,7 @@ public class LocalClienteService {
         local.setCidade(dto.cidade().toUpperCase().trim());
         local.setUf(dto.uf().toUpperCase().trim());
         local.setComplemento(dto.complemento() != null ? dto.complemento().toUpperCase().trim() : "");
+        local.setLinkLocalizacao(dto.linkLocalizacao() != null ? dto.linkLocalizacao().trim() : null);
         local.setAtivo(dto.ativo() != null ? dto.ativo() : true);
 
         return new LocalClienteDTO(repository.save(local));

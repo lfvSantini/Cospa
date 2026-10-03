@@ -26,6 +26,11 @@ public class LocalClienteController {
     public ResponseEntity<List<LocalClienteDTO>> buscarPorCliente(@PathVariable Long clienteId) {
         return ResponseEntity.ok(service.buscarPorClienteId(clienteId));
     }
+    
+    @GetMapping("/buscar")
+    public ResponseEntity<List<LocalClienteDTO>> buscarPorNomeClienteQuery(@RequestParam("nome") String nome) {
+        return ResponseEntity.ok(service.buscarPorNomeCliente(nome));
+    }
 
     @GetMapping("/cliente-nome/{nome}")
     public ResponseEntity<List<LocalClienteDTO>> buscarPorNomeCliente(@PathVariable String nome) {
@@ -49,6 +54,7 @@ public class LocalClienteController {
                 dto.cidade(),
                 dto.uf(),
                 dto.complemento(),
+                dto.linkLocalizacao(),
                 dto.ativo()
         ));
         return ResponseEntity.ok(atualizado);

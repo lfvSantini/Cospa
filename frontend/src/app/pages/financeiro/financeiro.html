@@ -1,0 +1,518 @@
+<div class="dashboard-wrapper" [class.light-mode]="!isDarkMode" (click)="closeAllMenus()">
+  <div class="sidebar-backdrop" *ngIf="isSidebarOpen" (click)="closeSidebar()"></div>
+
+  <!-- Sidebar Lateral -->
+  <aside class="sidebar" [class.open]="isSidebarOpen" (click)="$event.stopPropagation()">
+    <div class="sidebar-header">
+      <img src="assets/img/Logo.png" alt="COSPA" class="sidebar-logo" />
+      <button type="button" class="btn-close-sidebar" (click)="closeSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="sidebar-section-title">MÓDULOS</div>
+    <nav class="sidebar-nav">
+      <button type="button" class="sidebar-item" (click)="goToViagens()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="3" width="15" height="13"></rect>
+          <polygon points="16 8 20 8 23 11 23 16 16 8"></polygon>
+          <circle cx="5.5" cy="18.5" r="2.5"></circle>
+          <circle cx="18.5" cy="18.5" r="2.5"></circle>
+        </svg>
+        <span>Painel de Viagens</span>
+      </button>
+
+      <button type="button" class="sidebar-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+        <span>Financeiro</span>
+      </button>
+
+      <button type="button" class="sidebar-item disabled">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        <span>Estoque & Pátio</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-version">
+        <span>COSPA {{ appVersion }}</span>
+      </div>
+      <button type="button" class="btn-hub" (click)="goToModules()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <span>Trocar de Módulo</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Navbar -->
+  <header class="navbar" (click)="$event.stopPropagation()">
+    <div class="navbar-left">
+      <button type="button" class="btn-hamburger" (click)="toggleSidebar()" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <img src="assets/img/Logo.png" alt="COSPA" class="navbar-logo" />
+      <div class="navbar-divider"></div>
+      <span class="navbar-title">Gestão Financeira</span>
+    </div>
+
+    <div class="navbar-right">
+      <button type="button" class="theme-toggle" (click)="toggleTheme()" aria-label="Alterar Tema">
+        <div class="toggle-track" [class.dark]="isDarkMode">
+          <div class="toggle-thumb">
+            <svg *ngIf="!isDarkMode" class="theme-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="12" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg *ngIf="isDarkMode" class="theme-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </div>
+        </div>
+      </button>
+
+      <button type="button" class="btn-logout-nav" (click)="logout()" title="Sair">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span>Sair</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="dashboard-content">
+    <!-- CARDS DE KPI FINANCEIRO -->
+    <div class="kpi-grid">
+      <div class="kpi-card income">
+        <span class="kpi-label">TOTAL A RECEBER (EM ABERTO)</span>
+        <strong class="kpi-value">{{ totalAReceber | currency:'BRL':'symbol':'1.2-2' }}</strong>
+      </div>
+      <div class="kpi-card expense">
+        <span class="kpi-label">TOTAL A PAGAR (EM ABERTO)</span>
+        <strong class="kpi-value">{{ totalAPagar | currency:'BRL':'symbol':'1.2-2' }}</strong>
+      </div>
+      <div class="kpi-card balance">
+        <span class="kpi-label">SALDO REALIZADO CONSOLIDADO</span>
+        <strong class="kpi-value">{{ totalRealizadoMes | currency:'BRL':'symbol':'1.2-2' }}</strong>
+      </div>
+    </div>
+
+    <!-- NAVEGAÇÃO DE ABAS DO MÓDULO -->
+    <div class="finance-tabs-header">
+      <div class="tabs-group">
+        <button type="button" [class.active]="activeTab === 'RECEBER'" (click)="activeTab = 'RECEBER'">
+          Contas a Receber ({{ contasReceber.length }})
+        </button>
+        <button type="button" [class.active]="activeTab === 'PAGAR'" (click)="activeTab = 'PAGAR'">
+          Contas a Pagar ({{ contasPagar.length }})
+        </button>
+        <button type="button" [class.active]="activeTab === 'LANCAMENTOS'" (click)="activeTab = 'LANCAMENTOS'">
+          Lançamentos Financeiros ({{ lancamentos.length }})
+        </button>
+      </div>
+      <span class="scroll-hint">⇄ Desloque horizontalmente na tabela para ver todas as colunas</span>
+    </div>
+
+    <!-- TABELA 1: CONTAS A RECEBER -->
+    <section class="accordion-section" *ngIf="activeTab === 'RECEBER'">
+      <div class="accordion-collapse">
+        <div class="table-container scrollable-table-container">
+          <table class="cospa-table table-scrollable">
+            <thead>
+              <tr>
+                <th class="col-id-header">ID</th>
+                <th class="col-actions-header">AÇÕES</th>
+                <th>CLIENTE</th>
+                <th>OPERAÇÃO</th>
+                <th>Nº ROTA</th>
+                <th>Nº CTE COSPA</th>
+                <th>Nº MDFE</th>
+                <th>ORIGEM</th>
+                <th>DESTINO</th>
+                <th>PERFIL VEÍCULO</th>
+                <th>VALOR FRETE</th>
+                <th>VALOR ADICIONAL</th>
+                <th>DATA COLETA</th>
+                <th>DATA ENTREGA</th>
+                <th>DATA PAGAMENTO</th>
+                <th>PLACA</th>
+                <th>STATUS</th>
+                <th>OBS</th>
+                <th>DT ADIANTAMENTO</th>
+                <th>ADIANT. RECEBIDO?</th>
+                <th>DATA SALDO</th>
+                <th>SALDO RECEBIDO?</th>
+                <th>DATA ADICIONAL</th>
+                <th>ADIC. RECEBIDO?</th>
+                <th>ID TÍTULO</th>
+                <th>TOTAL PREVISTO</th>
+                <th>TOTAL REALIZADO</th>
+                <th>SALDO EM ABERTO</th>
+                <th>PRÓXIMO VENCIMENTO</th>
+              </tr>
+              <tr class="filter-row">
+                <th class="col-id-header"><input type="text" [(ngModel)]="filtroReceber.id" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th class="col-actions-header"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.cliente" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.operacao" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.numeroRota" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.numeroCteCospa" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.numeroMdfe" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.origem" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.destino" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.perfilVeiculo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.valorFrete" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.valorAdicional" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.dataColeta" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.dataEntrega" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.dataPagamento" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.placa" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.status" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.obs" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.dataAdiantamento" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.adiantamentoRecebido" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.dataSaldo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.saldoRecebido" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.dataAdicional" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.adicionalRecebido" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.idTitulo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.totalPrevisto" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.totalRealizado" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.saldoEmAberto" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.proximoVencimento" placeholder="Filtrar..." class="table-filter-input"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filtrarReceber(contasReceber)" [class.row-menu-open]="openedActionMenuId === item.id">
+                <td class="col-id-cell"><span class="badge-system-id">#{{ item.id }}</span></td>
+                <td class="col-actions-cell">
+                  <div class="row-dropdown-wrapper">
+                    <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)">
+                      <span>Ações</span>
+                      <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </button>
+                    <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
+                      <button type="button" class="row-menu-item item-finalizar" (click)="abrirModalBaixa(item)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span>Dar Baixa</span>
+                      </button>
+                      <button type="button" class="row-menu-item" (click)="verLancamentosTitulo(item)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line></svg>
+                        <span>Ver Parcelas</span>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+                <td class="col-principal-cell">{{ item.cliente }}</td>
+                <td>{{ item.operacao }}</td>
+                <td class="col-rota">{{ item.numeroRota || '-' }}</td>
+                <td>{{ item.numeroCteCospa || '-' }}</td>
+                <td>{{ item.numeroMdfe || '-' }}</td>
+                <td>{{ item.origem }}</td>
+                <td>{{ item.destino }}</td>
+                <td>{{ item.perfilVeiculo || '-' }}</td>
+                <td>{{ item.valorFrete | currency:'BRL':'symbol':'1.2-2' }}</td>
+                <td>{{ item.valorAdicional | currency:'BRL':'symbol':'1.2-2' }}</td>
+                <td>{{ item.dataColeta || '-' }}</td>
+                <td>{{ item.dataEntrega || '-' }}</td>
+                <td>{{ item.dataPagamento || '-' }}</td>
+                <td>{{ item.placa || '-' }}</td>
+                <td>
+                  <span class="status-pill" [ngClass]="{
+                    'status-quitado': item.status === 'QUITADO',
+                    'status-pendente': item.status === 'PENDENTE',
+                    'status-parcial': item.status === 'PARCIAL',
+                    'status-vencido': item.status === 'VENCIDO'
+                  }">{{ item.status }}</span>
+                </td>
+                <td>{{ item.obs || '-' }}</td>
+                <td>{{ item.dataAdiantamento || '-' }}</td>
+                <td><span class="badge-check" [class.check-sim]="item.adiantamentoRecebido === 'SIM'">{{ item.adiantamentoRecebido || 'NÃO' }}</span></td>
+                <td>{{ item.dataSaldo || '-' }}</td>
+                <td><span class="badge-check" [class.check-sim]="item.saldoRecebido === 'SIM'">{{ item.saldoRecebido || 'NÃO' }}</span></td>
+                <td>{{ item.dataAdicional || '-' }}</td>
+                <td><span class="badge-check" [class.check-sim]="item.adicionalRecebido === 'SIM'">{{ item.adicionalRecebido || 'NÃO' }}</span></td>
+                <td>{{ item.idTitulo }}</td>
+                <td><strong>{{ item.totalPrevisto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
+                <td class="text-green">{{ item.totalRealizado | currency:'BRL':'symbol':'1.2-2' }}</td>
+                <td class="text-orange"><strong>{{ item.saldoEmAberto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
+                <td>{{ item.proximoVencimento || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TABELA 2: CONTAS A PAGAR -->
+    <section class="accordion-section" *ngIf="activeTab === 'PAGAR'">
+      <div class="accordion-collapse">
+        <div class="table-container scrollable-table-container">
+          <table class="cospa-table table-scrollable">
+            <thead>
+              <tr>
+                <th class="col-id-header">ID</th>
+                <th class="col-actions-header">AÇÕES</th>
+                <th>FORNECEDOR / TRANSPORTADOR</th>
+                <th>CLIENTE</th>
+                <th>OPERAÇÃO</th>
+                <th>Nº ROTA</th>
+                <th>Nº CTE</th>
+                <th>Nº MDFE</th>
+                <th>ORIGEM</th>
+                <th>DESTINO</th>
+                <th>PERFIL VEÍCULO</th>
+                <th>VALOR FRETE</th>
+                <th>VALOR ADICIONAL</th>
+                <th>DATA COLETA</th>
+                <th>DATA ENTREGA</th>
+                <th>DATA PAGAMENTO</th>
+                <th>PLACA</th>
+                <th>STATUS</th>
+                <th>OBS</th>
+                <th>DT ADIANTAMENTO</th>
+                <th>ADIANT. PAGO?</th>
+                <th>DATA SALDO</th>
+                <th>SALDO PAGO?</th>
+                <th>DATA ADICIONAL</th>
+                <th>ADIC. PAGO?</th>
+                <th>ANEXO COMPROVANTE</th>
+                <th>ID TÍTULO</th>
+                <th>TOTAL PREVISTO</th>
+                <th>TOTAL REALIZADO</th>
+                <th>SALDO EM ABERTO</th>
+                <th>PRÓXIMO VENCIMENTO</th>
+              </tr>
+              <tr class="filter-row">
+                <th class="col-id-header"><input type="text" [(ngModel)]="filtroPagar.id" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th class="col-actions-header"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.fornecedor" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.cliente" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.operacao" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.numeroRota" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.numeroCte" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.numeroMdfe" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.origem" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.destino" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.perfilVeiculo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.valorFrete" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.valorAdicional" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.dataColeta" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.dataEntrega" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.dataPagamento" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.placa" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.status" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.obs" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.dataAdiantamento" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.adiantamentoPago" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.dataSaldo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.saldoPago" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.dataAdicional" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.adicionalPago" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.idTitulo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.totalPrevisto" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.totalRealizado" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.saldoEmAberto" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.proximoVencimento" placeholder="Filtrar..." class="table-filter-input"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filtrarPagar(contasPagar)" [class.row-menu-open]="openedActionMenuId === item.id">
+                <td class="col-id-cell"><span class="badge-system-id">#{{ item.id }}</span></td>
+                <td class="col-actions-cell">
+                  <div class="row-dropdown-wrapper">
+                    <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)">
+                      <span>Ações</span>
+                      <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </button>
+                    <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
+                      <button type="button" class="row-menu-item item-finalizar" (click)="abrirModalBaixa(item)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span>Registrar Pagto</span>
+                      </button>
+                      <button type="button" class="row-menu-item" (click)="verLancamentosTitulo(item)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line></svg>
+                        <span>Ver Parcelas</span>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+                <td class="col-principal-cell">{{ item.fornecedor }}</td>
+                <td>{{ item.cliente }}</td>
+                <td>{{ item.operacao }}</td>
+                <td class="col-rota">{{ item.numeroRota || '-' }}</td>
+                <td>{{ item.numeroCte || '-' }}</td>
+                <td>{{ item.numeroMdfe || '-' }}</td>
+                <td>{{ item.origem }}</td>
+                <td>{{ item.destino }}</td>
+                <td>{{ item.perfilVeiculo || '-' }}</td>
+                <td>{{ item.valorFrete | currency:'BRL':'symbol':'1.2-2' }}</td>
+                <td>{{ item.valorAdicional | currency:'BRL':'symbol':'1.2-2' }}</td>
+                <td>{{ item.dataColeta || '-' }}</td>
+                <td>{{ item.dataEntrega || '-' }}</td>
+                <td>{{ item.dataPagamento || '-' }}</td>
+                <td>{{ item.placa || '-' }}</td>
+                <td>
+                  <span class="status-pill" [ngClass]="{
+                    'status-quitado': item.status === 'QUITADO',
+                    'status-pendente': item.status === 'PENDENTE',
+                    'status-parcial': item.status === 'PARCIAL',
+                    'status-vencido': item.status === 'VENCIDO'
+                  }">{{ item.status }}</span>
+                </td>
+                <td>{{ item.obs || '-' }}</td>
+                <td>{{ item.dataAdiantamento || '-' }}</td>
+                <td><span class="badge-check" [class.check-sim]="item.adiantamentoPago === 'SIM'">{{ item.adiantamentoPago || 'NÃO' }}</span></td>
+                <td>{{ item.dataSaldo || '-' }}</td>
+                <td><span class="badge-check" [class.check-sim]="item.saldoPago === 'SIM'">{{ item.saldoPago || 'NÃO' }}</span></td>
+                <td>{{ item.dataAdicional || '-' }}</td>
+                <td><span class="badge-check" [class.check-sim]="item.adicionalPago === 'SIM'">{{ item.adicionalPago || 'NÃO' }}</span></td>
+                <td>
+                  <button *ngIf="item.comprovanteUrl" type="button" class="btn-comprovante" (click)="abrirArquivo(item.comprovanteUrl)">Ver Anexo</button>
+                  <span *ngIf="!item.comprovanteUrl" class="text-muted">-</span>
+                </td>
+                <td>{{ item.idTitulo }}</td>
+                <td><strong>{{ item.totalPrevisto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
+                <td class="text-green">{{ item.totalRealizado | currency:'BRL':'symbol':'1.2-2' }}</td>
+                <td class="text-red"><strong>{{ item.saldoEmAberto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
+                <td>{{ item.proximoVencimento || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TABELA 3: LANÇAMENTOS FINANCEIROS -->
+    <section class="accordion-section" *ngIf="activeTab === 'LANCAMENTOS'">
+      <div class="accordion-collapse">
+        <div class="table-container scrollable-table-container">
+          <table class="cospa-table table-scrollable">
+            <thead>
+              <tr>
+                <th class="col-id-header">ID LANÇ.</th>
+                <th class="col-actions-header">AÇÕES</th>
+                <th>ID TÍTULO</th>
+                <th>ID VIAGEM</th>
+                <th>TIPO</th>
+                <th>ETAPA</th>
+                <th>TIPO DE ADICIONAL</th>
+                <th>CLIENTE / FORNECEDOR</th>
+                <th>VALOR PREVISTO</th>
+                <th>DATA VENCIMENTO</th>
+                <th>VALOR REALIZADO</th>
+                <th>DATA EFETIVA</th>
+                <th>SALDO EM ABERTO</th>
+                <th>STATUS FINANCEIRO</th>
+                <th>Nº CTE</th>
+                <th>Nº MDFE</th>
+                <th>COMPROVANTE</th>
+                <th>OBS</th>
+              </tr>
+              <tr class="filter-row">
+                <th class="col-id-header"><input type="text" [(ngModel)]="filtroLancamentos.idLancamento" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th class="col-actions-header"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.idTitulo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.idViagem" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.tipo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.etapa" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.tipoAdicional" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.entidade" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.valorPrevisto" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.dataVencimento" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.valorRealizado" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.dataEfetiva" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.saldoEmAberto" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.status" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.numeroCte" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.numeroMdfe" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.obs" placeholder="Filtrar..." class="table-filter-input"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let lanc of filtrarLancamentos(lancamentos)" [class.row-menu-open]="openedActionMenuId === ('lanc_' + lanc.idLancamento)">
+                <td class="col-id-cell"><span class="badge-system-id">#{{ lanc.idLancamento }}</span></td>
+                <td class="col-actions-cell">
+                  <div class="row-dropdown-wrapper">
+                    <button type="button" class="btn-row-action" (click)="toggleRowActions($event, 'lanc_' + lanc.idLancamento)">
+                      <span>Ações</span>
+                      <svg class="chevron-icon" [class.rotate]="openedActionMenuId === ('lanc_' + lanc.idLancamento)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </button>
+                    <div class="row-dropdown-menu" *ngIf="openedActionMenuId === ('lanc_' + lanc.idLancamento)" (click)="$event.stopPropagation()">
+                      <button type="button" class="row-menu-item item-finalizar" (click)="abrirModalBaixaLancamento(lanc)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span>Baixar Parcela</span>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ lanc.idTitulo }}</td>
+                <td>#{{ lanc.idViagem }}</td>
+                <td><span class="badge-tipo" [class.tipo-rec]="lanc.tipo === 'A RECEBER'" [class.tipo-pag]="lanc.tipo === 'A PAGAR'">{{ lanc.tipo }}</span></td>
+                <td><strong>{{ lanc.etapa }}</strong></td>
+                <td>{{ lanc.tipoAdicional || '-' }}</td>
+                <td class="col-principal-cell">{{ lanc.entidade }}</td>
+                <td>{{ lanc.valorPrevisto | currency:'BRL':'symbol':'1.2-2' }}</td>
+                <td>{{ lanc.dataVencimento }}</td>
+                <td class="text-green">{{ lanc.valorRealizado | currency:'BRL':'symbol':'1.2-2' }}</td>
+                <td>{{ lanc.dataEfetiva || '-' }}</td>
+                <td><strong>{{ lanc.saldoEmAberto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
+                <td>
+                  <span class="status-pill" [ngClass]="{
+                    'status-quitado': lanc.status === 'QUITADO',
+                    'status-pendente': lanc.status === 'PENDENTE',
+                    'status-parcial': lanc.status === 'PARCIAL',
+                    'status-vencido': lanc.status === 'VENCIDO'
+                  }">{{ lanc.status }}</span>
+                </td>
+                <td>{{ lanc.numeroCte || '-' }}</td>
+                <td>{{ lanc.numeroMdfe || '-' }}</td>
+                <td>
+                  <button *ngIf="lanc.comprovanteUrl" type="button" class="btn-comprovante" (click)="abrirArquivo(lanc.comprovanteUrl)">Anexo</button>
+                  <span *ngIf="!lanc.comprovanteUrl" class="text-muted">-</span>
+                </td>
+                <td>{{ lanc.obs || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

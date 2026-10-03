@@ -2,6 +2,7 @@ package com.cospa.api.controller;
 
 import com.cospa.api.dto.ViagemRequestDTO;
 import com.cospa.api.dto.ViagemResponseDTO;
+import com.cospa.api.model.StatusViagem;
 import com.cospa.api.model.Viagem;
 import com.cospa.api.service.ViagemService;
 import jakarta.validation.Valid;
@@ -50,6 +51,15 @@ public class ViagemController {
     @PutMapping("/{id}")
     public ResponseEntity<ViagemResponseDTO> atualizar(@PathVariable Long id, @RequestBody @Valid ViagemRequestDTO dto) {
         return viagemService.atualizar(id, dto)
+                .map(v -> ResponseEntity.ok(new ViagemResponseDTO(v)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ViagemResponseDTO> atualizarStatusRapido(
+            @PathVariable Long id,
+            @RequestParam("status") StatusViagem status) {
+        return viagemService.atualizarStatus(id, status)
                 .map(v -> ResponseEntity.ok(new ViagemResponseDTO(v)))
                 .orElse(ResponseEntity.notFound().build());
     }

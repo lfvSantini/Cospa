@@ -36,6 +36,10 @@ export class ModulesComponent implements OnInit {
     this.router.navigate(['/dashboard']);
   }
 
+  goToFinanceiro(): void {
+    this.router.navigate(['/financeiro']);
+  }
+
   logout(): void {
     this.authService.logout();
   }

@@ -1,0 +1,1 @@
+ALTER TABLE locais_cliente ADD COLUMN link_localizacao VARCHAR(500) NULL;

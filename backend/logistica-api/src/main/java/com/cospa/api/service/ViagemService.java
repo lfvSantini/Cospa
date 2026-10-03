@@ -19,6 +19,9 @@ public class ViagemService {
     @Autowired
     private ViagemRepository repository;
 
+    @Autowired
+    private FinanceiroService financeiroService;
+
     @Transactional(readOnly = true)
     public List<Viagem> listarTodas() {
         return repository.findAllByOrderByIdDesc();
@@ -46,6 +49,8 @@ public class ViagemService {
             salva = repository.save(salva);
         }
 
+        financeiroService.gerarTitulosDaViagem(salva);
+
         return salva;
     }
 
@@ -58,7 +63,11 @@ public class ViagemService {
                 viagem.setNumeroOperacional(dto.getNumeroOperacional().trim());
             }
 
-            return repository.save(viagem);
+            Viagem atualizada = repository.save(viagem);
+
+            financeiroService.gerarTitulosDaViagem(atualizada);
+
+            return atualizada;
         });
     }
 
@@ -66,7 +75,9 @@ public class ViagemService {
     public Optional<Viagem> atualizarStatus(Long id, StatusViagem status) {
         return repository.findById(id).map(viagem -> {
             viagem.setStatus(status);
-            return repository.save(viagem);
+            Viagem salva = repository.save(viagem);
+            financeiroService.gerarTitulosDaViagem(salva);
+            return salva;
         });
     }
 
@@ -89,7 +100,9 @@ public class ViagemService {
             String motivoFormatado = (motivo != null && !motivo.isBlank()) ? motivo.trim() : "Sem motivo informado";
 
             viagem.setObservacao(obsAtual + "[CANCELADA]: " + motivoFormatado);
-            return repository.save(viagem);
+            Viagem salva = repository.save(viagem);
+            financeiroService.gerarTitulosDaViagem(salva);
+            return salva;
         });
     }
 
@@ -97,7 +110,9 @@ public class ViagemService {
     public Optional<Viagem> finalizar(Long id) {
         return repository.findById(id).map(viagem -> {
             viagem.setStatus(StatusViagem.FINALIZADO);
-            return repository.save(viagem);
+            Viagem salva = repository.save(viagem);
+            financeiroService.gerarTitulosDaViagem(salva);
+            return salva;
         });
     }
 

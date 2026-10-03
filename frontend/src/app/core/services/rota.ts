@@ -13,6 +13,7 @@ export interface LocalCliente {
   cidade: string;
   uf: string;
   complemento?: string;
+  linkLocalizacao?: string;
   ativo?: boolean;
 }
 

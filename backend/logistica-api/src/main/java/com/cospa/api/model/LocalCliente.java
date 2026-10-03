@@ -35,6 +35,9 @@ public class LocalCliente {
     @Column(length = 150)
     private String complemento;
 
+    @Column(name = "link_localizacao", length = 500)
+    private String linkLocalizacao;
+
     @Column(nullable = false)
     private Boolean ativo = true;
 
@@ -66,6 +69,9 @@ public class LocalCliente {
 
     public String getComplemento() { return complemento; }
     public void setComplemento(String complemento) { this.complemento = complemento; }
+
+    public String getLinkLocalizacao() { return linkLocalizacao; }
+    public void setLinkLocalizacao(String linkLocalizacao) { this.linkLocalizacao = linkLocalizacao; }
 
     public Boolean getAtivo() { return ativo; }
     public void setAtivo(Boolean ativo) { this.ativo = ativo; }

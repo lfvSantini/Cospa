@@ -60,6 +60,8 @@ public class SecurityConfig {
                             "/api/fornecedores/**",
                             "/api/viagens",
                             "/api/viagens/**",
+                            "/api/financeiro",
+                            "/api/financeiro/**",
                             "/api/rotas",
                             "/api/rotas/**"
                     ).permitAll();

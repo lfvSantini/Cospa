@@ -12,6 +12,7 @@ public record LocalClienteDTO(
         String cidade,
         String uf,
         String complemento,
+        String linkLocalizacao,
         Boolean ativo
 ) {
     public LocalClienteDTO(LocalCliente local) {
@@ -25,6 +26,7 @@ public record LocalClienteDTO(
                 local.getCidade(),
                 local.getUf(),
                 local.getComplemento(),
+                local.getLinkLocalizacao(),
                 local.getAtivo()
         );
     }

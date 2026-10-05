@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface TituloFinanceiroRepository extends JpaRepository<TituloFinanceiro, Long> {
     List<TituloFinanceiro> findByTipoOrderByIdDesc(String tipo);
     Optional<TituloFinanceiro> findByViagemIdAndTipo(Long viagemId, String tipo);
+    Optional<TituloFinanceiro> findByIdTitulo(String idTitulo); // Adicionado para busca segura
 }

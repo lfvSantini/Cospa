@@ -33,9 +33,9 @@ export interface ComprovanteItem {
 }
 
 export interface ViagemItem {
-  id: string; 
-  rawId: number; 
-  numeroOperacional: string; 
+  id: string;
+  rawId: number;
+  numeroOperacional: string;
   cliente: string;
   origem: string[];
   destino: string[];
@@ -137,7 +137,7 @@ export class DashboardComponent implements OnInit {
   isDarkMode: boolean = true;
   isSidebarOpen: boolean = false;
   isManageOpen: boolean = false;
-  
+
   openedActionMenuId: number | null = null;
 
   showAndamento: boolean = true;
@@ -243,7 +243,7 @@ export class DashboardComponent implements OnInit {
   ];
 
   tripForm = {
-    id: '', 
+    id: '',
     clienteSelect: '',
     tipoOperacao: 'Coleta' as TipoOperacao,
     origens: [{ local: '', endereco: '', linkLocalizacao: '', dataPrevista: '', dataReal: '' }] as PontoRotaCompleto[],
@@ -581,27 +581,27 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  addOrigem(): void { 
-    this.tripForm.origens.push({ local: '', endereco: '', linkLocalizacao: '', dataPrevista: '', dataReal: '' }); 
-    this.cdr.detectChanges(); 
+  addOrigem(): void {
+    this.tripForm.origens.push({ local: '', endereco: '', linkLocalizacao: '', dataPrevista: '', dataReal: '' });
+    this.cdr.detectChanges();
   }
 
-  removeOrigem(index: number): void { 
+  removeOrigem(index: number): void {
     if (this.tripForm.origens.length > 1) {
-      this.tripForm.origens.splice(index, 1); 
-      this.cdr.detectChanges(); 
+      this.tripForm.origens.splice(index, 1);
+      this.cdr.detectChanges();
     }
   }
 
-  addDestino(): void { 
-    this.tripForm.destinos.push({ local: '', endereco: '', linkLocalizacao: '', dataPrevista: '', dataReal: '' }); 
-    this.cdr.detectChanges(); 
+  addDestino(): void {
+    this.tripForm.destinos.push({ local: '', endereco: '', linkLocalizacao: '', dataPrevista: '', dataReal: '' });
+    this.cdr.detectChanges();
   }
 
-  removeDestino(index: number): void { 
+  removeDestino(index: number): void {
     if (this.tripForm.destinos.length > 1) {
-      this.tripForm.destinos.splice(index, 1); 
-      this.cdr.detectChanges(); 
+      this.tripForm.destinos.splice(index, 1);
+      this.cdr.detectChanges();
     }
   }
 
@@ -794,7 +794,7 @@ export class DashboardComponent implements OnInit {
   private mapViagemParaItem(v: any): ViagemItem {
     const rawOrigem = v.origem || v.origem_nome || v.origemNome || '';
     const rawDestino = v.destino || v.destino_nome || v.destinoNome || '';
-    
+
     const origens = rawOrigem ? rawOrigem.split(';').map((s: string) => s.trim()).filter((s: string) => s.length > 0) : [];
     const destinos = rawDestino ? rawDestino.split(';').map((s: string) => s.trim()).filter((s: string) => s.length > 0) : [];
 
@@ -831,8 +831,8 @@ export class DashboardComponent implements OnInit {
   filtrarListaViagens(lista: ViagemItem[]): ViagemItem[] {
     return (lista || []).filter(item => {
       const matchId = !this.filtroColunas.id || item.rawId.toString().includes(this.filtroColunas.id.trim().replace(/^#/, ''));
-      const matchRota = !this.filtroColunas.numeroRota || 
-        item.id.toLowerCase().includes(this.filtroColunas.numeroRota.toLowerCase()) || 
+      const matchRota = !this.filtroColunas.numeroRota ||
+        item.id.toLowerCase().includes(this.filtroColunas.numeroRota.toLowerCase()) ||
         item.numeroOperacional.toLowerCase().includes(this.filtroColunas.numeroRota.toLowerCase());
 
       const matchCliente = !this.filtroColunas.cliente || item.cliente.toLowerCase().includes(this.filtroColunas.cliente.toLowerCase());
@@ -852,7 +852,7 @@ export class DashboardComponent implements OnInit {
   finalizarViagem(item: ViagemItem): void {
     if (!item.rawViagem) return;
     const atualizada: any = { ...item.rawViagem, id: item.rawId, status: 'FINALIZADO' };
-    
+
     this.viagemService.salvar(atualizada, true, item.rawId).subscribe({
       next: () => {
         this.showFinalizadas = true;
@@ -969,30 +969,30 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  abrirPreviewFoto(url: string): void { 
+  abrirPreviewFoto(url: string): void {
     const urlFormatada = this.sanitizarUrlArquivo(url);
     if (this.isPdf(urlFormatada)) {
       window.open(urlFormatada, '_blank');
       return;
     }
     this.previousModalType = this.modalType as any;
-    this.modalType = null; 
-    this.previewImageUrl = urlFormatada; 
-    this.cdr.detectChanges(); 
+    this.modalType = null;
+    this.previewImageUrl = urlFormatada;
+    this.cdr.detectChanges();
   }
 
-  abrirImagemNovaAba(event: Event, url: string): void { 
-    event.stopPropagation(); 
-    window.open(this.sanitizarUrlArquivo(url), '_blank'); 
+  abrirImagemNovaAba(event: Event, url: string): void {
+    event.stopPropagation();
+    window.open(this.sanitizarUrlArquivo(url), '_blank');
   }
 
-  fecharPreviewFoto(): void { 
+  fecharPreviewFoto(): void {
     this.previewImageUrl = null;
     if (this.previousModalType) {
       this.modalType = this.previousModalType;
       this.previousModalType = null;
     }
-    this.cdr.detectChanges(); 
+    this.cdr.detectChanges();
   }
 
   // ==================== MOTORISTAS ====================
@@ -1327,7 +1327,7 @@ export class DashboardComponent implements OnInit {
     }
 
     const idAtual = this.isEditingVeiculo ? this.veiculoForm.id : null;
-    const placaExistente = this.veiculosList.find(v => 
+    const placaExistente = this.veiculosList.find(v =>
       v.placa.toUpperCase().trim() === placaLimpa && v.id !== idAtual
     );
 
@@ -1742,7 +1742,7 @@ export class DashboardComponent implements OnInit {
     this.isEditing = false;
     this.locaisDoClienteSelecionado = [];
     this.tripForm = {
-      id: '', 
+      id: '',
       clienteSelect: '',
       tipoOperacao: 'Coleta',
       origens: [{ local: '', endereco: '', linkLocalizacao: '', dataPrevista: '', dataReal: '' }],
@@ -1783,7 +1783,7 @@ export class DashboardComponent implements OnInit {
     this.selectedListOrigin = origin;
 
     const raw: any = item.rawViagem;
-    
+
     // Coletas
     const rawColetaLocais = item.origem.map(o => o === '-' ? '' : o);
     const rawColetaEnds = (raw?.localColeta || raw?.local_coleta || '').split(';').map((s: string) => s.trim());
@@ -1899,7 +1899,7 @@ export class DashboardComponent implements OnInit {
 
     const p1 = (this.tripForm.placa || '').split(' - ')[0].trim().toUpperCase();
     const p2 = (this.tripForm.placaSecundaria || '').split(' - ')[0].trim().toUpperCase();
-    
+
     let placaFinal = '-';
     if (p1 && p2) {
       placaFinal = `${p1} / ${p2}`;
@@ -1947,8 +1947,8 @@ export class DashboardComponent implements OnInit {
       numeroOperacional: rawIdInput,
       numero_operacional: rawIdInput,
       cliente: nomeClienteFinal.toUpperCase(),
-      tipoOperacao: this.tripForm.tipoOperacao,
-      tipo_operacao: this.tripForm.tipoOperacao,
+      tipoOperacao: this.normalizarTipoOperacao(this.tripForm.tipoOperacao),
+      tipo_operacao: this.normalizarTipoOperacao(this.tripForm.tipoOperacao),
 
       origem: strOrigemLocal,
       origemNome: strOrigemLocal,
@@ -2044,9 +2044,20 @@ export class DashboardComponent implements OnInit {
         const msg = err.error?.message || err.error?.reason || (typeof err.error === 'string' ? err.error : 'Erro ao salvar rota.');
         alert('Erro ao salvar rota: ' + msg);
       }
+
     });
   }
 
+  private normalizarTipoOperacao(op: string): string {
+    if (!op) return 'COLETA';
+    const upper = op.toUpperCase().trim();
+    if (upper.includes('TRANSF')) return 'TRANSFERENCIA';
+    if (upper.includes('COLET')) return 'COLETA';
+    if (upper.includes('ENTREG')) return 'ENTREGA';
+    if (upper.includes('DEVOL')) return 'DEVOLUCAO';
+    return upper.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+  
   openObsModal(item: ViagemItem): void {
     this.selectedViagem = item;
     this.modalType = 'OBS';

@@ -295,13 +295,14 @@ export class DashboardComponent implements OnInit {
     return todas.filter(v => (v.status || '').toString().trim().toUpperCase() === st.trim().toUpperCase()).length;
   }
 
-  // Alteração direta e rápida de status na linha da tabela
   alterarStatusRapido(item: ViagemItem, novoStatus: string): void {
     if (!item || !item.rawId) return;
     const statusAntigo = item.status;
     item.status = novoStatus;
 
-    this.http.patch(`${environment.apiUrl}/viagens/${item.rawId}/status?status=${encodeURIComponent(novoStatus)}`, {}).subscribe({
+    const statusFormatado = novoStatus.trim().toUpperCase().replace(/\s+/g, '_');
+
+    this.http.patch(`${environment.apiUrl}/viagens/${item.rawId}/status?status=${encodeURIComponent(statusFormatado)}`, {}).subscribe({
       next: () => {
         this.carregarViagens();
       },

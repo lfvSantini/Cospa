@@ -2050,14 +2050,22 @@ export class DashboardComponent implements OnInit {
 
   private normalizarTipoOperacao(op: string): string {
     if (!op) return 'COLETA';
-    const upper = op.toUpperCase().trim();
-    if (upper.includes('TRANSF')) return 'TRANSFERENCIA';
-    if (upper.includes('COLET')) return 'COLETA';
-    if (upper.includes('ENTREG')) return 'ENTREGA';
-    if (upper.includes('DEVOL')) return 'DEVOLUCAO';
-    return upper.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    const valorLimpo = op.toUpperCase().trim();
+
+    const dePara: { [key: string]: string } = {
+      'TRANSFERÊNCIA': 'TRANSFERENCIA',
+      'TRANSFERENCIA': 'TRANSFERENCIA',
+      'COLETA': 'COLETA',
+      'ENTREGA': 'ENTREGA',
+      'DEVOLUÇÃO': 'DEVOLUCAO',
+      'DEVOLUCAO': 'DEVOLUCAO'
+    };
+
+    return dePara[valorLimpo] || valorLimpo.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
-  
+
+
   openObsModal(item: ViagemItem): void {
     this.selectedViagem = item;
     this.modalType = 'OBS';

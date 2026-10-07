@@ -238,7 +238,7 @@ export class DashboardComponent implements OnInit {
     'Transferência', 'Coleta', 'Entrega', 'Devolução'
   ];
 
-  tiposAdicionalOpcoes: TipoAdicional[] = [
+  tiposAdicionalOpcoes: string[] = [
     'Ajudante', 'Diária', 'Multa', 'Complemento de frete'
   ];
 
@@ -258,10 +258,10 @@ export class DashboardComponent implements OnInit {
     especialistaCospa: '',
     valorReceber: 0,
     adicionalReceber: 0,
-    tipoAdicionalReceber: '' as TipoAdicional | '',
+    tipoAdicionalReceber: '' as string,
     valorPagarMotorista: 0,
     adicionalPagarMotorista: 0,
-    tipoAdicionalPagar: '' as TipoAdicional | '',
+    tipoAdicionalPagar: '' as string,
     valorAgenciador: 0,
     valorEspecialistaCospa: 0,
     pagamentoLiberado: false,
@@ -289,7 +289,6 @@ export class DashboardComponent implements OnInit {
     this.carregarTodosDados();
   }
 
-  // Função auxiliar universal para ignorar acentos e maiúsculas/minúsculas
   private normalizarTexto(texto: string | null | undefined): string {
     if (!texto) return '';
     return texto
@@ -788,7 +787,6 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // ==================== CARREGAMENTO DAS VIAGENS ====================
   carregarViagens(): void {
     this.isLoading = true;
     this.viagemService.listarTodas().subscribe({
@@ -870,9 +868,7 @@ export class DashboardComponent implements OnInit {
       const matchEntrega = !this.filtroColunas.entregaPrevista || this.normalizarTexto(item.entregaPrevista).includes(this.normalizarTexto(this.filtroColunas.entregaPrevista));
       const matchPlaca = !this.filtroColunas.placa || this.normalizarTexto(item.placa).includes(this.normalizarTexto(this.filtroColunas.placa));
       
-      // Filtro sem sensibilidade a acentos para o motorista (ex: "fla" encontra "FLÁVIO")
       const matchMotorista = !this.filtroColunas.motorista || this.normalizarTexto(item.motorista).includes(this.normalizarTexto(this.filtroColunas.motorista));
-      
       const matchStatus = !this.filtroColunas.status || this.normalizarTexto(item.status).includes(this.normalizarTexto(this.filtroColunas.status));
       const matchObs = !this.filtroColunas.obs || this.normalizarTexto(item.obs).includes(this.normalizarTexto(this.filtroColunas.obs));
 
@@ -1026,7 +1022,6 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // ==================== MOTORISTAS ====================
   carregarMotoristas(): void {
     this.motoristaService.listar().subscribe({
       next: (data: Motorista[]) => {
@@ -1259,7 +1254,6 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // ==================== VEÍCULOS ====================
   carregarVeiculos(): void {
     this.veiculoService.listar().subscribe({
       next: (data: any[]) => {
@@ -1539,7 +1533,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // ==================== CLIENTES ====================
   carregarClientes(): void {
     this.clienteService.listar().subscribe({
       next: (data: Cliente[]) => {
@@ -1652,7 +1645,6 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // ==================== FORNECEDORES ====================
   carregarFornecedores(): void {
     this.fornecedorService.listar().subscribe({
       next: (data: Fornecedor[]) => {
@@ -1768,7 +1760,6 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // ==================== VIAGENS (FORMULÁRIO) ====================
   openNovaViagemModal(): void {
     this.isEditing = false;
     this.locaisDoClienteSelecionado = [];
@@ -1956,29 +1947,42 @@ export class DashboardComponent implements OnInit {
     const strEntregaPrevista = this.tripForm.destinos.map(d => (d.dataPrevista || '').trim()).join('; ');
     const strEntregaReal = this.tripForm.destinos.map(d => (d.dataReal || '').trim()).join('; ');
 
-    // Construção resiliente do array de datas relacionais (garante ordem correta sem erros de nulos)
+    const normalizarTipoAdicional = (tipo: string | null | undefined): string | null => {
+      if (!tipo || tipo === 'Nenhum' || tipo.trim() === '') return null;
+      const t = tipo.trim().toUpperCase();
+      if (t.includes('DIARIA') || t.includes('DIÁRIA')) return 'DIARIA';
+      if (t.includes('AJUDANTE')) return 'AJUDANTE';
+      if (t.includes('MULTA')) return 'MULTA';
+      if (t.includes('COMPLEMENTO')) return 'COMPLEMENTO_DE_FRETE';
+      return t;
+    };
+
     const datasArrayPayload: ViagemDataItem[] = [
       ...this.tripForm.origens.map((o, idx) => ({
         tipo: 'COLETA' as const,
         dataPrevista: (o.dataPrevista || '').trim().toUpperCase() || 'A CONFIRMAR',
-        dataReal: (o.dataReal || '').trim().toUpperCase(),
+        dataReal: (o.dataReal || '').trim().toUpperCase() || '',
         ordem: idx
       })),
       ...this.tripForm.destinos.map((d, idx) => ({
         tipo: 'ENTREGA' as const,
         dataPrevista: (d.dataPrevista || '').trim().toUpperCase() || 'A CONFIRMAR',
-        dataReal: (d.dataReal || '').trim().toUpperCase(),
+        dataReal: (d.dataReal || '').trim().toUpperCase() || '',
         ordem: idx
       }))
     ];
+
+    const tipoOpNormalizado = this.normalizarTipoOperacao(this.tripForm.tipoOperacao);
+    const tipoAdicRecNormalizado = normalizarTipoAdicional(this.tripForm.tipoAdicionalReceber);
+    const tipoAdicPagNormalizado = normalizarTipoAdicional(this.tripForm.tipoAdicionalPagar);
 
     const payload: any = {
       ...(this.isEditing ? { id: idOriginal } : {}),
       numeroOperacional: rawIdInput,
       numero_operacional: rawIdInput,
       cliente: nomeClienteFinal.toUpperCase(),
-      tipoOperacao: this.normalizarTipoOperacao(this.tripForm.tipoOperacao),
-      tipo_operacao: this.normalizarTipoOperacao(this.tripForm.tipoOperacao),
+      tipoOperacao: tipoOpNormalizado,
+      tipo_operacao: tipoOpNormalizado,
 
       origem: strOrigemLocal,
       origemNome: strOrigemLocal,
@@ -2027,15 +2031,15 @@ export class DashboardComponent implements OnInit {
       valor_a_receber: Number(this.tripForm.valorReceber) || 0,
       valorAdicionalReceber: Number(this.tripForm.adicionalReceber) || 0,
       valor_adicional_receber: Number(this.tripForm.adicionalReceber) || 0,
-      tipoAdicionalReceber: this.tripForm.tipoAdicionalReceber || null,
-      tipo_adicional_receber: this.tripForm.tipoAdicionalReceber || null,
+      tipoAdicionalReceber: tipoAdicRecNormalizado,
+      tipo_adicional_receber: tipoAdicRecNormalizado,
 
       valorAPagar: Number(this.tripForm.valorPagarMotorista) || 0,
       valor_a_pagar: Number(this.tripForm.valorPagarMotorista) || 0,
       valorAdicionalPagar: Number(this.tripForm.adicionalPagarMotorista) || 0,
       valor_adicional_pagar: Number(this.tripForm.adicionalPagarMotorista) || 0,
-      tipoAdicionalPagar: this.tripForm.tipoAdicionalPagar || null,
-      tipo_adicional_pagar: this.tripForm.tipoAdicionalPagar || null,
+      tipoAdicionalPagar: tipoAdicPagNormalizado,
+      tipo_adicional_pagar: tipoAdicPagNormalizado,
 
       valorAgenciador: Number(this.tripForm.valorAgenciador) || 0,
       valor_agenciador: Number(this.tripForm.valorAgenciador) || 0,
@@ -2071,8 +2075,25 @@ export class DashboardComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Erro detalhado ao salvar rota:', err);
-        const msg = err.error?.message || err.error?.reason || (typeof err.error === 'string' ? err.error : (err.message || 'Erro ao salvar rota.'));
-        alert('Erro ao salvar rota: ' + msg);
+
+        let detalhe = 'Verifique os dados preenchidos.';
+        if (err.error) {
+          if (typeof err.error === 'string') {
+            detalhe = err.error;
+          } else if (err.error.errors && Array.isArray(err.error.errors)) {
+            detalhe = err.error.errors.map((e: any) => `${e.field}: ${e.defaultMessage}`).join(' | ');
+          } else if (err.error.message) {
+            detalhe = err.error.message;
+          } else if (err.error.detail) {
+            detalhe = err.error.detail;
+          } else {
+            detalhe = JSON.stringify(err.error);
+          }
+        } else if (err.message) {
+          detalhe = err.message;
+        }
+
+        alert('Erro ao salvar rota (400):\n' + detalhe);
       }
     });
   }

@@ -27,6 +27,7 @@ export interface TituloFinanceiro {
   dataColeta: string;
   dataEntrega: string;
   dataPagamento?: string;
+  motorista?: string;
   fornecedor?: string;
   placa: string;
   status: StatusFinanceiro;
@@ -123,6 +124,8 @@ export class FinanceiroComponent implements OnInit {
 
   filtroPagar = {
     id: '',
+    motorista: '',
+    fornecedor: '',
     cliente: '',
     operacao: '',
     numeroRota: '',
@@ -136,7 +139,6 @@ export class FinanceiroComponent implements OnInit {
     dataColeta: '',
     dataEntrega: '',
     dataPagamento: '',
-    fornecedor: '',
     placa: '',
     status: '',
     obs: '',
@@ -182,6 +184,17 @@ export class FinanceiroComponent implements OnInit {
     this.carregarDadosFinanceiros();
   }
 
+  // Normalização para remover diacríticos e acentos nas buscas
+  private normalizarTexto(texto: string | null | undefined): string {
+    if (!texto) return '';
+    return texto
+      .toString()
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+
   toggleTheme(): void {
     this.isDarkMode = !this.isDarkMode;
     localStorage.setItem('cospa_theme', this.isDarkMode ? 'dark' : 'light');
@@ -223,7 +236,7 @@ export class FinanceiroComponent implements OnInit {
     this.openedActionMenuId = this.openedActionMenuId === id ? null : id;
     this.cdr.detectChanges();
   }
-  // Retorna apenas títulos em aberto para as abas principais
+
   get receberAbertas(): TituloFinanceiro[] {
     return this.contasReceber.filter(t => t.status !== 'QUITADO');
   }
@@ -232,7 +245,6 @@ export class FinanceiroComponent implements OnInit {
     return this.contasPagar.filter(t => t.status !== 'QUITADO');
   }
 
-  // Retorna apenas o histórico de quitadas
   get contasQuitadas(): TituloFinanceiro[] {
     return [...this.contasReceber, ...this.contasPagar].filter(t => t.status === 'QUITADO');
   }
@@ -285,37 +297,41 @@ export class FinanceiroComponent implements OnInit {
 
     this.financeiroService.listarContasPagar().subscribe({
       next: (dados) => {
-        this.contasPagar = (dados || []).map(t => ({
-          id: t.viagemId ? t.viagemId.toString() : t.id.toString(),
-          idTitulo: t.idTitulo,
-          fornecedor: t.entidadeNome,
-          cliente: t.operacao || '-',
-          operacao: t.operacao || '-',
-          numeroRota: t.numeroRota || '-',
-          numeroCte: t.numeroCte || '-',
-          numeroMdfe: t.numeroMdfe || '-',
-          origem: t.origem || '-',
-          destino: t.destino || '-',
-          perfilVeiculo: t.perfilVeiculo || '-',
-          valorFrete: t.valorFrete || 0,
-          valorAdicional: t.valorAdicional || 0,
-          dataColeta: t.dataColeta || '-',
-          dataEntrega: t.dataEntrega || '-',
-          dataPagamento: t.dataPagamento || '-',
-          placa: t.placa || '-',
-          status: (t.status as StatusFinanceiro) || 'PENDENTE',
-          obs: t.observacao || '-',
-          totalPrevisto: t.totalPrevisto || 0,
-          totalRealizado: t.totalRealizado || 0,
-          saldoEmAberto: t.saldoEmAberto || 0,
-          proximoVencimento: t.proximoVencimento || '-'
-        }));
+        this.contasPagar = (dados || []).map(t => {
+          const item = t as any;
+          return {
+            id: item.viagemId ? item.viagemId.toString() : item.id.toString(),
+            idTitulo: item.idTitulo,
+            motorista: item.motorista || item.nomeMotorista || item.entidadeNome || '-',
+            fornecedor: item.fornecedor || item.fornecedorAgencia || item.fornecedorNome || '-',
+            cliente: item.cliente || item.operacao || '-',
+            operacao: item.operacao || '-',
+            numeroRota: item.numeroRota || '-',
+            numeroCte: item.numeroCte || '-',
+            numeroMdfe: item.numeroMdfe || '-',
+            origem: item.origem || '-',
+            destino: item.destino || '-',
+            perfilVeiculo: item.perfilVeiculo || '-',
+            valorFrete: item.valorFrete || 0,
+            valorAdicional: item.valorAdicional || 0,
+            dataColeta: item.dataColeta || '-',
+            dataEntrega: item.dataEntrega || '-',
+            dataPagamento: item.dataPagamento || '-',
+            placa: item.placa || '-',
+            status: (item.status as StatusFinanceiro) || 'PENDENTE',
+            obs: item.observacao || '-',
+            totalPrevisto: item.totalPrevisto || 0,
+            totalRealizado: item.totalRealizado || 0,
+            saldoEmAberto: item.saldoEmAberto || 0,
+            proximoVencimento: item.proximoVencimento || '-'
+          };
+        });
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Erro ao listar contas a pagar:', err)
     });
 
-this.financeiroService.listarLancamentos().subscribe({
+    this.financeiroService.listarLancamentos().subscribe({
       next: (dados) => {
         this.lancamentos = (dados || []).map(l => ({
           idLancamento: l.id,
@@ -345,14 +361,14 @@ this.financeiroService.listarLancamentos().subscribe({
   filtrarReceber(lista: TituloFinanceiro[]): TituloFinanceiro[] {
     return (lista || []).filter(item => {
       const matchId = !this.filtroReceber.id || item.id.includes(this.filtroReceber.id.trim().replace('#', ''));
-      const matchCliente = !this.filtroReceber.cliente || item.cliente.toLowerCase().includes(this.filtroReceber.cliente.toLowerCase());
-      const matchOp = !this.filtroReceber.operacao || item.operacao.toLowerCase().includes(this.filtroReceber.operacao.toLowerCase());
-      const matchRota = !this.filtroReceber.numeroRota || item.numeroRota.toLowerCase().includes(this.filtroReceber.numeroRota.toLowerCase());
-      const matchCte = !this.filtroReceber.numeroCteCospa || (item.numeroCteCospa || '').toLowerCase().includes(this.filtroReceber.numeroCteCospa.toLowerCase());
-      const matchMdfe = !this.filtroReceber.numeroMdfe || (item.numeroMdfe || '').toLowerCase().includes(this.filtroReceber.numeroMdfe.toLowerCase());
-      const matchOrigem = !this.filtroReceber.origem || item.origem.toLowerCase().includes(this.filtroReceber.origem.toLowerCase());
-      const matchDestino = !this.filtroReceber.destino || item.destino.toLowerCase().includes(this.filtroReceber.destino.toLowerCase());
-      const matchStatus = !this.filtroReceber.status || item.status.toLowerCase().includes(this.filtroReceber.status.toLowerCase());
+      const matchCliente = !this.filtroReceber.cliente || this.normalizarTexto(item.cliente).includes(this.normalizarTexto(this.filtroReceber.cliente));
+      const matchOp = !this.filtroReceber.operacao || this.normalizarTexto(item.operacao).includes(this.normalizarTexto(this.filtroReceber.operacao));
+      const matchRota = !this.filtroReceber.numeroRota || this.normalizarTexto(item.numeroRota).includes(this.normalizarTexto(this.filtroReceber.numeroRota));
+      const matchCte = !this.filtroReceber.numeroCteCospa || this.normalizarTexto(item.numeroCteCospa).includes(this.normalizarTexto(this.filtroReceber.numeroCteCospa));
+      const matchMdfe = !this.filtroReceber.numeroMdfe || this.normalizarTexto(item.numeroMdfe).includes(this.normalizarTexto(this.filtroReceber.numeroMdfe));
+      const matchOrigem = !this.filtroReceber.origem || this.normalizarTexto(item.origem).includes(this.normalizarTexto(this.filtroReceber.origem));
+      const matchDestino = !this.filtroReceber.destino || this.normalizarTexto(item.destino).includes(this.normalizarTexto(this.filtroReceber.destino));
+      const matchStatus = !this.filtroReceber.status || this.normalizarTexto(item.status).includes(this.normalizarTexto(this.filtroReceber.status));
       const matchVenc = !this.filtroReceber.proximoVencimento || (item.proximoVencimento || '').includes(this.filtroReceber.proximoVencimento);
 
       return matchId && matchCliente && matchOp && matchRota && matchCte && matchMdfe && matchOrigem && matchDestino && matchStatus && matchVenc;
@@ -362,30 +378,38 @@ this.financeiroService.listarLancamentos().subscribe({
   filtrarPagar(lista: TituloFinanceiro[]): TituloFinanceiro[] {
     return (lista || []).filter(item => {
       const matchId = !this.filtroPagar.id || item.id.includes(this.filtroPagar.id.trim().replace('#', ''));
-      const matchCliente = !this.filtroPagar.cliente || item.cliente.toLowerCase().includes(this.filtroPagar.cliente.toLowerCase());
-      const matchForn = !this.filtroPagar.fornecedor || (item.fornecedor || '').toLowerCase().includes(this.filtroPagar.fornecedor.toLowerCase());
-      const matchRota = !this.filtroPagar.numeroRota || item.numeroRota.toLowerCase().includes(this.filtroPagar.numeroRota.toLowerCase());
-      const matchPlaca = !this.filtroPagar.placa || item.placa.toLowerCase().includes(this.filtroPagar.placa.toLowerCase());
-      const matchStatus = !this.filtroPagar.status || item.status.toLowerCase().includes(this.filtroPagar.status.toLowerCase());
+      
+      // Filtros sem sensibilidade a acentos (ex: "bernardo", "flávio", etc.)
+      const matchMotorista = !this.filtroPagar.motorista || this.normalizarTexto(item.motorista).includes(this.normalizarTexto(this.filtroPagar.motorista));
+      const matchForn = !this.filtroPagar.fornecedor || this.normalizarTexto(item.fornecedor).includes(this.normalizarTexto(this.filtroPagar.fornecedor));
+      const matchCliente = !this.filtroPagar.cliente || this.normalizarTexto(item.cliente).includes(this.normalizarTexto(this.filtroPagar.cliente));
+      const matchOp = !this.filtroPagar.operacao || this.normalizarTexto(item.operacao).includes(this.normalizarTexto(this.filtroPagar.operacao));
+      const matchRota = !this.filtroPagar.numeroRota || this.normalizarTexto(item.numeroRota).includes(this.normalizarTexto(this.filtroPagar.numeroRota));
+      const matchCte = !this.filtroPagar.numeroCte || this.normalizarTexto(item.numeroCte).includes(this.normalizarTexto(this.filtroPagar.numeroCte));
+      const matchMdfe = !this.filtroPagar.numeroMdfe || this.normalizarTexto(item.numeroMdfe).includes(this.normalizarTexto(this.filtroPagar.numeroMdfe));
+      const matchOrigem = !this.filtroPagar.origem || this.normalizarTexto(item.origem).includes(this.normalizarTexto(this.filtroPagar.origem));
+      const matchDestino = !this.filtroPagar.destino || this.normalizarTexto(item.destino).includes(this.normalizarTexto(this.filtroPagar.destino));
+      const matchPlaca = !this.filtroPagar.placa || this.normalizarTexto(item.placa).includes(this.normalizarTexto(this.filtroPagar.placa));
+      const matchStatus = !this.filtroPagar.status || this.normalizarTexto(item.status).includes(this.normalizarTexto(this.filtroPagar.status));
       const matchVenc = !this.filtroPagar.proximoVencimento || (item.proximoVencimento || '').includes(this.filtroPagar.proximoVencimento);
 
-      return matchId && matchCliente && matchForn && matchRota && matchPlaca && matchStatus && matchVenc;
+      return matchId && matchMotorista && matchForn && matchCliente && matchOp && matchRota && matchCte && matchMdfe && matchOrigem && matchDestino && matchPlaca && matchStatus && matchVenc;
     });
   }
 
   filtrarLancamentos(lista: LancamentoItem[]): LancamentoItem[] {
     return (lista || []).filter(item => {
       const matchId = !this.filtroLancamentos.idLancamento || item.idLancamento.toString().includes(this.filtroLancamentos.idLancamento.trim().replace('#', ''));
-      const matchTit = !this.filtroLancamentos.idTitulo || item.idTitulo.toLowerCase().includes(this.filtroLancamentos.idTitulo.toLowerCase());
+      const matchTit = !this.filtroLancamentos.idTitulo || this.normalizarTexto(item.idTitulo).includes(this.normalizarTexto(this.filtroLancamentos.idTitulo));
       
       const filtroViagem = this.filtroLancamentos.idViagem.trim().replace('#', '');
       const itemViagem = (item.idViagem || '').replace('#', '').trim();
       const matchViagem = !filtroViagem || itemViagem === filtroViagem;
 
-      const matchTipo = !this.filtroLancamentos.tipo || item.tipo.toLowerCase().includes(this.filtroLancamentos.tipo.toLowerCase());
-      const matchEtapa = !this.filtroLancamentos.etapa || item.etapa.toLowerCase().includes(this.filtroLancamentos.etapa.toLowerCase());
-      const matchEnt = !this.filtroLancamentos.entidade || item.entidade.toLowerCase().includes(this.filtroLancamentos.entidade.toLowerCase());
-      const matchStatus = !this.filtroLancamentos.status || item.status.toLowerCase().includes(this.filtroLancamentos.status.toLowerCase());
+      const matchTipo = !this.filtroLancamentos.tipo || this.normalizarTexto(item.tipo).includes(this.normalizarTexto(this.filtroLancamentos.tipo));
+      const matchEtapa = !this.filtroLancamentos.etapa || this.normalizarTexto(item.etapa).includes(this.normalizarTexto(this.filtroLancamentos.etapa));
+      const matchEnt = !this.filtroLancamentos.entidade || this.normalizarTexto(item.entidade).includes(this.normalizarTexto(this.filtroLancamentos.entidade));
+      const matchStatus = !this.filtroLancamentos.status || this.normalizarTexto(item.status).includes(this.normalizarTexto(this.filtroLancamentos.status));
 
       return matchId && matchTit && matchViagem && matchTipo && matchEtapa && matchEnt && matchStatus;
     });

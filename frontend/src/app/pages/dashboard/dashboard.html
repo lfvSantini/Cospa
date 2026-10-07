@@ -168,7 +168,7 @@
   <!-- Conteúdo Principal -->
   <main class="dashboard-content">
 
-    <!-- BARRA SUPERIOR DE CONTADORES POR STATUS (ESTILO DO FINANCEIRO) -->
+    <!-- BARRA SUPERIOR DE CONTADORES POR STATUS -->
     <div class="status-counter-bar">
       <div class="status-counter-card" *ngFor="let st of listaStatus">
         <span class="status-counter-name">{{ st }}</span>
@@ -233,7 +233,6 @@
                   <td class="col-placa">{{ item.placa }}</td>
                   <td class="col-motorista" [class.to-hire]="item.motorista === 'A Contratar'">{{ item.motorista }}</td>
                   <td class="col-status">
-                    <!-- SELETOR DIRETO DE STATUS NA LINHA -->
                     <select class="select-status-inline" [ngModel]="item.status" (ngModelChange)="alterarStatusRapido(item, $event)">
                       <option *ngFor="let st of listaStatus" [value]="st">{{ st }}</option>
                     </select>
@@ -735,7 +734,6 @@
         <!-- MÓDULO UNIFICADO: ITINERÁRIO & CRONOGRAMA -->
         <div class="schedule-unified-card">
           <div class="schedule-columns-grid">
-            <!-- COLUNA DA ESQUERDA: COLETAS / ORIGENS -->
             <div class="schedule-col">
               <div class="schedule-col-head">
                 <span class="col-tag">Origem / Coleta ({{ tripForm.origens.length }})</span>
@@ -793,7 +791,6 @@
               </div>
             </div>
 
-            <!-- COLUNA DA DIREITA: ENTREGAS / DESTINOS -->
             <div class="schedule-col">
               <div class="schedule-col-head">
                 <span class="col-tag">Destino / Entrega ({{ tripForm.destinos.length }})</span>
@@ -981,6 +978,24 @@
 
       <div class="modal-body-container">
         <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarRota()" class="modal-pane-content">
+          <!-- Campo de pesquisa e seleção rápida de locais existentes -->
+          <div class="f-group" style="margin-bottom: 0.5rem;">
+            <label>Pesquisar / Carregar Local Existente</label>
+            <input 
+              type="text" 
+              [(ngModel)]="buscaLocalCadastro" 
+              (ngModelChange)="onSelecionarLocalBusca($event)" 
+              list="lista_locais_existentes" 
+              name="buscaLocalCadastro" 
+              placeholder="DIGITE PARA BUSCAR E CARREGAR UM LOCAL JÁ CADASTRADO..." 
+            />
+            <datalist id="lista_locais_existentes">
+              <option *ngFor="let r of rotasList" [value]="r.nomeLocal">
+                {{ r.clienteNome }} - {{ r.cidade }}/{{ r.uf }} ({{ r.endereco }})
+              </option>
+            </datalist>
+          </div>
+
           <div class="form-row-2">
             <div class="f-group">
               <label>Cliente Vinculado *</label>
@@ -1378,12 +1393,21 @@
               <label>Cidade/UF</label>
               <input type="text" [(ngModel)]="veiculoForm.cidadeUf" name="cidadeUf" placeholder="EX: MARINGÁ/PR" />
             </div>
+            
+            <!-- Campo de Fornecedor com pesquisa digitável -->
             <div class="f-group">
-              <label>Fornecedor</label>
-              <select [(ngModel)]="veiculoForm.fornecedor" name="fornecedor">
+              <label>Fornecedor (Dono)</label>
+              <input 
+                type="text" 
+                [(ngModel)]="veiculoForm.fornecedor" 
+                list="lista_fornecedores_veiculo_auto" 
+                name="veiculoFornecedor" 
+                placeholder="FROTA PRÓPRIA OU FORNECEDOR" 
+              />
+              <datalist id="lista_fornecedores_veiculo_auto">
                 <option value="Frota Própria">Frota Própria</option>
                 <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
-              </select>
+              </datalist>
             </div>
           </div>
 

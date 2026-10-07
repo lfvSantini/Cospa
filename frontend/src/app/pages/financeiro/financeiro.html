@@ -330,7 +330,8 @@
               <tr>
                 <th class="col-id-header">ID</th>
                 <th class="col-actions-header">AÇÕES</th>
-                <th>FORNECEDOR / TRANSPORTADOR</th>
+                <th>MOTORISTA</th>
+                <th>FORNECEDOR</th>
                 <th>CLIENTE</th>
                 <th>OPERAÇÃO</th>
                 <th>Nº ROTA</th>
@@ -364,7 +365,9 @@
                 <th class="col-id-header"><input type="text" [(ngModel)]="filtroPagar.id" placeholder="Filtrar..."
                     class="table-filter-input"></th>
                 <th class="col-actions-header"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.fornecedor" placeholder="Filtrar..."
+                <th><input type="text" [(ngModel)]="filtroPagar.motorista" placeholder="Filtrar Motorista..."
+                    class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.fornecedor" placeholder="Filtrar Fornecedor..."
                     class="table-filter-input"></th>
                 <th><input type="text" [(ngModel)]="filtroPagar.cliente" placeholder="Filtrar..."
                     class="table-filter-input"></th>
@@ -454,7 +457,8 @@
                     </div>
                   </div>
                 </td>
-                <td class="col-principal-cell">{{ item.fornecedor }}</td>
+                <td class="col-principal-cell">{{ item.motorista }}</td>
+                <td>{{ item.fornecedor }}</td>
                 <td>{{ item.cliente }}</td>
                 <td>{{ item.operacao }}</td>
                 <td class="col-rota">{{ item.numeroRota || '-' }}</td>
@@ -627,6 +631,7 @@
         </div>
       </div>
     </section>
+
     <!-- TABELA 4: HISTÓRICO DE QUITADAS -->
     <section class="accordion-section" *ngIf="activeTab === 'QUITADAS'">
       <div class="accordion-collapse">

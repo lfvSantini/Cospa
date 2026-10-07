@@ -143,7 +143,6 @@ export class DashboardComponent implements OnInit {
   showAndamento: boolean = true;
   showFinalizadas: boolean = false;
 
-  // 11 STATUS PADRONIZADOS
   listaStatus: string[] = [
     'PROGRAMADO',
     'A CONTRATAR',
@@ -177,6 +176,7 @@ export class DashboardComponent implements OnInit {
 
   activeManageTab: 'CADASTRAR' | 'LISTAR' = 'CADASTRAR';
   manageSearchTerm: string = '';
+  buscaLocalCadastro: string = '';
 
   activePhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
   activeMotoristaPhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
@@ -289,7 +289,17 @@ export class DashboardComponent implements OnInit {
     this.carregarTodosDados();
   }
 
-  // Contagem dinâmica para a barra superior
+  // Função auxiliar universal para ignorar acentos e maiúsculas/minúsculas
+  private normalizarTexto(texto: string | null | undefined): string {
+    if (!texto) return '';
+    return texto
+      .toString()
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+
   contarPorStatus(st: string): number {
     const todas = [...this.viagensAndamento, ...this.viagensFinalizadas];
     return todas.filter(v => (v.status || '').toString().trim().toUpperCase() === st.trim().toUpperCase()).length;
@@ -436,6 +446,7 @@ export class DashboardComponent implements OnInit {
     this.activeMotoristaPhotoTab = 'ADICIONAR';
     this.activeVeiculoPhotoTab = 'ADICIONAR';
     this.manageSearchTerm = '';
+    this.buscaLocalCadastro = '';
     this.previewImageUrl = null;
     this.motivoCancelamento = '';
     this.isDraggingComprovante = false;
@@ -541,19 +552,18 @@ export class DashboardComponent implements OnInit {
 
   onMotoristaSelectChange(): void {
     if (!this.tripForm.motorista) return;
-    let nomeBusca = this.tripForm.motorista.trim().toLowerCase();
+    let nomeBusca = this.normalizarTexto(this.tripForm.motorista);
 
     if (nomeBusca.includes(' (cpf:')) {
       nomeBusca = nomeBusca.split(' (cpf:')[0].trim();
-      const motEncontrado = this.motoristasList.find(m => m.nome.toLowerCase() === nomeBusca);
-      if (motEncontrado) {
-        this.tripForm.motorista = motEncontrado.nome;
-      }
     }
 
-    const mot = this.motoristasList.find(m => m.nome.toLowerCase() === nomeBusca);
-    if (mot && mot.fornecedorVinculado) {
-      this.tripForm.agencia = mot.fornecedorVinculado;
+    const mot = this.motoristasList.find(m => this.normalizarTexto(m.nome) === nomeBusca);
+    if (mot) {
+      this.tripForm.motorista = mot.nome;
+      if (mot.fornecedorVinculado) {
+        this.tripForm.agencia = mot.fornecedorVinculado;
+      }
     }
     this.cdr.detectChanges();
   }
@@ -626,6 +636,7 @@ export class DashboardComponent implements OnInit {
     this.activeManageTab = 'CADASTRAR';
     this.modalType = 'ROTA';
     this.isManageOpen = false;
+    this.buscaLocalCadastro = '';
     this.carregarRotas();
     this.cdr.detectChanges();
   }
@@ -642,17 +653,27 @@ export class DashboardComponent implements OnInit {
   }
 
   filtrarRotas(): void {
-    const t = (this.manageSearchTerm || '').toLowerCase().trim();
+    const t = this.normalizarTexto(this.manageSearchTerm);
     if (!t) {
       this.filteredRotas = [...this.rotasList];
       return;
     }
     this.filteredRotas = this.rotasList.filter(r =>
-      (r.nomeLocal || '').toLowerCase().includes(t) ||
-      (r.clienteNome || '').toLowerCase().includes(t) ||
-      (r.cidade || '').toLowerCase().includes(t) ||
-      (r.endereco || '').toLowerCase().includes(t)
+      this.normalizarTexto(r.nomeLocal).includes(t) ||
+      this.normalizarTexto(r.clienteNome).includes(t) ||
+      this.normalizarTexto(r.cidade).includes(t) ||
+      this.normalizarTexto(r.endereco).includes(t)
     );
+  }
+
+  onSelecionarLocalBusca(nome: string): void {
+    if (!nome) return;
+    const nomeNormal = this.normalizarTexto(nome);
+    const encontrado = this.rotasList.find(r => this.normalizarTexto(r.nomeLocal) === nomeNormal);
+    if (encontrado) {
+      this.editarRota(encontrado);
+      this.buscaLocalCadastro = '';
+    }
   }
 
   salvarRota(): void {
@@ -678,6 +699,7 @@ export class DashboardComponent implements OnInit {
         this.activeManageTab = 'LISTAR';
         this.rotaForm = this.getEmptyRota();
         this.isEditingRota = false;
+        this.buscaLocalCadastro = '';
         if (this.tripForm.clienteSelect) {
           this.onClienteSelectChange(this.tripForm.clienteSelect);
         }
@@ -697,6 +719,7 @@ export class DashboardComponent implements OnInit {
   cancelarEdicaoRota(): void {
     this.rotaForm = this.getEmptyRota();
     this.isEditingRota = false;
+    this.buscaLocalCadastro = '';
     this.cdr.detectChanges();
   }
 
@@ -738,8 +761,9 @@ export class DashboardComponent implements OnInit {
   }
 
   onOrigemLocalSelect(origIndex: number, nomeLocal: string): void {
+    const nomeNormal = this.normalizarTexto(nomeLocal);
     const encontrado = this.locaisDoClienteSelecionado.find(
-      l => l.nomeLocal.trim().toUpperCase() === (nomeLocal || '').trim().toUpperCase()
+      l => this.normalizarTexto(l.nomeLocal) === nomeNormal
     );
     if (encontrado) {
       const compl = encontrado.complemento ? ` - ${encontrado.complemento}` : '';
@@ -751,8 +775,9 @@ export class DashboardComponent implements OnInit {
   }
 
   onDestinoLocalSelect(destIndex: number, nomeLocal: string): void {
+    const nomeNormal = this.normalizarTexto(nomeLocal);
     const encontrado = this.locaisDoClienteSelecionado.find(
-      l => l.nomeLocal.trim().toUpperCase() === (nomeLocal || '').trim().toUpperCase()
+      l => this.normalizarTexto(l.nomeLocal) === nomeNormal
     );
     if (encontrado) {
       const compl = encontrado.complemento ? ` - ${encontrado.complemento}` : '';
@@ -763,7 +788,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // ==================== CARREGAMENTO DAS VIAGENS (SIMPLIFICADO EM 2 LISTAS) ====================
+  // ==================== CARREGAMENTO DAS VIAGENS ====================
   carregarViagens(): void {
     this.isLoading = true;
     this.viagemService.listarTodas().subscribe({
@@ -832,19 +857,24 @@ export class DashboardComponent implements OnInit {
   filtrarListaViagens(lista: ViagemItem[]): ViagemItem[] {
     return (lista || []).filter(item => {
       const matchId = !this.filtroColunas.id || item.rawId.toString().includes(this.filtroColunas.id.trim().replace(/^#/, ''));
-      const matchRota = !this.filtroColunas.numeroRota ||
-        item.id.toLowerCase().includes(this.filtroColunas.numeroRota.toLowerCase()) ||
-        item.numeroOperacional.toLowerCase().includes(this.filtroColunas.numeroRota.toLowerCase());
+      
+      const termoRota = this.normalizarTexto(this.filtroColunas.numeroRota);
+      const matchRota = !termoRota ||
+        this.normalizarTexto(item.id).includes(termoRota) ||
+        this.normalizarTexto(item.numeroOperacional).includes(termoRota);
 
-      const matchCliente = !this.filtroColunas.cliente || item.cliente.toLowerCase().includes(this.filtroColunas.cliente.toLowerCase());
-      const matchOrigem = !this.filtroColunas.origem || item.origem.some(o => o.toLowerCase().includes(this.filtroColunas.origem.toLowerCase()));
-      const matchDestino = !this.filtroColunas.destino || item.destino.some(d => d.toLowerCase().includes(this.filtroColunas.destino.toLowerCase()));
-      const matchColeta = !this.filtroColunas.coletaPrevista || item.coletaPrevista.toLowerCase().includes(this.filtroColunas.coletaPrevista.toLowerCase());
-      const matchEntrega = !this.filtroColunas.entregaPrevista || item.entregaPrevista.toLowerCase().includes(this.filtroColunas.entregaPrevista.toLowerCase());
-      const matchPlaca = !this.filtroColunas.placa || item.placa.toLowerCase().includes(this.filtroColunas.placa.toLowerCase());
-      const matchMotorista = !this.filtroColunas.motorista || item.motorista.toLowerCase().includes(this.filtroColunas.motorista.toLowerCase());
-      const matchStatus = !this.filtroColunas.status || item.status.toString().toLowerCase().includes(this.filtroColunas.status.toLowerCase());
-      const matchObs = !this.filtroColunas.obs || (item.obs || '').toLowerCase().includes(this.filtroColunas.obs.toLowerCase());
+      const matchCliente = !this.filtroColunas.cliente || this.normalizarTexto(item.cliente).includes(this.normalizarTexto(this.filtroColunas.cliente));
+      const matchOrigem = !this.filtroColunas.origem || item.origem.some(o => this.normalizarTexto(o).includes(this.normalizarTexto(this.filtroColunas.origem)));
+      const matchDestino = !this.filtroColunas.destino || item.destino.some(d => this.normalizarTexto(d).includes(this.normalizarTexto(this.filtroColunas.destino)));
+      const matchColeta = !this.filtroColunas.coletaPrevista || this.normalizarTexto(item.coletaPrevista).includes(this.normalizarTexto(this.filtroColunas.coletaPrevista));
+      const matchEntrega = !this.filtroColunas.entregaPrevista || this.normalizarTexto(item.entregaPrevista).includes(this.normalizarTexto(this.filtroColunas.entregaPrevista));
+      const matchPlaca = !this.filtroColunas.placa || this.normalizarTexto(item.placa).includes(this.normalizarTexto(this.filtroColunas.placa));
+      
+      // Filtro sem sensibilidade a acentos para o motorista (ex: "fla" encontra "FLÁVIO")
+      const matchMotorista = !this.filtroColunas.motorista || this.normalizarTexto(item.motorista).includes(this.normalizarTexto(this.filtroColunas.motorista));
+      
+      const matchStatus = !this.filtroColunas.status || this.normalizarTexto(item.status).includes(this.normalizarTexto(this.filtroColunas.status));
+      const matchObs = !this.filtroColunas.obs || this.normalizarTexto(item.obs).includes(this.normalizarTexto(this.filtroColunas.obs));
 
       return matchId && matchRota && matchCliente && matchOrigem && matchDestino && matchColeta && matchEntrega && matchPlaca && matchMotorista && matchStatus && matchObs;
     });
@@ -1025,17 +1055,17 @@ export class DashboardComponent implements OnInit {
   }
 
   filtrarMotoristas(): void {
-    const t = (this.manageSearchTerm || '').toLowerCase().trim();
+    const t = this.normalizarTexto(this.manageSearchTerm);
     if (!t) {
       this.filteredMotoristas = [...this.motoristasList];
       return;
     }
     this.filteredMotoristas = this.motoristasList.filter(m =>
-      (m.nome || '').toLowerCase().includes(t) ||
-      (m.cpf || '').toLowerCase().includes(t) ||
-      (m.telefone || '').toLowerCase().includes(t) ||
-      (m.email || '').toLowerCase().includes(t) ||
-      (m.fornecedorVinculado || '').toLowerCase().includes(t)
+      this.normalizarTexto(m.nome).includes(t) ||
+      this.normalizarTexto(m.cpf).includes(t) ||
+      this.normalizarTexto(m.telefone).includes(t) ||
+      this.normalizarTexto(m.email).includes(t) ||
+      this.normalizarTexto(m.fornecedorVinculado).includes(t)
     );
   }
 
@@ -1269,19 +1299,19 @@ export class DashboardComponent implements OnInit {
   }
 
   filtrarVeiculos(): void {
-    const t = (this.manageSearchTerm || '').toLowerCase().trim();
+    const t = this.normalizarTexto(this.manageSearchTerm);
     if (!t) {
       this.filteredVeiculos = [...this.veiculosList];
       return;
     }
     this.filteredVeiculos = this.veiculosList.filter(v =>
-      (v.placa || '').toLowerCase().includes(t) ||
-      (v.tipoVeiculo || '').toLowerCase().includes(t) ||
-      (v.tipoCarroceria || '').toLowerCase().includes(t) ||
-      (v.cidadeUf || '').toLowerCase().includes(t) ||
-      (v.fornecedor || '').toLowerCase().includes(t) ||
-      (v.agenciador || '').toLowerCase().includes(t) ||
-      (v.idRastreador || '').toLowerCase().includes(t)
+      this.normalizarTexto(v.placa).includes(t) ||
+      this.normalizarTexto(v.tipoVeiculo).includes(t) ||
+      this.normalizarTexto(v.tipoCarroceria).includes(t) ||
+      this.normalizarTexto(v.cidadeUf).includes(t) ||
+      this.normalizarTexto(v.fornecedor).includes(t) ||
+      this.normalizarTexto(v.agenciador).includes(t) ||
+      this.normalizarTexto(v.idRastreador).includes(t)
     );
   }
 
@@ -1532,15 +1562,15 @@ export class DashboardComponent implements OnInit {
   }
 
   filtrarClientes(): void {
-    const t = (this.manageSearchTerm || '').toLowerCase().trim();
+    const t = this.normalizarTexto(this.manageSearchTerm);
     if (!t) {
       this.filteredClientes = [...this.clientesList];
       return;
     }
     this.filteredClientes = this.clientesList.filter(c =>
-      (c.nomeFantasia || '').toLowerCase().includes(t) ||
-      (c.razaoSocial || '').toLowerCase().includes(t) ||
-      (c.cnpjCpf || '').toLowerCase().includes(t)
+      this.normalizarTexto(c.nomeFantasia).includes(t) ||
+      this.normalizarTexto(c.razaoSocial).includes(t) ||
+      this.normalizarTexto(c.cnpjCpf).includes(t)
     );
   }
 
@@ -1646,16 +1676,16 @@ export class DashboardComponent implements OnInit {
   }
 
   filtrarFornecedores(): void {
-    const t = (this.manageSearchTerm || '').toLowerCase().trim();
+    const t = this.normalizarTexto(this.manageSearchTerm);
     if (!t) {
       this.filteredFornecedores = [...this.fornecedoresList];
       return;
     }
     this.filteredFornecedores = this.fornecedoresList.filter(f =>
-      (f.nome || '').toLowerCase().includes(t) ||
-      (f.cnpjCpf || '').toLowerCase().includes(t) ||
-      (f.nomeContato || '').toLowerCase().includes(t) ||
-      (f.formaPagamento || '').toLowerCase().includes(t)
+      this.normalizarTexto(f.nome).includes(t) ||
+      this.normalizarTexto(f.cnpjCpf).includes(t) ||
+      this.normalizarTexto(f.nomeContato).includes(t) ||
+      this.normalizarTexto(f.formaPagamento).includes(t)
     );
   }
 
@@ -1785,7 +1815,6 @@ export class DashboardComponent implements OnInit {
 
     const raw: any = item.rawViagem;
 
-    // Coletas
     const rawColetaLocais = item.origem.map(o => o === '-' ? '' : o);
     const rawColetaEnds = (raw?.localColeta || raw?.local_coleta || '').split(';').map((s: string) => s.trim());
     const rawColetaPrev = (raw?.dataColetaPrevista || raw?.data_coleta_prevista || '').split(';').map((s: string) => s.trim());
@@ -1807,7 +1836,6 @@ export class DashboardComponent implements OnInit {
       });
     }
 
-    // Entregas
     const rawEntregaLocais = item.destino.map(d => d === '-' ? '' : d);
     const rawEntregaEnds = (raw?.localEntrega || raw?.local_entrega || '').split(';').map((s: string) => s.trim());
     const rawEntregaPrev = (raw?.dataEntregaPrevista || raw?.data_entrega_prevista || '').split(';').map((s: string) => s.trim());
@@ -1914,30 +1942,31 @@ export class DashboardComponent implements OnInit {
     let cpfFinal = '';
 
     if (this.tripForm.motorista && this.tripForm.motorista.trim() !== '') {
-      let motBusca = this.tripForm.motorista.trim().toLowerCase();
+      let motBusca = this.normalizarTexto(this.tripForm.motorista);
       if (motBusca.includes(' (cpf:')) {
         motBusca = motBusca.split(' (cpf:')[0].trim();
       }
-      const motSelected = this.motoristasList.find(m => m.nome.toLowerCase() === motBusca);
+      const motSelected = this.motoristasList.find(m => this.normalizarTexto(m.nome) === motBusca);
       motoristaFinal = motSelected ? motSelected.nome : this.tripForm.motorista.toUpperCase();
       cpfFinal = motSelected ? (motSelected.cpf || '') : '';
     }
 
-    const strColetaPrevista = this.tripForm.origens.map(o => (o.dataPrevista || '').trim()).filter(Boolean).join('; ');
-    const strColetaReal = this.tripForm.origens.map(o => (o.dataReal || '').trim()).filter(Boolean).join('; ');
-    const strEntregaPrevista = this.tripForm.destinos.map(d => (d.dataPrevista || '').trim()).filter(Boolean).join('; ');
-    const strEntregaReal = this.tripForm.destinos.map(d => (d.dataReal || '').trim()).filter(Boolean).join('; ');
+    const strColetaPrevista = this.tripForm.origens.map(o => (o.dataPrevista || '').trim()).join('; ');
+    const strColetaReal = this.tripForm.origens.map(o => (o.dataReal || '').trim()).join('; ');
+    const strEntregaPrevista = this.tripForm.destinos.map(d => (d.dataPrevista || '').trim()).join('; ');
+    const strEntregaReal = this.tripForm.destinos.map(d => (d.dataReal || '').trim()).join('; ');
 
+    // Construção resiliente do array de datas relacionais (garante ordem correta sem erros de nulos)
     const datasArrayPayload: ViagemDataItem[] = [
-      ...this.tripForm.origens.filter(o => o.dataPrevista?.trim() || o.dataReal?.trim()).map((o, idx) => ({
+      ...this.tripForm.origens.map((o, idx) => ({
         tipo: 'COLETA' as const,
-        dataPrevista: (o.dataPrevista || '').trim().toUpperCase(),
+        dataPrevista: (o.dataPrevista || '').trim().toUpperCase() || 'A CONFIRMAR',
         dataReal: (o.dataReal || '').trim().toUpperCase(),
         ordem: idx
       })),
-      ...this.tripForm.destinos.filter(d => d.dataPrevista?.trim() || d.dataReal?.trim()).map((d, idx) => ({
+      ...this.tripForm.destinos.map((d, idx) => ({
         tipo: 'ENTREGA' as const,
-        dataPrevista: (d.dataPrevista || '').trim().toUpperCase(),
+        dataPrevista: (d.dataPrevista || '').trim().toUpperCase() || 'A CONFIRMAR',
         dataReal: (d.dataReal || '').trim().toUpperCase(),
         ordem: idx
       }))
@@ -2041,19 +2070,16 @@ export class DashboardComponent implements OnInit {
         this.closeModal();
       },
       error: (err: any) => {
-        console.error('Erro ao salvar rota:', err);
-        const msg = err.error?.message || err.error?.reason || (typeof err.error === 'string' ? err.error : 'Erro ao salvar rota.');
+        console.error('Erro detalhado ao salvar rota:', err);
+        const msg = err.error?.message || err.error?.reason || (typeof err.error === 'string' ? err.error : (err.message || 'Erro ao salvar rota.'));
         alert('Erro ao salvar rota: ' + msg);
       }
-
     });
   }
 
   private normalizarTipoOperacao(op: string): string {
     if (!op) return 'COLETA';
-
     const valorLimpo = op.toUpperCase().trim();
-
     const dePara: { [key: string]: string } = {
       'TRANSFERÊNCIA': 'TRANSFERENCIA',
       'TRANSFERENCIA': 'TRANSFERENCIA',
@@ -2062,10 +2088,8 @@ export class DashboardComponent implements OnInit {
       'DEVOLUÇÃO': 'DEVOLUCAO',
       'DEVOLUCAO': 'DEVOLUCAO'
     };
-
     return dePara[valorLimpo] || valorLimpo.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
-
 
   openObsModal(item: ViagemItem): void {
     this.selectedViagem = item;

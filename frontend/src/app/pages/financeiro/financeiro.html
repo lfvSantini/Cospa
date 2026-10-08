@@ -260,12 +260,6 @@
                     </button>
                     <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id"
                       (click)="$event.stopPropagation()">
-                      <button type="button" class="row-menu-item item-finalizar" (click)="abrirModalBaixa(item)">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                        <span>Dar Baixa</span>
-                      </button>
                       <button type="button" class="row-menu-item" (click)="verLancamentosTitulo(item)">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -280,8 +274,12 @@
                 <td class="col-principal-cell">{{ item.cliente }}</td>
                 <td>{{ item.operacao }}</td>
                 <td class="col-rota">{{ item.numeroRota || '-' }}</td>
-                <td>{{ item.numeroCteCospa || '-' }}</td>
-                <td>{{ item.numeroMdfe || '-' }}</td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.numeroCteCospa" (blur)="salvarCampoTitulo(item, 'numeroCte', item.numeroCteCospa)" placeholder="Preencher CTE...">
+                </td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.numeroMdfe" (blur)="salvarCampoTitulo(item, 'numeroMdfe', item.numeroMdfe)" placeholder="Preencher MDFE...">
+                </td>
                 <td>{{ item.origem }}</td>
                 <td>{{ item.destino }}</td>
                 <td>{{ item.perfilVeiculo || '-' }}</td>
@@ -289,7 +287,9 @@
                 <td>{{ item.valorAdicional | currency:'BRL':'symbol':'1.2-2' }}</td>
                 <td>{{ item.dataColeta || '-' }}</td>
                 <td>{{ item.dataEntrega || '-' }}</td>
-                <td>{{ item.dataPagamento || '-' }}</td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.dataPagamento" (blur)="salvarCampoTitulo(item, 'dataPagamento', item.dataPagamento)" placeholder="DD/MM/AAAA...">
+                </td>
                 <td>{{ item.placa || '-' }}</td>
                 <td>
                   <span class="status-pill" [ngClass]="{
@@ -299,21 +299,43 @@
                     'status-vencido': item.status === 'VENCIDO'
                   }">{{ item.status }}</span>
                 </td>
-                <td>{{ item.obs || '-' }}</td>
-                <td>{{ item.dataAdiantamento || '-' }}</td>
-                <td><span class="badge-check" [class.check-sim]="item.adiantamentoRecebido === 'SIM'">{{
-                    item.adiantamentoRecebido || 'NÃO' }}</span></td>
-                <td>{{ item.dataSaldo || '-' }}</td>
-                <td><span class="badge-check" [class.check-sim]="item.saldoRecebido === 'SIM'">{{ item.saldoRecebido ||
-                    'NÃO' }}</span></td>
-                <td>{{ item.dataAdicional || '-' }}</td>
-                <td><span class="badge-check" [class.check-sim]="item.adicionalRecebido === 'SIM'">{{
-                    item.adicionalRecebido || 'NÃO' }}</span></td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.obs" (blur)="salvarCampoTitulo(item, 'observacao', item.obs)" placeholder="Observação...">
+                </td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.dataAdiantamento" (blur)="salvarCampoTitulo(item, 'dataAdiantamento', item.dataAdiantamento)" placeholder="DD/MM/AAAA...">
+                </td>
+                <td>
+                  <select class="cell-select" [(ngModel)]="item.adiantamentoRecebido" (change)="salvarCampoTitulo(item, 'adiantamentoRecebido', item.adiantamentoRecebido)">
+                    <option value="SIM">SIM</option>
+                    <option value="NÃO">NÃO</option>
+                  </select>
+                </td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.dataSaldo" (blur)="salvarCampoTitulo(item, 'dataSaldo', item.dataSaldo)" placeholder="DD/MM/AAAA...">
+                </td>
+                <td>
+                  <select class="cell-select" [(ngModel)]="item.saldoRecebido" (change)="salvarCampoTitulo(item, 'saldoRecebido', item.saldoRecebido)">
+                    <option value="SIM">SIM</option>
+                    <option value="NÃO">NÃO</option>
+                  </select>
+                </td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.dataAdicional" (blur)="salvarCampoTitulo(item, 'dataAdicional', item.dataAdicional)" placeholder="DD/MM/AAAA...">
+                </td>
+                <td>
+                  <select class="cell-select" [(ngModel)]="item.adicionalRecebido" (change)="salvarCampoTitulo(item, 'adicionalRecebido', item.adicionalRecebido)">
+                    <option value="SIM">SIM</option>
+                    <option value="NÃO">NÃO</option>
+                  </select>
+                </td>
                 <td>{{ item.idTitulo }}</td>
                 <td><strong>{{ item.totalPrevisto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
                 <td class="text-green">{{ item.totalRealizado | currency:'BRL':'symbol':'1.2-2' }}</td>
                 <td class="text-orange"><strong>{{ item.saldoEmAberto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
-                <td>{{ item.proximoVencimento || '-' }}</td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.proximoVencimento" (blur)="salvarCampoTitulo(item, 'proximoVencimento', item.proximoVencimento)" placeholder="DD/MM/AAAA...">
+                </td>
               </tr>
             </tbody>
           </table>
@@ -440,12 +462,6 @@
                     </button>
                     <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id"
                       (click)="$event.stopPropagation()">
-                      <button type="button" class="row-menu-item item-finalizar" (click)="abrirModalBaixa(item)">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                        <span>Registrar Pagto</span>
-                      </button>
                       <button type="button" class="row-menu-item" (click)="verLancamentosTitulo(item)">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -462,8 +478,12 @@
                 <td>{{ item.cliente }}</td>
                 <td>{{ item.operacao }}</td>
                 <td class="col-rota">{{ item.numeroRota || '-' }}</td>
-                <td>{{ item.numeroCte || '-' }}</td>
-                <td>{{ item.numeroMdfe || '-' }}</td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.numeroCte" (blur)="salvarCampoTitulo(item, 'numeroCte', item.numeroCte)" placeholder="Preencher CTE...">
+                </td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.numeroMdfe" (blur)="salvarCampoTitulo(item, 'numeroMdfe', item.numeroMdfe)" placeholder="Preencher MDFE...">
+                </td>
                 <td>{{ item.origem }}</td>
                 <td>{{ item.destino }}</td>
                 <td>{{ item.perfilVeiculo || '-' }}</td>
@@ -471,7 +491,9 @@
                 <td>{{ item.valorAdicional | currency:'BRL':'symbol':'1.2-2' }}</td>
                 <td>{{ item.dataColeta || '-' }}</td>
                 <td>{{ item.dataEntrega || '-' }}</td>
-                <td>{{ item.dataPagamento || '-' }}</td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.dataPagamento" (blur)="salvarCampoTitulo(item, 'dataPagamento', item.dataPagamento)" placeholder="DD/MM/AAAA...">
+                </td>
                 <td>{{ item.placa || '-' }}</td>
                 <td>
                   <span class="status-pill" [ngClass]="{
@@ -481,16 +503,36 @@
                     'status-vencido': item.status === 'VENCIDO'
                   }">{{ item.status }}</span>
                 </td>
-                <td>{{ item.obs || '-' }}</td>
-                <td>{{ item.dataAdiantamento || '-' }}</td>
-                <td><span class="badge-check" [class.check-sim]="item.adiantamentoPago === 'SIM'">{{
-                    item.adiantamentoPago || 'NÃO' }}</span></td>
-                <td>{{ item.dataSaldo || '-' }}</td>
-                <td><span class="badge-check" [class.check-sim]="item.saldoPago === 'SIM'">{{ item.saldoPago || 'NÃO'
-                    }}</span></td>
-                <td>{{ item.dataAdicional || '-' }}</td>
-                <td><span class="badge-check" [class.check-sim]="item.adicionalPago === 'SIM'">{{ item.adicionalPago ||
-                    'NÃO' }}</span></td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.obs" (blur)="salvarCampoTitulo(item, 'observacao', item.obs)" placeholder="Observação...">
+                </td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.dataAdiantamento" (blur)="salvarCampoTitulo(item, 'dataAdiantamento', item.dataAdiantamento)" placeholder="DD/MM/AAAA...">
+                </td>
+                <td>
+                  <select class="cell-select" [(ngModel)]="item.adiantamentoPago" (change)="salvarCampoTitulo(item, 'adiantamentoPago', item.adiantamentoPago)">
+                    <option value="SIM">SIM</option>
+                    <option value="NÃO">NÃO</option>
+                  </select>
+                </td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.dataSaldo" (blur)="salvarCampoTitulo(item, 'dataSaldo', item.dataSaldo)" placeholder="DD/MM/AAAA...">
+                </td>
+                <td>
+                  <select class="cell-select" [(ngModel)]="item.saldoPago" (change)="salvarCampoTitulo(item, 'saldoPago', item.saldoPago)">
+                    <option value="SIM">SIM</option>
+                    <option value="NÃO">NÃO</option>
+                  </select>
+                </td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.dataAdicional" (blur)="salvarCampoTitulo(item, 'dataAdicional', item.dataAdicional)" placeholder="DD/MM/AAAA...">
+                </td>
+                <td>
+                  <select class="cell-select" [(ngModel)]="item.adicionalPago" (change)="salvarCampoTitulo(item, 'adicionalPago', item.adicionalPago)">
+                    <option value="SIM">SIM</option>
+                    <option value="NÃO">NÃO</option>
+                  </select>
+                </td>
                 <td>
                   <button *ngIf="item.comprovanteUrl" type="button" class="btn-comprovante"
                     (click)="abrirArquivo(item.comprovanteUrl)">Ver Anexo</button>
@@ -500,7 +542,9 @@
                 <td><strong>{{ item.totalPrevisto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
                 <td class="text-green">{{ item.totalRealizado | currency:'BRL':'symbol':'1.2-2' }}</td>
                 <td class="text-red"><strong>{{ item.saldoEmAberto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
-                <td>{{ item.proximoVencimento || '-' }}</td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="item.proximoVencimento" (blur)="salvarCampoTitulo(item, 'proximoVencimento', item.proximoVencimento)" placeholder="DD/MM/AAAA...">
+                </td>
               </tr>
             </tbody>
           </table>
@@ -605,9 +649,13 @@
                 <td>{{ lanc.tipoAdicional || '-' }}</td>
                 <td class="col-principal-cell">{{ lanc.entidade }}</td>
                 <td>{{ lanc.valorPrevisto | currency:'BRL':'symbol':'1.2-2' }}</td>
-                <td>{{ lanc.dataVencimento }}</td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="lanc.dataVencimento" (blur)="salvarCampoLancamento(lanc, 'dataVencimento', lanc.dataVencimento)" placeholder="DD/MM/AAAA...">
+                </td>
                 <td class="text-green">{{ lanc.valorRealizado | currency:'BRL':'symbol':'1.2-2' }}</td>
-                <td>{{ lanc.dataEfetiva || '-' }}</td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="lanc.dataEfetiva" (blur)="salvarCampoLancamento(lanc, 'dataEfetiva', lanc.dataEfetiva)" placeholder="DD/MM/AAAA...">
+                </td>
                 <td><strong>{{ lanc.saldoEmAberto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
                 <td>
                   <span class="status-pill" [ngClass]="{
@@ -617,14 +665,20 @@
                     'status-vencido': lanc.status === 'VENCIDO'
                   }">{{ lanc.status }}</span>
                 </td>
-                <td>{{ lanc.numeroCte || '-' }}</td>
-                <td>{{ lanc.numeroMdfe || '-' }}</td>
                 <td>
-                  <button *ngIf="lanc.comprovanteUrl" type="button" class="btn-comprovante"
-                    (click)="abrirArquivo(lanc.comprovanteUrl)">Anexo</button>
-                  <span *ngIf="!lanc.comprovanteUrl" class="text-muted">-</span>
+                  <input class="cell-input" [(ngModel)]="lanc.numeroCte" (blur)="salvarCampoLancamento(lanc, 'numeroCte', lanc.numeroCte)" placeholder="Nº CTE...">
                 </td>
-                <td>{{ lanc.obs || '-' }}</td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="lanc.numeroMdfe" (blur)="salvarCampoLancamento(lanc, 'numeroMdfe', lanc.numeroMdfe)" placeholder="Nº MDFE...">
+                </td>
+                <td>
+                  <input #fileInputLanc type="file" (change)="onComprovanteSelecionado($event, lanc)" style="display: none;" accept="image/*,.pdf" />
+                  <button *ngIf="!lanc.comprovanteUrl" type="button" class="btn-anexar" (click)="fileInputLanc.click()">+ Anexar</button>
+                  <button *ngIf="lanc.comprovanteUrl" type="button" class="btn-comprovante" (click)="abrirArquivo(lanc.comprovanteUrl)">Ver Anexo</button>
+                </td>
+                <td>
+                  <input class="cell-input" [(ngModel)]="lanc.obs" (blur)="salvarCampoLancamento(lanc, 'observacao', lanc.obs)" placeholder="Observação...">
+                </td>
               </tr>
             </tbody>
           </table>
@@ -661,7 +715,7 @@
                 <td class="col-actions-cell">
                   <div class="row-dropdown-wrapper">
                     <button type="button" class="btn-row-action" (click)="verLancamentosTitulo(item)">
-                      <span>Ver Lançamentos</span>
+                      <span>Ver Parcelas</span>
                     </button>
                   </div>
                 </td>
@@ -689,4 +743,24 @@
       </div>
     </section>
   </main>
+
+  <!-- MODAL DE CONFIRMAÇÃO DE BAIXA DE PARCELA -->
+  <div class="cospa-modal-overlay" *ngIf="selectedLancamentoParaBaixa" (click)="selectedLancamentoParaBaixa = null">
+    <div class="cospa-modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Baixar Parcela #{{ selectedLancamentoParaBaixa.idLancamento }}</h3>
+        <button type="button" class="btn-close-modal" (click)="selectedLancamentoParaBaixa = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Confirmar a liquidação da parcela de <strong>{{ selectedLancamentoParaBaixa.etapa }}</strong> no valor de <strong>{{ selectedLancamentoParaBaixa.valorPrevisto | currency:'BRL':'symbol':'1.2-2' }}</strong>?</p>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
+          O estado financeiro será atualizado imediatamente para <strong>QUITADO</strong> e o saldo em aberto será zerado.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="selectedLancamentoParaBaixa = null">Cancelar</button>
+        <button type="button" class="btn-confirm" (click)="confirmarBaixaLancamento()">Confirmar Baixa</button>
+      </div>
+    </div>
+  </div>
 </div>

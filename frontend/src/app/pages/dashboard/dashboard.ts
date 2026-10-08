@@ -177,6 +177,7 @@ export class DashboardComponent implements OnInit {
   activeManageTab: 'CADASTRAR' | 'LISTAR' = 'CADASTRAR';
   manageSearchTerm: string = '';
   buscaLocalCadastro: string = '';
+  buscaVeiculoCadastro: string = '';
 
   activePhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
   activeMotoristaPhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
@@ -446,6 +447,7 @@ export class DashboardComponent implements OnInit {
     this.activeVeiculoPhotoTab = 'ADICIONAR';
     this.manageSearchTerm = '';
     this.buscaLocalCadastro = '';
+    this.buscaVeiculoCadastro = '';
     this.previewImageUrl = null;
     this.motivoCancelamento = '';
     this.isDraggingComprovante = false;
@@ -567,6 +569,7 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // CORREÇÃO PONTUAL: Não sobrescrever o Perfil/Carroceria da viagem pela placa do veículo
   onPlacaSelectChange(): void {
     if (!this.tripForm.placa) return;
     let placaBusca = this.tripForm.placa.trim().toUpperCase();
@@ -581,12 +584,7 @@ export class DashboardComponent implements OnInit {
       if (veic.fornecedor) {
         this.tripForm.agencia = veic.fornecedor;
       }
-      if (veic.tipoVeiculo) {
-        this.tripForm.perfilVeiculo = veic.tipoVeiculo;
-      }
-      if (veic.tipoCarroceria) {
-        this.tripForm.carroceriaVeiculo = veic.tipoCarroceria;
-      }
+      // O perfil e carroceria são preenchidos conforme o cliente solicita e NÃO são alterados automaticamente pela placa
     }
     this.cdr.detectChanges();
   }
@@ -1340,8 +1338,19 @@ export class DashboardComponent implements OnInit {
     this.activeManageTab = 'CADASTRAR';
     this.modalType = 'VEICULO';
     this.isManageOpen = false;
+    this.buscaVeiculoCadastro = '';
     this.filtrarVeiculos();
     this.cdr.detectChanges();
+  }
+
+  onSelecionarVeiculoBusca(placaOuNome: string): void {
+    if (!placaOuNome) return;
+    const termo = this.normalizarTexto(placaOuNome);
+    const encontrado = this.veiculosList.find(v => this.normalizarTexto(v.placa) === termo || this.normalizarTexto(v.placa).startsWith(termo));
+    if (encontrado) {
+      this.editarVeiculo(encontrado);
+      this.buscaVeiculoCadastro = '';
+    }
   }
 
   salvarVeiculo(): void {
@@ -1402,6 +1411,7 @@ export class DashboardComponent implements OnInit {
     this.veiculoForm = { ...v };
     this.isEditingVeiculo = true;
     this.activeManageTab = 'CADASTRAR';
+    this.buscaVeiculoCadastro = '';
     this.cdr.detectChanges();
   }
 
@@ -1418,6 +1428,7 @@ export class DashboardComponent implements OnInit {
   cancelarEdicaoVeiculo(): void {
     this.veiculoForm = this.getEmptyVeiculo();
     this.isEditingVeiculo = false;
+    this.buscaVeiculoCadastro = '';
     this.cdr.detectChanges();
   }
 

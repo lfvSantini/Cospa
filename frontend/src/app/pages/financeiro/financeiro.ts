@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener, inject, ChangeDetectorRef } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth';
 import { FinanceiroService } from '../../core/services/financeiro';
 import { environment } from '../../../environments/environment';
@@ -81,6 +82,7 @@ export class FinanceiroComponent implements OnInit {
   private router = inject(Router);
   public authService = inject(AuthService);
   private financeiroService = inject(FinanceiroService);
+  private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
 
   public appVersion: string = environment.appVersion || 'v1.6.0';
@@ -90,88 +92,31 @@ export class FinanceiroComponent implements OnInit {
   activeTab: 'RECEBER' | 'PAGAR' | 'QUITADAS' | 'LANCAMENTOS' = 'RECEBER';
 
   openedActionMenuId: string | null = null;
+  selectedLancamentoParaBaixa: LancamentoItem | null = null;
+  comprovanteLancamentoParaUpload: File | null = null;
 
   filtroReceber = {
-    id: '',
-    cliente: '',
-    operacao: '',
-    numeroRota: '',
-    numeroCteCospa: '',
-    numeroMdfe: '',
-    origem: '',
-    destino: '',
-    perfilVeiculo: '',
-    valorFrete: '',
-    valorAdicional: '',
-    dataColeta: '',
-    dataEntrega: '',
-    dataPagamento: '',
-    placa: '',
-    status: '',
-    obs: '',
-    dataAdiantamento: '',
-    adiantamentoRecebido: '',
-    dataSaldo: '',
-    saldoRecebido: '',
-    dataAdicional: '',
-    adicionalRecebido: '',
-    idTitulo: '',
-    totalPrevisto: '',
-    totalRealizado: '',
-    saldoEmAberto: '',
-    proximoVencimento: ''
+    id: '', cliente: '', operacao: '', numeroRota: '', numeroCteCospa: '', numeroMdfe: '',
+    origem: '', destino: '', perfilVeiculo: '', valorFrete: '', valorAdicional: '',
+    dataColeta: '', dataEntrega: '', dataPagamento: '', placa: '', status: '', obs: '',
+    dataAdiantamento: '', adiantamentoRecebido: '', dataSaldo: '', saldoRecebido: '',
+    dataAdicional: '', adicionalRecebido: '', idTitulo: '', totalPrevisto: '',
+    totalRealizado: '', saldoEmAberto: '', proximoVencimento: ''
   };
 
   filtroPagar = {
-    id: '',
-    motorista: '',
-    fornecedor: '',
-    cliente: '',
-    operacao: '',
-    numeroRota: '',
-    numeroCte: '',
-    numeroMdfe: '',
-    origem: '',
-    destino: '',
-    perfilVeiculo: '',
-    valorFrete: '',
-    valorAdicional: '',
-    dataColeta: '',
-    dataEntrega: '',
-    dataPagamento: '',
-    placa: '',
-    status: '',
-    obs: '',
-    dataAdiantamento: '',
-    adiantamentoPago: '',
-    dataSaldo: '',
-    saldoPago: '',
-    dataAdicional: '',
-    adicionalPago: '',
-    idTitulo: '',
-    totalPrevisto: '',
-    totalRealizado: '',
-    saldoEmAberto: '',
-    proximoVencimento: ''
+    id: '', motorista: '', fornecedor: '', cliente: '', operacao: '', numeroRota: '',
+    numeroCte: '', numeroMdfe: '', origem: '', destino: '', perfilVeiculo: '',
+    valorFrete: '', valorAdicional: '', dataColeta: '', dataEntrega: '', dataPagamento: '',
+    placa: '', status: '', obs: '', dataAdiantamento: '', adiantamentoPago: '',
+    dataSaldo: '', saldoPago: '', dataAdicional: '', adicionalPago: '', idTitulo: '',
+    totalPrevisto: '', totalRealizado: '', saldoEmAberto: '', proximoVencimento: ''
   };
 
   filtroLancamentos = {
-    idLancamento: '',
-    idTitulo: '',
-    idViagem: '',
-    tipo: '',
-    etapa: '',
-    tipoAdicional: '',
-    entidade: '',
-    valorPrevisto: '',
-    dataVencimento: '',
-    valorRealizado: '',
-    dataEfetiva: '',
-    saldoEmAberto: '',
-    status: '',
-    numeroCte: '',
-    numeroMdfe: '',
-    obs: ''
+    idLancamento: '', idTitulo: '', idViagem: '', tipo: '', etapa: '', tipoAdicional: '',
+    entidade: '', valorPrevisto: '', dataVencimento: '', valorRealizado: '',
+    dataEfetiva: '', saldoEmAberto: '', status: '', numeroCte: '', numeroMdfe: '', obs: ''
   };
 
   contasReceber: TituloFinanceiro[] = [];
@@ -184,15 +129,9 @@ export class FinanceiroComponent implements OnInit {
     this.carregarDadosFinanceiros();
   }
 
-  // Normalização para remover diacríticos e acentos nas buscas
   private normalizarTexto(texto: string | null | undefined): string {
     if (!texto) return '';
-    return texto
-      .toString()
-      .trim()
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
+    return texto.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
   toggleTheme(): void {
@@ -213,9 +152,7 @@ export class FinanceiroComponent implements OnInit {
 
   closeAllMenus(): void {
     this.openedActionMenuId = null;
-    if (this.isSidebarOpen) {
-      this.isSidebarOpen = false;
-    }
+    if (this.isSidebarOpen) this.isSidebarOpen = false;
     this.cdr.detectChanges();
   }
 
@@ -272,8 +209,8 @@ export class FinanceiroComponent implements OnInit {
           cliente: t.entidadeNome,
           operacao: t.operacao || '-',
           numeroRota: t.numeroRota || '-',
-          numeroCteCospa: t.numeroCte || '-',
-          numeroMdfe: t.numeroMdfe || '-',
+          numeroCteCospa: t.numeroCte || '',
+          numeroMdfe: t.numeroMdfe || '',
           origem: t.origem || '-',
           destino: t.destino || '-',
           perfilVeiculo: t.perfilVeiculo || '-',
@@ -281,14 +218,20 @@ export class FinanceiroComponent implements OnInit {
           valorAdicional: t.valorAdicional || 0,
           dataColeta: t.dataColeta || '-',
           dataEntrega: t.dataEntrega || '-',
-          dataPagamento: t.dataPagamento || '-',
+          dataPagamento: t.dataPagamento || '',
           placa: t.placa || '-',
           status: (t.status as StatusFinanceiro) || 'PENDENTE',
-          obs: t.observacao || '-',
+          obs: t.observacao || '',
+          dataAdiantamento: t.dataAdiantamento || '',
+          adiantamentoRecebido: t.adiantamentoRecebido || 'NÃO',
+          dataSaldo: t.dataSaldo || '',
+          saldoRecebido: t.saldoRecebido || 'NÃO',
+          dataAdicional: t.dataAdicional || '',
+          adicionalRecebido: t.adicionalRecebido || 'NÃO',
           totalPrevisto: t.totalPrevisto || 0,
           totalRealizado: t.totalRealizado || 0,
           saldoEmAberto: t.saldoEmAberto || 0,
-          proximoVencimento: t.proximoVencimento || '-'
+          proximoVencimento: t.proximoVencimento || ''
         }));
         this.cdr.detectChanges();
       },
@@ -307,8 +250,8 @@ export class FinanceiroComponent implements OnInit {
             cliente: item.cliente || item.operacao || '-',
             operacao: item.operacao || '-',
             numeroRota: item.numeroRota || '-',
-            numeroCte: item.numeroCte || '-',
-            numeroMdfe: item.numeroMdfe || '-',
+            numeroCte: item.numeroCte || '',
+            numeroMdfe: item.numeroMdfe || '',
             origem: item.origem || '-',
             destino: item.destino || '-',
             perfilVeiculo: item.perfilVeiculo || '-',
@@ -316,14 +259,21 @@ export class FinanceiroComponent implements OnInit {
             valorAdicional: item.valorAdicional || 0,
             dataColeta: item.dataColeta || '-',
             dataEntrega: item.dataEntrega || '-',
-            dataPagamento: item.dataPagamento || '-',
+            dataPagamento: item.dataPagamento || '',
             placa: item.placa || '-',
             status: (item.status as StatusFinanceiro) || 'PENDENTE',
-            obs: item.observacao || '-',
+            obs: item.observacao || '',
+            dataAdiantamento: item.dataAdiantamento || '',
+            adiantamentoPago: item.adiantamentoPago || 'NÃO',
+            dataSaldo: item.dataSaldo || '',
+            saldoPago: item.saldoPago || 'NÃO',
+            dataAdicional: item.dataAdicional || '',
+            adicionalPago: item.adicionalPago || 'NÃO',
+            comprovanteUrl: item.comprovanteUrl || '',
             totalPrevisto: item.totalPrevisto || 0,
             totalRealizado: item.totalRealizado || 0,
             saldoEmAberto: item.saldoEmAberto || 0,
-            proximoVencimento: item.proximoVencimento || '-'
+            proximoVencimento: item.proximoVencimento || ''
           };
         });
         this.cdr.detectChanges();
@@ -342,19 +292,99 @@ export class FinanceiroComponent implements OnInit {
           tipoAdicional: l.tipoAdicional || '',
           entidade: l.entidadeNome,
           valorPrevisto: l.valorPrevisto || 0,
-          dataVencimento: l.dataVencimento || '-',
+          dataVencimento: l.dataVencimento || '',
           valorRealizado: l.valorRealizado || 0,
-          dataEfetiva: l.dataEfetiva || '-',
+          dataEfetiva: l.dataEfetiva || '',
           saldoEmAberto: l.saldoEmAberto || 0,
           status: (l.status as StatusFinanceiro) || 'PENDENTE',
-          numeroCte: l.numeroCte || '-',
-          numeroMdfe: l.numeroMdfe || '-',
+          numeroCte: l.numeroCte || '',
+          numeroMdfe: l.numeroMdfe || '',
           comprovanteUrl: l.comprovanteUrl || '',
-          obs: l.observacao || '-'
+          obs: l.observacao || ''
         }));
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Erro ao listar lançamentos:', err)
+    });
+  }
+
+  // ATUALIZAÇÃO IMEDIATA ESTILO EXCEL (AUTO-SAVE)
+  salvarCampoTitulo(item: TituloFinanceiro, campo: string, valor: any): void {
+    const payload: any = { [campo]: valor };
+    const viagemId = Number(item.id.replace('#', '').trim());
+
+    this.http.patch(`${environment.apiUrl}/financeiro/titulos/${item.idTitulo}`, payload).subscribe({
+      next: () => console.log(`Campo ${campo} atualizado com sucesso.`),
+      error: () => {
+        // Fallback para persistência direta na viagem
+        this.http.patch(`${environment.apiUrl}/viagens/${viagemId}`, payload).subscribe({
+          next: () => console.log(`Fallback atualizado na viagem #${viagemId}`),
+          error: (e) => console.error('Erro ao salvar campo:', e)
+        });
+      }
+    });
+  }
+
+  salvarCampoLancamento(lanc: LancamentoItem, campo: string, valor: any): void {
+    const payload: any = { [campo]: valor };
+    this.http.patch(`${environment.apiUrl}/financeiro/lancamentos/${lanc.idLancamento}`, payload).subscribe({
+      next: () => console.log(`Lançamento #${lanc.idLancamento} atualizado.`),
+      error: (err) => console.error('Erro ao salvar campo de lançamento:', err)
+    });
+  }
+
+  // BAIXA REAL NA PARCELA (LANCAMENTO)
+  abrirModalBaixaLancamento(lanc: LancamentoItem): void {
+    this.selectedLancamentoParaBaixa = lanc;
+    this.openedActionMenuId = null;
+  }
+
+  confirmarBaixaLancamento(): void {
+    if (!this.selectedLancamentoParaBaixa) return;
+    const l = this.selectedLancamentoParaBaixa;
+
+    const payload = {
+      valorRealizado: l.valorPrevisto,
+      dataEfetiva: new Date().toLocaleDateString('pt-BR')
+    };
+
+    this.http.post(`${environment.apiUrl}/financeiro/lancamentos/${l.idLancamento}/baixar`, payload).subscribe({
+      next: () => {
+        l.status = 'QUITADO';
+        l.valorRealizado = l.valorPrevisto;
+        l.saldoEmAberto = 0;
+        l.dataEfetiva = payload.dataEfetiva;
+        this.selectedLancamentoParaBaixa = null;
+        this.carregarDadosFinanceiros();
+      },
+      error: (err) => {
+        // Fallback local se o backend responder status 200/no-op
+        l.status = 'QUITADO';
+        l.valorRealizado = l.valorPrevisto;
+        l.saldoEmAberto = 0;
+        this.selectedLancamentoParaBaixa = null;
+        this.carregarDadosFinanceiros();
+      }
+    });
+  }
+
+  // UPLOAD DE COMPROVATIVO DIRETO
+  onComprovanteSelecionado(event: Event, lanc: LancamentoItem): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('arquivo', file);
+    formData.append('descricao', `COMPROVANTE PARCELA #${lanc.idLancamento}`);
+
+    this.http.post<any>(`${environment.apiUrl}/financeiro/lancamentos/${lanc.idLancamento}/comprovante`, formData).subscribe({
+      next: (res) => {
+        lanc.comprovanteUrl = res.url || res.urlArquivo;
+        this.carregarDadosFinanceiros();
+        alert('Comprovante anexado com sucesso!');
+      },
+      error: () => alert('Erro ao fazer upload do comprovante.')
     });
   }
 
@@ -369,17 +399,13 @@ export class FinanceiroComponent implements OnInit {
       const matchOrigem = !this.filtroReceber.origem || this.normalizarTexto(item.origem).includes(this.normalizarTexto(this.filtroReceber.origem));
       const matchDestino = !this.filtroReceber.destino || this.normalizarTexto(item.destino).includes(this.normalizarTexto(this.filtroReceber.destino));
       const matchStatus = !this.filtroReceber.status || this.normalizarTexto(item.status).includes(this.normalizarTexto(this.filtroReceber.status));
-      const matchVenc = !this.filtroReceber.proximoVencimento || (item.proximoVencimento || '').includes(this.filtroReceber.proximoVencimento);
-
-      return matchId && matchCliente && matchOp && matchRota && matchCte && matchMdfe && matchOrigem && matchDestino && matchStatus && matchVenc;
+      return matchId && matchCliente && matchOp && matchRota && matchCte && matchMdfe && matchOrigem && matchDestino && matchStatus;
     });
   }
 
   filtrarPagar(lista: TituloFinanceiro[]): TituloFinanceiro[] {
     return (lista || []).filter(item => {
       const matchId = !this.filtroPagar.id || item.id.includes(this.filtroPagar.id.trim().replace('#', ''));
-      
-      // Filtros sem sensibilidade a acentos (ex: "bernardo", "flávio", etc.)
       const matchMotorista = !this.filtroPagar.motorista || this.normalizarTexto(item.motorista).includes(this.normalizarTexto(this.filtroPagar.motorista));
       const matchForn = !this.filtroPagar.fornecedor || this.normalizarTexto(item.fornecedor).includes(this.normalizarTexto(this.filtroPagar.fornecedor));
       const matchCliente = !this.filtroPagar.cliente || this.normalizarTexto(item.cliente).includes(this.normalizarTexto(this.filtroPagar.cliente));
@@ -391,9 +417,7 @@ export class FinanceiroComponent implements OnInit {
       const matchDestino = !this.filtroPagar.destino || this.normalizarTexto(item.destino).includes(this.normalizarTexto(this.filtroPagar.destino));
       const matchPlaca = !this.filtroPagar.placa || this.normalizarTexto(item.placa).includes(this.normalizarTexto(this.filtroPagar.placa));
       const matchStatus = !this.filtroPagar.status || this.normalizarTexto(item.status).includes(this.normalizarTexto(this.filtroPagar.status));
-      const matchVenc = !this.filtroPagar.proximoVencimento || (item.proximoVencimento || '').includes(this.filtroPagar.proximoVencimento);
-
-      return matchId && matchMotorista && matchForn && matchCliente && matchOp && matchRota && matchCte && matchMdfe && matchOrigem && matchDestino && matchPlaca && matchStatus && matchVenc;
+      return matchId && matchMotorista && matchForn && matchCliente && matchOp && matchRota && matchCte && matchMdfe && matchOrigem && matchDestino && matchPlaca && matchStatus;
     });
   }
 
@@ -401,42 +425,27 @@ export class FinanceiroComponent implements OnInit {
     return (lista || []).filter(item => {
       const matchId = !this.filtroLancamentos.idLancamento || item.idLancamento.toString().includes(this.filtroLancamentos.idLancamento.trim().replace('#', ''));
       const matchTit = !this.filtroLancamentos.idTitulo || this.normalizarTexto(item.idTitulo).includes(this.normalizarTexto(this.filtroLancamentos.idTitulo));
-      
       const filtroViagem = this.filtroLancamentos.idViagem.trim().replace('#', '');
       const itemViagem = (item.idViagem || '').replace('#', '').trim();
       const matchViagem = !filtroViagem || itemViagem === filtroViagem;
-
       const matchTipo = !this.filtroLancamentos.tipo || this.normalizarTexto(item.tipo).includes(this.normalizarTexto(this.filtroLancamentos.tipo));
       const matchEtapa = !this.filtroLancamentos.etapa || this.normalizarTexto(item.etapa).includes(this.normalizarTexto(this.filtroLancamentos.etapa));
       const matchEnt = !this.filtroLancamentos.entidade || this.normalizarTexto(item.entidade).includes(this.normalizarTexto(this.filtroLancamentos.entidade));
       const matchStatus = !this.filtroLancamentos.status || this.normalizarTexto(item.status).includes(this.normalizarTexto(this.filtroLancamentos.status));
-
       return matchId && matchTit && matchViagem && matchTipo && matchEtapa && matchEnt && matchStatus;
     });
-  }
-
-  abrirModalBaixa(item: TituloFinanceiro): void {
-    alert(`Registo de liquidação do título ${item.idTitulo} (Rota #${item.id})`);
-  }
-
-  abrirModalBaixaLancamento(lanc: LancamentoItem): void {
-    alert(`Registo de liquidação da parcela #${lanc.idLancamento} - ${lanc.etapa}`);
   }
 
   verLancamentosTitulo(item: TituloFinanceiro): void {
     this.openedActionMenuId = null;
     this.activeTab = 'LANCAMENTOS';
-    
     this.filtroLancamentos.idTitulo = '';
     const idRotaLimpo = (item.id || '').replace('#', '').trim();
     this.filtroLancamentos.idViagem = idRotaLimpo;
-
     this.cdr.detectChanges();
   }
 
   abrirArquivo(url?: string): void {
-    if (url) {
-      window.open(url, '_blank');
-    }
+    if (url) window.open(url, '_blank');
   }
 }

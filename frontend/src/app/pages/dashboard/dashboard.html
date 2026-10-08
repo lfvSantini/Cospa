@@ -978,7 +978,6 @@
 
       <div class="modal-body-container">
         <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarRota()" class="modal-pane-content">
-          <!-- Campo de pesquisa e seleção rápida de locais existentes -->
           <div class="f-group" style="margin-bottom: 0.5rem;">
             <label>Pesquisar / Carregar Local Existente</label>
             <input 
@@ -1334,6 +1333,24 @@
 
       <div class="modal-body-container">
         <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarVeiculo()" class="modal-pane-content">
+          <!-- Campo de pesquisa instantânea para buscar e carregar veículo existente -->
+          <div class="f-group" style="margin-bottom: 0.5rem;">
+            <label>Pesquisar / Carregar Veículo Existente</label>
+            <input 
+              type="text" 
+              [(ngModel)]="buscaVeiculoCadastro" 
+              (ngModelChange)="onSelecionarVeiculoBusca($event)" 
+              list="lista_veiculos_existentes" 
+              name="buscaVeiculoCadastro" 
+              placeholder="DIGITE A PLACA OU FORNECEDOR PARA CARREGAR UM VEÍCULO JÁ CADASTRADO..." 
+            />
+            <datalist id="lista_veiculos_existentes">
+              <option *ngFor="let v of veiculosList" [value]="v.placa">
+                {{ v.placa }} - {{ v.tipoVeiculo }} ({{ v.fornecedor }})
+              </option>
+            </datalist>
+          </div>
+
           <div class="form-row-4">
             <div class="f-group">
               <label>Placa *</label>
@@ -1394,7 +1411,6 @@
               <input type="text" [(ngModel)]="veiculoForm.cidadeUf" name="cidadeUf" placeholder="EX: MARINGÁ/PR" />
             </div>
             
-            <!-- Campo de Fornecedor com pesquisa digitável -->
             <div class="f-group">
               <label>Fornecedor (Dono)</label>
               <input 

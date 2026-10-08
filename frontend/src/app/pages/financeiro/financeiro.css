@@ -451,8 +451,6 @@
   overflow: visible;
 }
 
-/* Força o alinhamento à esquerda e espaçamento correto do cabeçalho da 3ª coluna na tabela de quitadas */
-.accordion-section[ng-reflect-ng-if*="QUITADAS"] .table-scrollable thead tr:first-child th:nth-child(3),
 .table-scrollable thead tr:first-child th:nth-child(3) {
   text-align: left !important;
   padding-left: 1.25rem !important;
@@ -588,7 +586,6 @@
   text-align: center !important;
 }
 
-/* ALINHAMENTO CORRETO DA COLUNA DE CLIENTE / FORNECEDOR */
 .col-principal-cell {
   font-weight: 700;
   min-width: 280px !important;
@@ -693,6 +690,7 @@
   font-weight: 600;
   padding: 3px 8px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .btn-comprovante:hover {
@@ -739,7 +737,6 @@
   transform: rotate(180deg);
 }
 
-/* DROPDOWN FLUTUANTE */
 .row-dropdown-menu {
   position: absolute;
   top: calc(100% + 4px);
@@ -762,7 +759,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ANTI-CLIPPING: ABRE PARA CIMA NAS ÚLTIMAS 4 LINHAS */
 .table-scrollable tbody tr:last-child .row-dropdown-menu,
 .table-scrollable tbody tr:nth-last-child(2) .row-dropdown-menu,
 .table-scrollable tbody tr:nth-last-child(3) .row-dropdown-menu,
@@ -810,4 +806,170 @@
 
 .row-menu-item.item-finalizar svg {
   stroke: #10b981;
+}
+
+/* =========================================================
+   CAMPOS EDITÁVEIS NA TABELA (ESTILO EXCEL INLINE)
+   ========================================================= */
+.cell-input {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--text-main);
+  padding: 4px 6px;
+  font-size: 0.82rem;
+  width: 100%;
+  min-width: 90px;
+  box-sizing: border-box;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.cell-input:hover {
+  border-color: var(--btn-action-border);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.cell-input:focus {
+  background-color: var(--btn-action-bg);
+  border-color: #0066d6;
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(0, 102, 214, 0.25);
+}
+
+.cell-select {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--text-main);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 6px;
+  cursor: pointer;
+  outline: none;
+  text-align: center;
+}
+
+.cell-select:hover,
+.cell-select:focus {
+  border-color: #0066d6;
+  background-color: var(--btn-action-bg);
+}
+
+.btn-anexar {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px dashed rgba(16, 185, 129, 0.4);
+  color: #10b981;
+  border-radius: 4px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-anexar:hover {
+  background: #10b981;
+  color: #ffffff;
+}
+
+/* =========================================================
+   MODAL DE CONFIRMAÇÃO DE BAIXA DE PARCELA
+   ========================================================= */
+.cospa-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+}
+
+.cospa-modal-box {
+  background: var(--bg-table-card);
+  border: 1px solid var(--border-nav);
+  border-radius: 12px;
+  width: 440px;
+  max-width: 92vw;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-head {
+  padding: 1.1rem 1.4rem;
+  border-bottom: 1px solid var(--border-nav);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--btn-action-bg);
+}
+
+.modal-head h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.btn-close-modal {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.btn-close-modal:hover {
+  color: var(--text-main);
+}
+
+.modal-body {
+  padding: 1.4rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--text-main);
+}
+
+.modal-footer {
+  padding: 1rem 1.4rem;
+  border-top: 1px solid var(--border-nav);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  background-color: var(--bg-table-card);
+}
+
+.btn-cancel {
+  background: var(--btn-action-bg);
+  border: 1px solid var(--btn-action-border);
+  color: var(--text-main);
+  padding: 0.55rem 1.1rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  background: var(--btn-action-hover);
+}
+
+.btn-confirm {
+  background: #10b981;
+  border: none;
+  color: #ffffff;
+  padding: 0.55rem 1.3rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-confirm:hover {
+  background: #059669;
 }

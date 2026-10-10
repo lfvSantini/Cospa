@@ -35,9 +35,7 @@
 
       <button type="button" class="sidebar-item disabled">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path
-            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-          </path>
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
           <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
           <line x1="12" y1="22.08" x2="12" y2="12"></line>
         </svg>
@@ -80,8 +78,7 @@
       <button type="button" class="theme-toggle" (click)="toggleTheme()" aria-label="Alterar Tema">
         <div class="toggle-track" [class.dark]="isDarkMode">
           <div class="toggle-thumb">
-            <svg *ngIf="!isDarkMode" class="theme-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2">
+            <svg *ngIf="!isDarkMode" class="theme-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="5"></circle>
               <line x1="12" y1="12" x2="12" y2="3"></line>
               <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -92,8 +89,7 @@
               <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
               <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
             </svg>
-            <svg *ngIf="isDarkMode" class="theme-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2">
+            <svg *ngIf="isDarkMode" class="theme-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
           </div>
@@ -113,7 +109,6 @@
 
   <!-- Conteúdo Principal -->
   <main class="dashboard-content">
-    <!-- CARDS DE KPI FINANCEIRO -->
     <div class="kpi-grid">
       <div class="kpi-card income">
         <span class="kpi-label">TOTAL A RECEBER (EM ABERTO)</span>
@@ -129,7 +124,7 @@
       </div>
     </div>
 
-    <!-- NAVEGAÇÃO DE ABAS DO MÓDULO -->
+    <!-- Navegação de Abas -->
     <div class="finance-tabs-header">
       <div class="tabs-group">
         <button type="button" [class.active]="activeTab === 'RECEBER'" (click)="activeTab = 'RECEBER'">
@@ -186,80 +181,55 @@
                 <th>PRÓXIMO VENCIMENTO</th>
               </tr>
               <tr class="filter-row">
-                <th class="col-id-header"><input type="text" [(ngModel)]="filtroReceber.id" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
+                <th class="col-id-header"><input type="text" [(ngModel)]="filtroReceber.id" placeholder="Filtrar..." class="table-filter-input"></th>
                 <th class="col-actions-header"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.cliente" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.operacao" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.numeroRota" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.numeroCteCospa" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.numeroMdfe" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.origem" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.destino" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.perfilVeiculo" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.valorFrete" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.valorAdicional" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.dataColeta" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.dataEntrega" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.dataPagamento" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.placa" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.status" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.obs" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.dataAdiantamento" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.adiantamentoRecebido" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.dataSaldo" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.saldoRecebido" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.dataAdicional" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.adicionalRecebido" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.idTitulo" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.totalPrevisto" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.totalRealizado" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.saldoEmAberto" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroReceber.proximoVencimento" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.cliente" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.operacao" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.numeroRota" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.numeroCteCospa" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.numeroMdfe" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.origem" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.destino" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.perfilVeiculo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.valorFrete" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.valorAdicional" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.dataColeta" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.dataEntrega" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.dataPagamento" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.placa" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.status" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.obs" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.dataAdiantamento" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.adiantamentoRecebido" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.dataSaldo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.saldoRecebido" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.dataAdicional" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.adicionalRecebido" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.idTitulo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.totalPrevisto" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.totalRealizado" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.saldoEmAberto" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroReceber.proximoVencimento" placeholder="Filtrar..." class="table-filter-input"></th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let item of filtrarReceber(contasReceber)"
-                [class.row-menu-open]="openedActionMenuId === item.id">
+              <tr *ngFor="let item of filtrarReceber(contasReceber)" [class.row-menu-open]="openedActionMenuId === item.id">
                 <td class="col-id-cell"><span class="badge-system-id">#{{ item.id }}</span></td>
                 <td class="col-actions-cell">
                   <div class="row-dropdown-wrapper">
                     <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)">
                       <span>Ações</span>
-                      <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2">
+                      <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
                       </svg>
                     </button>
-                    <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id"
-                      (click)="$event.stopPropagation()">
+                    <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
+                      <button type="button" class="row-menu-item item-finalizar" (click)="abrirModalBaixaTitulo(item)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>Dar Baixa</span>
+                      </button>
                       <button type="button" class="row-menu-item" (click)="verLancamentosTitulo(item)">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -274,12 +244,8 @@
                 <td class="col-principal-cell">{{ item.cliente }}</td>
                 <td>{{ item.operacao }}</td>
                 <td class="col-rota">{{ item.numeroRota || '-' }}</td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.numeroCteCospa" (blur)="salvarCampoTitulo(item, 'numeroCte', item.numeroCteCospa)" placeholder="Preencher CTE...">
-                </td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.numeroMdfe" (blur)="salvarCampoTitulo(item, 'numeroMdfe', item.numeroMdfe)" placeholder="Preencher MDFE...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="item.numeroCteCospa" (blur)="salvarCampoTitulo(item, 'numeroCte', item.numeroCteCospa)" placeholder="Preencher CTE..."></td>
+                <td><input class="cell-input" [(ngModel)]="item.numeroMdfe" (blur)="salvarCampoTitulo(item, 'numeroMdfe', item.numeroMdfe)" placeholder="Preencher MDFE..."></td>
                 <td>{{ item.origem }}</td>
                 <td>{{ item.destino }}</td>
                 <td>{{ item.perfilVeiculo || '-' }}</td>
@@ -287,9 +253,7 @@
                 <td>{{ item.valorAdicional | currency:'BRL':'symbol':'1.2-2' }}</td>
                 <td>{{ item.dataColeta || '-' }}</td>
                 <td>{{ item.dataEntrega || '-' }}</td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.dataPagamento" (blur)="salvarCampoTitulo(item, 'dataPagamento', item.dataPagamento)" placeholder="DD/MM/AAAA...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="item.dataPagamento" (blur)="salvarCampoTitulo(item, 'dataPagamento', item.dataPagamento)" placeholder="DD/MM/AAAA..."></td>
                 <td>{{ item.placa || '-' }}</td>
                 <td>
                   <span class="status-pill" [ngClass]="{
@@ -299,30 +263,22 @@
                     'status-vencido': item.status === 'VENCIDO'
                   }">{{ item.status }}</span>
                 </td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.obs" (blur)="salvarCampoTitulo(item, 'observacao', item.obs)" placeholder="Observação...">
-                </td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.dataAdiantamento" (blur)="salvarCampoTitulo(item, 'dataAdiantamento', item.dataAdiantamento)" placeholder="DD/MM/AAAA...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="item.obs" (blur)="salvarCampoTitulo(item, 'observacao', item.obs)" placeholder="Observação..."></td>
+                <td><input class="cell-input" [(ngModel)]="item.dataAdiantamento" (blur)="salvarCampoTitulo(item, 'dataAdiantamento', item.dataAdiantamento)" placeholder="DD/MM/AAAA..."></td>
                 <td>
                   <select class="cell-select" [(ngModel)]="item.adiantamentoRecebido" (change)="salvarCampoTitulo(item, 'adiantamentoRecebido', item.adiantamentoRecebido)">
                     <option value="SIM">SIM</option>
                     <option value="NÃO">NÃO</option>
                   </select>
                 </td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.dataSaldo" (blur)="salvarCampoTitulo(item, 'dataSaldo', item.dataSaldo)" placeholder="DD/MM/AAAA...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="item.dataSaldo" (blur)="salvarCampoTitulo(item, 'dataSaldo', item.dataSaldo)" placeholder="DD/MM/AAAA..."></td>
                 <td>
                   <select class="cell-select" [(ngModel)]="item.saldoRecebido" (change)="salvarCampoTitulo(item, 'saldoRecebido', item.saldoRecebido)">
                     <option value="SIM">SIM</option>
                     <option value="NÃO">NÃO</option>
                   </select>
                 </td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.dataAdicional" (blur)="salvarCampoTitulo(item, 'dataAdicional', item.dataAdicional)" placeholder="DD/MM/AAAA...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="item.dataAdicional" (blur)="salvarCampoTitulo(item, 'dataAdicional', item.dataAdicional)" placeholder="DD/MM/AAAA..."></td>
                 <td>
                   <select class="cell-select" [(ngModel)]="item.adicionalRecebido" (change)="salvarCampoTitulo(item, 'adicionalRecebido', item.adicionalRecebido)">
                     <option value="SIM">SIM</option>
@@ -331,11 +287,11 @@
                 </td>
                 <td>{{ item.idTitulo }}</td>
                 <td><strong>{{ item.totalPrevisto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
-                <td class="text-green">{{ item.totalRealizado | currency:'BRL':'symbol':'1.2-2' }}</td>
-                <td class="text-orange"><strong>{{ item.saldoEmAberto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
                 <td>
-                  <input class="cell-input" [(ngModel)]="item.proximoVencimento" (blur)="salvarCampoTitulo(item, 'proximoVencimento', item.proximoVencimento)" placeholder="DD/MM/AAAA...">
+                  <input type="number" step="0.01" class="cell-input text-green" [(ngModel)]="item.totalRealizado" (blur)="onTotalRealizadoChange(item)" placeholder="0.00">
                 </td>
+                <td class="text-orange"><strong>{{ item.saldoEmAberto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
+                <td><input class="cell-input" [(ngModel)]="item.proximoVencimento" (blur)="salvarCampoTitulo(item, 'proximoVencimento', item.proximoVencimento)" placeholder="DD/MM/AAAA..."></td>
               </tr>
             </tbody>
           </table>
@@ -384,68 +340,38 @@
                 <th>PRÓXIMO VENCIMENTO</th>
               </tr>
               <tr class="filter-row">
-                <th class="col-id-header"><input type="text" [(ngModel)]="filtroPagar.id" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
+                <th class="col-id-header"><input type="text" [(ngModel)]="filtroPagar.id" placeholder="Filtrar..." class="table-filter-input"></th>
                 <th class="col-actions-header"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.motorista" placeholder="Filtrar Motorista..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.fornecedor" placeholder="Filtrar Fornecedor..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.cliente" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.operacao" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.numeroRota" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.numeroCte" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.numeroMdfe" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.origem" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.destino" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.perfilVeiculo" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.valorFrete" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.valorAdicional" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.dataColeta" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.dataEntrega" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.dataPagamento" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.placa" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.status" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.obs" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.dataAdiantamento" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.adiantamentoPago" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.dataSaldo" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.saldoPago" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.dataAdicional" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.adicionalPago" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.motorista" placeholder="Filtrar Motorista..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.fornecedor" placeholder="Filtrar Fornecedor..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.cliente" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.operacao" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.numeroRota" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.numeroCte" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.numeroMdfe" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.origem" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.destino" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.perfilVeiculo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.valorFrete" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.valorAdicional" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.dataColeta" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.dataEntrega" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.dataPagamento" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.placa" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.status" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.obs" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.dataAdiantamento" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.adiantamentoPago" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.dataSaldo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.saldoPago" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.dataAdicional" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.adicionalPago" placeholder="Filtrar..." class="table-filter-input"></th>
                 <th></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.idTitulo" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.totalPrevisto" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.totalRealizado" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.saldoEmAberto" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroPagar.proximoVencimento" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.idTitulo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.totalPrevisto" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.totalRealizado" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.saldoEmAberto" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroPagar.proximoVencimento" placeholder="Filtrar..." class="table-filter-input"></th>
               </tr>
             </thead>
             <tbody>
@@ -455,13 +381,17 @@
                   <div class="row-dropdown-wrapper">
                     <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.id)">
                       <span>Ações</span>
-                      <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2">
+                      <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
                       </svg>
                     </button>
-                    <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id"
-                      (click)="$event.stopPropagation()">
+                    <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.id" (click)="$event.stopPropagation()">
+                      <button type="button" class="row-menu-item item-finalizar" (click)="abrirModalBaixaTitulo(item)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>Registrar Pagto</span>
+                      </button>
                       <button type="button" class="row-menu-item" (click)="verLancamentosTitulo(item)">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -478,12 +408,8 @@
                 <td>{{ item.cliente }}</td>
                 <td>{{ item.operacao }}</td>
                 <td class="col-rota">{{ item.numeroRota || '-' }}</td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.numeroCte" (blur)="salvarCampoTitulo(item, 'numeroCte', item.numeroCte)" placeholder="Preencher CTE...">
-                </td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.numeroMdfe" (blur)="salvarCampoTitulo(item, 'numeroMdfe', item.numeroMdfe)" placeholder="Preencher MDFE...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="item.numeroCte" (blur)="salvarCampoTitulo(item, 'numeroCte', item.numeroCte)" placeholder="Preencher CTE..."></td>
+                <td><input class="cell-input" [(ngModel)]="item.numeroMdfe" (blur)="salvarCampoTitulo(item, 'numeroMdfe', item.numeroMdfe)" placeholder="Preencher MDFE..."></td>
                 <td>{{ item.origem }}</td>
                 <td>{{ item.destino }}</td>
                 <td>{{ item.perfilVeiculo || '-' }}</td>
@@ -491,9 +417,7 @@
                 <td>{{ item.valorAdicional | currency:'BRL':'symbol':'1.2-2' }}</td>
                 <td>{{ item.dataColeta || '-' }}</td>
                 <td>{{ item.dataEntrega || '-' }}</td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.dataPagamento" (blur)="salvarCampoTitulo(item, 'dataPagamento', item.dataPagamento)" placeholder="DD/MM/AAAA...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="item.dataPagamento" (blur)="salvarCampoTitulo(item, 'dataPagamento', item.dataPagamento)" placeholder="DD/MM/AAAA..."></td>
                 <td>{{ item.placa || '-' }}</td>
                 <td>
                   <span class="status-pill" [ngClass]="{
@@ -503,30 +427,22 @@
                     'status-vencido': item.status === 'VENCIDO'
                   }">{{ item.status }}</span>
                 </td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.obs" (blur)="salvarCampoTitulo(item, 'observacao', item.obs)" placeholder="Observação...">
-                </td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.dataAdiantamento" (blur)="salvarCampoTitulo(item, 'dataAdiantamento', item.dataAdiantamento)" placeholder="DD/MM/AAAA...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="item.obs" (blur)="salvarCampoTitulo(item, 'observacao', item.obs)" placeholder="Observação..."></td>
+                <td><input class="cell-input" [(ngModel)]="item.dataAdiantamento" (blur)="salvarCampoTitulo(item, 'dataAdiantamento', item.dataAdiantamento)" placeholder="DD/MM/AAAA..."></td>
                 <td>
                   <select class="cell-select" [(ngModel)]="item.adiantamentoPago" (change)="salvarCampoTitulo(item, 'adiantamentoPago', item.adiantamentoPago)">
                     <option value="SIM">SIM</option>
                     <option value="NÃO">NÃO</option>
                   </select>
                 </td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.dataSaldo" (blur)="salvarCampoTitulo(item, 'dataSaldo', item.dataSaldo)" placeholder="DD/MM/AAAA...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="item.dataSaldo" (blur)="salvarCampoTitulo(item, 'dataSaldo', item.dataSaldo)" placeholder="DD/MM/AAAA..."></td>
                 <td>
                   <select class="cell-select" [(ngModel)]="item.saldoPago" (change)="salvarCampoTitulo(item, 'saldoPago', item.saldoPago)">
                     <option value="SIM">SIM</option>
                     <option value="NÃO">NÃO</option>
                   </select>
                 </td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="item.dataAdicional" (blur)="salvarCampoTitulo(item, 'dataAdicional', item.dataAdicional)" placeholder="DD/MM/AAAA...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="item.dataAdicional" (blur)="salvarCampoTitulo(item, 'dataAdicional', item.dataAdicional)" placeholder="DD/MM/AAAA..."></td>
                 <td>
                   <select class="cell-select" [(ngModel)]="item.adicionalPago" (change)="salvarCampoTitulo(item, 'adicionalPago', item.adicionalPago)">
                     <option value="SIM">SIM</option>
@@ -534,17 +450,17 @@
                   </select>
                 </td>
                 <td>
-                  <button *ngIf="item.comprovanteUrl" type="button" class="btn-comprovante"
-                    (click)="abrirArquivo(item.comprovanteUrl)">Ver Anexo</button>
-                  <span *ngIf="!item.comprovanteUrl" class="text-muted">-</span>
+                  <input #fileInputTitulo type="file" (change)="onComprovanteTituloSelecionado($event, item)" style="display: none;" accept="image/*,.pdf" />
+                  <button *ngIf="!item.comprovanteUrl" type="button" class="btn-anexar" (click)="fileInputTitulo.click()">+ Anexar</button>
+                  <button *ngIf="item.comprovanteUrl" type="button" class="btn-comprovante" (click)="abrirArquivo(item.comprovanteUrl)">Ver Anexo</button>
                 </td>
                 <td>{{ item.idTitulo }}</td>
                 <td><strong>{{ item.totalPrevisto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
-                <td class="text-green">{{ item.totalRealizado | currency:'BRL':'symbol':'1.2-2' }}</td>
-                <td class="text-red"><strong>{{ item.saldoEmAberto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
                 <td>
-                  <input class="cell-input" [(ngModel)]="item.proximoVencimento" (blur)="salvarCampoTitulo(item, 'proximoVencimento', item.proximoVencimento)" placeholder="DD/MM/AAAA...">
+                  <input type="number" step="0.01" class="cell-input text-green" [(ngModel)]="item.totalRealizado" (blur)="onTotalRealizadoChange(item)" placeholder="0.00">
                 </td>
+                <td class="text-red"><strong>{{ item.saldoEmAberto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
+                <td><input class="cell-input" [(ngModel)]="item.proximoVencimento" (blur)="salvarCampoTitulo(item, 'proximoVencimento', item.proximoVencimento)" placeholder="DD/MM/AAAA..."></td>
               </tr>
             </tbody>
           </table>
@@ -579,60 +495,39 @@
                 <th>OBS</th>
               </tr>
               <tr class="filter-row">
-                <th class="col-id-header"><input type="text" [(ngModel)]="filtroLancamentos.idLancamento"
-                    placeholder="Filtrar..." class="table-filter-input"></th>
+                <th class="col-id-header"><input type="text" [(ngModel)]="filtroLancamentos.idLancamento" placeholder="Filtrar..." class="table-filter-input"></th>
                 <th class="col-actions-header"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.idTitulo" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.idViagem" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.tipo" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.etapa" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.tipoAdicional" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.entidade" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.valorPrevisto" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.dataVencimento" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.valorRealizado" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.dataEfetiva" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.saldoEmAberto" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.status" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.numeroCte" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.numeroMdfe" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.idTitulo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.idViagem" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.tipo" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.etapa" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.tipoAdicional" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.entidade" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.valorPrevisto" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.dataVencimento" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.valorRealizado" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.dataEfetiva" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.saldoEmAberto" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.status" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.numeroCte" placeholder="Filtrar..." class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.numeroMdfe" placeholder="Filtrar..." class="table-filter-input"></th>
                 <th></th>
-                <th><input type="text" [(ngModel)]="filtroLancamentos.obs" placeholder="Filtrar..."
-                    class="table-filter-input"></th>
+                <th><input type="text" [(ngModel)]="filtroLancamentos.obs" placeholder="Filtrar..." class="table-filter-input"></th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let lanc of filtrarLancamentos(lancamentos)"
-                [class.row-menu-open]="openedActionMenuId === ('lanc_' + lanc.idLancamento)">
+              <tr *ngFor="let lanc of filtrarLancamentos(lancamentos)" [class.row-menu-open]="openedActionMenuId === ('lanc_' + lanc.idLancamento)">
                 <td class="col-id-cell"><span class="badge-system-id">#{{ lanc.idLancamento }}</span></td>
                 <td class="col-actions-cell">
                   <div class="row-dropdown-wrapper">
-                    <button type="button" class="btn-row-action"
-                      (click)="toggleRowActions($event, 'lanc_' + lanc.idLancamento)">
+                    <button type="button" class="btn-row-action" (click)="toggleRowActions($event, 'lanc_' + lanc.idLancamento)">
                       <span>Ações</span>
-                      <svg class="chevron-icon" [class.rotate]="openedActionMenuId === ('lanc_' + lanc.idLancamento)"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <svg class="chevron-icon" [class.rotate]="openedActionMenuId === ('lanc_' + lanc.idLancamento)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
                       </svg>
                     </button>
-                    <div class="row-dropdown-menu" *ngIf="openedActionMenuId === ('lanc_' + lanc.idLancamento)"
-                      (click)="$event.stopPropagation()">
-                      <button type="button" class="row-menu-item item-finalizar"
-                        (click)="abrirModalBaixaLancamento(lanc)">
+                    <div class="row-dropdown-menu" *ngIf="openedActionMenuId === ('lanc_' + lanc.idLancamento)" (click)="$event.stopPropagation()">
+                      <button type="button" class="row-menu-item item-finalizar" (click)="abrirModalBaixaLancamento(lanc)">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
@@ -643,19 +538,14 @@
                 </td>
                 <td>{{ lanc.idTitulo }}</td>
                 <td>#{{ lanc.idViagem }}</td>
-                <td><span class="badge-tipo" [class.tipo-rec]="lanc.tipo === 'A RECEBER'"
-                    [class.tipo-pag]="lanc.tipo === 'A PAGAR'">{{ lanc.tipo }}</span></td>
+                <td><span class="badge-tipo" [class.tipo-rec]="lanc.tipo === 'A RECEBER'" [class.tipo-pag]="lanc.tipo === 'A PAGAR'">{{ lanc.tipo }}</span></td>
                 <td><strong>{{ lanc.etapa }}</strong></td>
                 <td>{{ lanc.tipoAdicional || '-' }}</td>
                 <td class="col-principal-cell">{{ lanc.entidade }}</td>
                 <td>{{ lanc.valorPrevisto | currency:'BRL':'symbol':'1.2-2' }}</td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="lanc.dataVencimento" (blur)="salvarCampoLancamento(lanc, 'dataVencimento', lanc.dataVencimento)" placeholder="DD/MM/AAAA...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="lanc.dataVencimento" (blur)="salvarCampoLancamento(lanc, 'dataVencimento', lanc.dataVencimento)" placeholder="DD/MM/AAAA..."></td>
                 <td class="text-green">{{ lanc.valorRealizado | currency:'BRL':'symbol':'1.2-2' }}</td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="lanc.dataEfetiva" (blur)="salvarCampoLancamento(lanc, 'dataEfetiva', lanc.dataEfetiva)" placeholder="DD/MM/AAAA...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="lanc.dataEfetiva" (blur)="salvarCampoLancamento(lanc, 'dataEfetiva', lanc.dataEfetiva)" placeholder="DD/MM/AAAA..."></td>
                 <td><strong>{{ lanc.saldoEmAberto | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
                 <td>
                   <span class="status-pill" [ngClass]="{
@@ -665,20 +555,14 @@
                     'status-vencido': lanc.status === 'VENCIDO'
                   }">{{ lanc.status }}</span>
                 </td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="lanc.numeroCte" (blur)="salvarCampoLancamento(lanc, 'numeroCte', lanc.numeroCte)" placeholder="Nº CTE...">
-                </td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="lanc.numeroMdfe" (blur)="salvarCampoLancamento(lanc, 'numeroMdfe', lanc.numeroMdfe)" placeholder="Nº MDFE...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="lanc.numeroCte" (blur)="salvarCampoLancamento(lanc, 'numeroCte', lanc.numeroCte)" placeholder="Nº CTE..."></td>
+                <td><input class="cell-input" [(ngModel)]="lanc.numeroMdfe" (blur)="salvarCampoLancamento(lanc, 'numeroMdfe', lanc.numeroMdfe)" placeholder="Nº MDFE..."></td>
                 <td>
                   <input #fileInputLanc type="file" (change)="onComprovanteSelecionado($event, lanc)" style="display: none;" accept="image/*,.pdf" />
                   <button *ngIf="!lanc.comprovanteUrl" type="button" class="btn-anexar" (click)="fileInputLanc.click()">+ Anexar</button>
                   <button *ngIf="lanc.comprovanteUrl" type="button" class="btn-comprovante" (click)="abrirArquivo(lanc.comprovanteUrl)">Ver Anexo</button>
                 </td>
-                <td>
-                  <input class="cell-input" [(ngModel)]="lanc.obs" (blur)="salvarCampoLancamento(lanc, 'observacao', lanc.obs)" placeholder="Observação...">
-                </td>
+                <td><input class="cell-input" [(ngModel)]="lanc.obs" (blur)="salvarCampoLancamento(lanc, 'observacao', lanc.obs)" placeholder="Observação..."></td>
               </tr>
             </tbody>
           </table>
@@ -721,8 +605,7 @@
                 </td>
                 <td class="col-principal-cell">{{ item.cliente || item.fornecedor }}</td>
                 <td>
-                  <span class="badge-tipo" [class.tipo-rec]="item.idTitulo?.startsWith('REC')"
-                    [class.tipo-pag]="item.idTitulo?.startsWith('PAG')">
+                  <span class="badge-tipo" [class.tipo-rec]="item.idTitulo?.startsWith('REC')" [class.tipo-pag]="item.idTitulo?.startsWith('PAG')">
                     {{ item.idTitulo?.startsWith('REC') ? 'A RECEBER' : 'A PAGAR' }}
                   </span>
                 </td>
@@ -744,7 +627,36 @@
     </section>
   </main>
 
-  <!-- MODAL DE CONFIRMAÇÃO DE BAIXA DE PARCELA -->
+  <!-- MODAL DE BAIXA DE TÍTULO (RECEBER / PAGAR) -->
+  <div class="cospa-modal-overlay" *ngIf="selectedTituloParaBaixa" (click)="selectedTituloParaBaixa = null">
+    <div class="cospa-modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Registrar Pagamento / Baixa: {{ selectedTituloParaBaixa.idTitulo }}</h3>
+        <button type="button" class="btn-close-modal" (click)="selectedTituloParaBaixa = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Entidade: <strong>{{ selectedTituloParaBaixa.cliente || selectedTituloParaBaixa.motorista }}</strong></p>
+        <p>Total Previsto: <strong>{{ selectedTituloParaBaixa.totalPrevisto | currency:'BRL':'symbol':'1.2-2' }}</strong></p>
+        <p>Saldo em Aberto Atual: <strong class="text-orange">{{ selectedTituloParaBaixa.saldoEmAberto | currency:'BRL':'symbol':'1.2-2' }}</strong></p>
+        
+        <div class="f-group" style="margin-top: 1rem;">
+          <label>Valor da Baixa (R$)</label>
+          <input type="number" step="0.01" [(ngModel)]="valorBaixaDigitado" class="modal-input" placeholder="0.00" />
+        </div>
+
+        <div class="f-group" style="margin-top: 0.75rem;">
+          <label>Data Efetiva da Baixa</label>
+          <input type="text" [(ngModel)]="dataBaixaDigitada" class="modal-input" placeholder="DD/MM/AAAA" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="selectedTituloParaBaixa = null">Cancelar</button>
+        <button type="button" class="btn-confirm" (click)="confirmarBaixaTitulo()">Confirmar Baixa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE BAIXA DE PARCELA (LANÇAMENTO) -->
   <div class="cospa-modal-overlay" *ngIf="selectedLancamentoParaBaixa" (click)="selectedLancamentoParaBaixa = null">
     <div class="cospa-modal-box" (click)="$event.stopPropagation()">
       <div class="modal-head">
@@ -752,10 +664,18 @@
         <button type="button" class="btn-close-modal" (click)="selectedLancamentoParaBaixa = null">✕</button>
       </div>
       <div class="modal-body">
-        <p>Confirmar a liquidação da parcela de <strong>{{ selectedLancamentoParaBaixa.etapa }}</strong> no valor de <strong>{{ selectedLancamentoParaBaixa.valorPrevisto | currency:'BRL':'symbol':'1.2-2' }}</strong>?</p>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
-          O estado financeiro será atualizado imediatamente para <strong>QUITADO</strong> e o saldo em aberto será zerado.
-        </p>
+        <p>Parcela: <strong>{{ selectedLancamentoParaBaixa.etapa }}</strong> (Previsto: {{ selectedLancamentoParaBaixa.valorPrevisto | currency:'BRL':'symbol':'1.2-2' }})</p>
+        <p>Saldo em Aberto: <strong class="text-orange">{{ selectedLancamentoParaBaixa.saldoEmAberto | currency:'BRL':'symbol':'1.2-2' }}</strong></p>
+        
+        <div class="f-group" style="margin-top: 1rem;">
+          <label>Valor Pago / Recebido (R$)</label>
+          <input type="number" step="0.01" [(ngModel)]="valorBaixaDigitado" class="modal-input" placeholder="0.00" />
+        </div>
+
+        <div class="f-group" style="margin-top: 0.75rem;">
+          <label>Data Efetiva da Liquidação</label>
+          <input type="text" [(ngModel)]="dataBaixaDigitada" class="modal-input" placeholder="DD/MM/AAAA" />
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-cancel" (click)="selectedLancamentoParaBaixa = null">Cancelar</button>

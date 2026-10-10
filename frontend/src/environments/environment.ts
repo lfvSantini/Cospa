@@ -2,5 +2,5 @@ export const environment = {
   production: true,
   apiUrl: 'https://cospa-production.up.railway.app/api',
   uploadsUrl: 'https://cospa-production.up.railway.app/uploads/',
-  appVersion: 'v2.1.8'
+  appVersion: 'v2.2.2'
 };

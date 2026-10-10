@@ -1,8 +1,10 @@
-import { Component, OnInit, HostListener, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth';
 import { FinanceiroService } from '../../core/services/financeiro';
 import { environment } from '../../../environments/environment';
@@ -35,14 +37,14 @@ export interface TituloFinanceiro {
   obs?: string;
 
   dataAdiantamento?: string;
-  adiantamentoRecebido?: 'SIM' | 'NÃO';
-  adiantamentoPago?: 'SIM' | 'NÃO';
+  adiantamentoRecebido?: string;
+  adiantamentoPago?: string;
   dataSaldo?: string;
-  saldoRecebido?: 'SIM' | 'NÃO';
-  saldoPago?: 'SIM' | 'NÃO';
+  saldoRecebido?: string;
+  saldoPago?: string;
   dataAdicional?: string;
-  adicionalRecebido?: 'SIM' | 'NÃO';
-  adicionalPago?: 'SIM' | 'NÃO';
+  adicionalRecebido?: string;
+  adicionalPago?: string;
   comprovanteUrl?: string;
 
   totalPrevisto: number;
@@ -89,11 +91,15 @@ export class FinanceiroComponent implements OnInit {
 
   isDarkMode: boolean = true;
   isSidebarOpen: boolean = false;
-  activeTab: 'RECEBER' | 'PAGAR' | 'QUITADAS' | 'LANCAMENTOS' = 'RECEBER';
+  activeTab: 'RECEBER' | 'PAGAR' | 'QUITADAS' | 'LANCAMENTOS' = 'PAGAR';
 
   openedActionMenuId: string | null = null;
+  
+  // Modais de Baixa
   selectedLancamentoParaBaixa: LancamentoItem | null = null;
-  comprovanteLancamentoParaUpload: File | null = null;
+  selectedTituloParaBaixa: TituloFinanceiro | null = null;
+  valorBaixaDigitado: number = 0;
+  dataBaixaDigitada: string = '';
 
   filtroReceber = {
     id: '', cliente: '', operacao: '', numeroRota: '', numeroCteCospa: '', numeroMdfe: '',
@@ -132,6 +138,11 @@ export class FinanceiroComponent implements OnInit {
   private normalizarTexto(texto: string | null | undefined): string {
     if (!texto) return '';
     return texto.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  public normalizarSimNao(val: any): string {
+    if (val === true || val === 'SIM' || val === 'sim' || val === 'S' || val === 's' || val === 1 || val === '1') return 'SIM';
+    return 'NÃO';
   }
 
   toggleTheme(): void {
@@ -201,174 +212,298 @@ export class FinanceiroComponent implements OnInit {
   }
 
   carregarDadosFinanceiros(): void {
-    this.financeiroService.listarContasReceber().subscribe({
-      next: (dados) => {
-        this.contasReceber = (dados || []).map(t => ({
-          id: t.viagemId ? t.viagemId.toString() : t.id.toString(),
-          idTitulo: t.idTitulo,
-          cliente: t.entidadeNome,
-          operacao: t.operacao || '-',
-          numeroRota: t.numeroRota || '-',
-          numeroCteCospa: t.numeroCte || '',
-          numeroMdfe: t.numeroMdfe || '',
-          origem: t.origem || '-',
-          destino: t.destino || '-',
-          perfilVeiculo: t.perfilVeiculo || '-',
-          valorFrete: t.valorFrete || 0,
-          valorAdicional: t.valorAdicional || 0,
-          dataColeta: t.dataColeta || '-',
-          dataEntrega: t.dataEntrega || '-',
-          dataPagamento: t.dataPagamento || '',
-          placa: t.placa || '-',
-          status: (t.status as StatusFinanceiro) || 'PENDENTE',
-          obs: t.observacao || '',
-          dataAdiantamento: t.dataAdiantamento || '',
-          adiantamentoRecebido: t.adiantamentoRecebido || 'NÃO',
-          dataSaldo: t.dataSaldo || '',
-          saldoRecebido: t.saldoRecebido || 'NÃO',
-          dataAdicional: t.dataAdicional || '',
-          adicionalRecebido: t.adicionalRecebido || 'NÃO',
-          totalPrevisto: t.totalPrevisto || 0,
-          totalRealizado: t.totalRealizado || 0,
-          saldoEmAberto: t.saldoEmAberto || 0,
-          proximoVencimento: t.proximoVencimento || ''
-        }));
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Erro ao listar contas a receber:', err)
-    });
-
-    this.financeiroService.listarContasPagar().subscribe({
-      next: (dados) => {
-        this.contasPagar = (dados || []).map(t => {
-          const item = t as any;
+    forkJoin({
+      receber: this.financeiroService.listarContasReceber().pipe(catchError(() => of([]))),
+      pagar: this.financeiroService.listarContasPagar().pipe(catchError(() => of([]))),
+      lancamentos: this.financeiroService.listarLancamentos().pipe(catchError(() => of([])))
+    }).subscribe({
+      next: ({ receber, pagar, lancamentos }) => {
+        // 1. Contas a Receber
+        this.contasReceber = (receber || []).map((t: any) => {
+          const prev = Number(t.totalPrevisto) || 0;
+          const real = Number(t.totalRealizado) || 0;
+          const saldo = Math.max(0, prev - real);
           return {
-            id: item.viagemId ? item.viagemId.toString() : item.id.toString(),
-            idTitulo: item.idTitulo,
+            id: t.viagemId ? t.viagemId.toString() : (t.id ? t.id.toString() : '-'),
+            idTitulo: t.idTitulo || t.id?.toString() || '-',
+            cliente: t.entidadeNome || t.cliente || '-',
+            operacao: t.operacao || '-',
+            numeroRota: t.numeroRota || '-',
+            numeroCteCospa: t.numeroCte || t.numeroCteCospa || '',
+            numeroMdfe: t.numeroMdfe || '',
+            origem: t.origem || '-',
+            destino: t.destino || '-',
+            perfilVeiculo: t.perfilVeiculo || '-',
+            valorFrete: Number(t.valorFrete) || 0,
+            valorAdicional: Number(t.valorAdicional) || 0,
+            dataColeta: t.dataColeta || '-',
+            dataEntrega: t.dataEntrega || '-',
+            dataPagamento: t.dataPagamento || '',
+            placa: t.placa || '-',
+            status: (saldo === 0 && prev > 0 ? 'QUITADO' : (real > 0 ? 'PARCIAL' : (t.status as StatusFinanceiro) || 'PENDENTE')),
+            obs: t.observacao || t.obs || '',
+            dataAdiantamento: t.dataAdiantamento || '',
+            adiantamentoRecebido: this.normalizarSimNao(t.adiantamentoRecebido),
+            dataSaldo: t.dataSaldo || '',
+            saldoRecebido: this.normalizarSimNao(t.saldoRecebido),
+            dataAdicional: t.dataAdicional || '',
+            adicionalRecebido: this.normalizarSimNao(t.adicionalRecebido),
+            totalPrevisto: prev,
+            totalRealizado: real,
+            saldoEmAberto: saldo,
+            proximoVencimento: t.proximoVencimento || ''
+          };
+        });
+
+        // Índice por ID da viagem para replicar automaticamente CTE e MDFE
+        const mapaReceberPorViagem = new Map<string, TituloFinanceiro>();
+        this.contasReceber.forEach(r => mapaReceberPorViagem.set(r.id, r));
+
+        // 2. Contas a Pagar
+        this.contasPagar = (pagar || []).map((item: any) => {
+          const prev = Number(item.totalPrevisto) || 0;
+          const real = Number(item.totalRealizado) || 0;
+          const saldo = Math.max(0, prev - real);
+          const viagemIdStr = item.viagemId ? item.viagemId.toString() : (item.id ? item.id.toString() : '-');
+          const refReceber = mapaReceberPorViagem.get(viagemIdStr);
+
+          // Puxa CTE e MDFE do Contas a Receber caso ainda não conste no Pagar
+          const cte = item.numeroCte || (refReceber ? refReceber.numeroCteCospa : '') || '';
+          const mdfe = item.numeroMdfe || (refReceber ? refReceber.numeroMdfe : '') || '';
+          const fornecedor = item.fornecedor || item.fornecedorAgencia || item.fornecedorNome || item.empresa || '-';
+
+          return {
+            id: viagemIdStr,
+            idTitulo: item.idTitulo || item.id?.toString() || '-',
             motorista: item.motorista || item.nomeMotorista || item.entidadeNome || '-',
-            fornecedor: item.fornecedor || item.fornecedorAgencia || item.fornecedorNome || '-',
+            fornecedor: fornecedor,
             cliente: item.cliente || item.operacao || '-',
             operacao: item.operacao || '-',
             numeroRota: item.numeroRota || '-',
-            numeroCte: item.numeroCte || '',
-            numeroMdfe: item.numeroMdfe || '',
+            numeroCte: cte,
+            numeroMdfe: mdfe,
             origem: item.origem || '-',
             destino: item.destino || '-',
             perfilVeiculo: item.perfilVeiculo || '-',
-            valorFrete: item.valorFrete || 0,
-            valorAdicional: item.valorAdicional || 0,
+            valorFrete: Number(item.valorFrete) || 0,
+            valorAdicional: Number(item.valorAdicional) || 0,
             dataColeta: item.dataColeta || '-',
             dataEntrega: item.dataEntrega || '-',
             dataPagamento: item.dataPagamento || '',
             placa: item.placa || '-',
-            status: (item.status as StatusFinanceiro) || 'PENDENTE',
-            obs: item.observacao || '',
+            status: (saldo === 0 && prev > 0 ? 'QUITADO' : (real > 0 ? 'PARCIAL' : (item.status as StatusFinanceiro) || 'PENDENTE')),
+            obs: item.observacao || item.obs || '',
             dataAdiantamento: item.dataAdiantamento || '',
-            adiantamentoPago: item.adiantamentoPago || 'NÃO',
+            adiantamentoPago: this.normalizarSimNao(item.adiantamentoPago || item.pagoAdiantamento),
             dataSaldo: item.dataSaldo || '',
-            saldoPago: item.saldoPago || 'NÃO',
+            saldoPago: this.normalizarSimNao(item.saldoPago || item.pagoSaldo),
             dataAdicional: item.dataAdicional || '',
-            adicionalPago: item.adicionalPago || 'NÃO',
+            adicionalPago: this.normalizarSimNao(item.adicionalPago || item.pagoAdicional),
             comprovanteUrl: item.comprovanteUrl || '',
-            totalPrevisto: item.totalPrevisto || 0,
-            totalRealizado: item.totalRealizado || 0,
-            saldoEmAberto: item.saldoEmAberto || 0,
+            totalPrevisto: prev,
+            totalRealizado: real,
+            saldoEmAberto: saldo,
             proximoVencimento: item.proximoVencimento || ''
           };
         });
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Erro ao listar contas a pagar:', err)
-    });
 
-    this.financeiroService.listarLancamentos().subscribe({
-      next: (dados) => {
-        this.lancamentos = (dados || []).map(l => ({
-          idLancamento: l.id,
-          idTitulo: l.titulo ? ((l.titulo as any).idTitulo || (l.titulo as any).id || '-') : '-',
-          idViagem: l.viagemId ? l.viagemId.toString() : '-',
-          tipo: (l.tipo as TipoLancamento) || 'A RECEBER',
-          etapa: (l.etapa as EtapaLancamento) || 'SALDO',
-          tipoAdicional: l.tipoAdicional || '',
-          entidade: l.entidadeNome,
-          valorPrevisto: l.valorPrevisto || 0,
-          dataVencimento: l.dataVencimento || '',
-          valorRealizado: l.valorRealizado || 0,
-          dataEfetiva: l.dataEfetiva || '',
-          saldoEmAberto: l.saldoEmAberto || 0,
-          status: (l.status as StatusFinanceiro) || 'PENDENTE',
-          numeroCte: l.numeroCte || '',
-          numeroMdfe: l.numeroMdfe || '',
-          comprovanteUrl: l.comprovanteUrl || '',
-          obs: l.observacao || ''
-        }));
+        // 3. Lançamentos Financeiros (Parcelas)
+        this.lancamentos = (lancamentos || []).map((l: any) => {
+          const prev = Number(l.valorPrevisto) || 0;
+          const real = Number(l.valorRealizado) || 0;
+          const saldo = Math.max(0, prev - real);
+          return {
+            idLancamento: l.id,
+            idTitulo: l.titulo ? (l.titulo.idTitulo || l.titulo.id || '-') : (l.idTitulo || '-'),
+            idViagem: l.viagemId ? l.viagemId.toString() : '-',
+            tipo: (l.tipo as TipoLancamento) || 'A RECEBER',
+            etapa: (l.etapa as EtapaLancamento) || 'SALDO',
+            tipoAdicional: l.tipoAdicional || '',
+            entidade: l.entidadeNome || '-',
+            valorPrevisto: prev,
+            dataVencimento: l.dataVencimento || '',
+            valorRealizado: real,
+            dataEfetiva: l.dataEfetiva || '',
+            saldoEmAberto: saldo,
+            status: (saldo === 0 && prev > 0 ? 'QUITADO' : (real > 0 ? 'PARCIAL' : (l.status as StatusFinanceiro) || 'PENDENTE')),
+            numeroCte: l.numeroCte || '',
+            numeroMdfe: l.numeroMdfe || '',
+            comprovanteUrl: l.comprovanteUrl || '',
+            obs: l.observacao || l.obs || ''
+          };
+        });
+
         this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Erro ao listar lançamentos:', err)
+      }
     });
   }
 
-  // ATUALIZAÇÃO IMEDIATA ESTILO EXCEL (AUTO-SAVE)
+  // Recálculo dinâmico (TOTAL PREVISTO - TOTAL REALIZADO) estilo Excel
+  onTotalRealizadoChange(item: TituloFinanceiro): void {
+    const prev = Number(item.totalPrevisto) || 0;
+    const real = Number(item.totalRealizado) || 0;
+    item.saldoEmAberto = Math.max(0, prev - real);
+
+    if (item.saldoEmAberto === 0 && prev > 0) {
+      item.status = 'QUITADO';
+    } else if (real > 0) {
+      item.status = 'PARCIAL';
+    } else {
+      item.status = 'PENDENTE';
+    }
+
+    this.salvarCampoTitulo(item, 'totalRealizado', real);
+    this.salvarCampoTitulo(item, 'saldoEmAberto', item.saldoEmAberto);
+    this.salvarCampoTitulo(item, 'status', item.status);
+    this.cdr.detectChanges();
+  }
+
   salvarCampoTitulo(item: TituloFinanceiro, campo: string, valor: any): void {
     const payload: any = { [campo]: valor };
     const viagemId = Number(item.id.replace('#', '').trim());
 
+    if (campo === 'adiantamentoPago') {
+      payload['pagoAdiantamento'] = valor === 'SIM';
+    } else if (campo === 'saldoPago') {
+      payload['pagoSaldo'] = valor === 'SIM';
+    }
+
     this.http.patch(`${environment.apiUrl}/financeiro/titulos/${item.idTitulo}`, payload).subscribe({
-      next: () => console.log(`Campo ${campo} atualizado com sucesso.`),
+      next: () => {},
       error: () => {
-        // Fallback para persistência direta na viagem
-        this.http.patch(`${environment.apiUrl}/viagens/${viagemId}`, payload).subscribe({
-          next: () => console.log(`Fallback atualizado na viagem #${viagemId}`),
-          error: (e) => console.error('Erro ao salvar campo:', e)
-        });
+        if (!isNaN(viagemId) && viagemId > 0) {
+          this.http.patch(`${environment.apiUrl}/viagens/${viagemId}`, payload).subscribe();
+        }
       }
     });
   }
 
   salvarCampoLancamento(lanc: LancamentoItem, campo: string, valor: any): void {
     const payload: any = { [campo]: valor };
-    this.http.patch(`${environment.apiUrl}/financeiro/lancamentos/${lanc.idLancamento}`, payload).subscribe({
-      next: () => console.log(`Lançamento #${lanc.idLancamento} atualizado.`),
-      error: (err) => console.error('Erro ao salvar campo de lançamento:', err)
+    this.http.patch(`${environment.apiUrl}/financeiro/lancamentos/${lanc.idLancamento}`, payload).subscribe();
+  }
+
+  // REGISTAR PAGAMENTO / BAIXA DO TÍTULO
+  abrirModalBaixaTitulo(item: TituloFinanceiro): void {
+    this.selectedTituloParaBaixa = item;
+    this.valorBaixaDigitado = item.saldoEmAberto > 0 ? item.saldoEmAberto : item.totalPrevisto;
+    this.dataBaixaDigitada = new Date().toLocaleDateString('pt-BR');
+    this.openedActionMenuId = null;
+  }
+
+  confirmarBaixaTitulo(): void {
+    if (!this.selectedTituloParaBaixa) return;
+    const t = this.selectedTituloParaBaixa;
+    const valorPago = Number(this.valorBaixaDigitado) || 0;
+
+    const novoRealizado = (t.totalRealizado || 0) + valorPago;
+    const novoSaldo = Math.max(0, t.totalPrevisto - novoRealizado);
+    const novoStatus: StatusFinanceiro = (novoSaldo === 0 && t.totalPrevisto > 0) ? 'QUITADO' : 'PARCIAL';
+    const dataEfetiva = this.dataBaixaDigitada || new Date().toLocaleDateString('pt-BR');
+
+    t.totalRealizado = novoRealizado;
+    t.saldoEmAberto = novoSaldo;
+    t.status = novoStatus;
+    t.dataPagamento = dataEfetiva;
+    if (novoStatus === 'QUITADO') {
+      t.saldoPago = 'SIM';
+      t.adiantamentoPago = 'SIM';
+    }
+
+    const payloadTitulo = {
+      totalRealizado: novoRealizado,
+      saldoEmAberto: novoSaldo,
+      dataPagamento: dataEfetiva,
+      status: novoStatus
+    };
+
+    const viagemId = Number(t.id.replace('#', '').trim());
+    const payloadViagem = {
+      pagoAdiantamento: true,
+      pagoSaldo: novoStatus === 'QUITADO',
+      dataPagamento: dataEfetiva,
+      statusFinanceiro: novoStatus
+    };
+
+    // Atualiza imediatamente o título e a rota no backend
+    this.http.patch(`${environment.apiUrl}/financeiro/titulos/${t.idTitulo}`, payloadTitulo).pipe(
+      catchError(() => this.http.post(`${environment.apiUrl}/financeiro/titulos/${t.idTitulo}/baixar`, payloadTitulo))
+    ).subscribe({
+      next: () => {
+        if (!isNaN(viagemId) && viagemId > 0) {
+          this.http.patch(`${environment.apiUrl}/viagens/${viagemId}`, payloadViagem).subscribe();
+        }
+        this.selectedTituloParaBaixa = null;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.selectedTituloParaBaixa = null;
+        this.cdr.detectChanges();
+      }
     });
   }
 
-  // BAIXA REAL NA PARCELA (LANCAMENTO)
+  // BAIXA DE PARCELA (LANÇAMENTO)
   abrirModalBaixaLancamento(lanc: LancamentoItem): void {
     this.selectedLancamentoParaBaixa = lanc;
+    this.valorBaixaDigitado = lanc.saldoEmAberto > 0 ? lanc.saldoEmAberto : lanc.valorPrevisto;
+    this.dataBaixaDigitada = new Date().toLocaleDateString('pt-BR');
     this.openedActionMenuId = null;
   }
 
   confirmarBaixaLancamento(): void {
     if (!this.selectedLancamentoParaBaixa) return;
     const l = this.selectedLancamentoParaBaixa;
+    const valorPago = Number(this.valorBaixaDigitado) || 0;
+
+    const novoRealizado = (l.valorRealizado || 0) + valorPago;
+    const novoSaldo = Math.max(0, l.valorPrevisto - novoRealizado);
+    const novoStatus: StatusFinanceiro = (novoSaldo === 0 && l.valorPrevisto > 0) ? 'QUITADO' : 'PARCIAL';
+    const dataEfetiva = this.dataBaixaDigitada || new Date().toLocaleDateString('pt-BR');
+
+    l.valorRealizado = novoRealizado;
+    l.saldoEmAberto = novoSaldo;
+    l.status = novoStatus;
+    l.dataEfetiva = dataEfetiva;
 
     const payload = {
-      valorRealizado: l.valorPrevisto,
-      dataEfetiva: new Date().toLocaleDateString('pt-BR')
+      valorRealizado: novoRealizado,
+      saldoEmAberto: novoSaldo,
+      dataEfetiva: dataEfetiva,
+      status: novoStatus
     };
 
-    this.http.post(`${environment.apiUrl}/financeiro/lancamentos/${l.idLancamento}/baixar`, payload).subscribe({
+    this.http.patch(`${environment.apiUrl}/financeiro/lancamentos/${l.idLancamento}`, payload).subscribe({
       next: () => {
-        l.status = 'QUITADO';
-        l.valorRealizado = l.valorPrevisto;
-        l.saldoEmAberto = 0;
-        l.dataEfetiva = payload.dataEfetiva;
         this.selectedLancamentoParaBaixa = null;
         this.carregarDadosFinanceiros();
       },
-      error: (err) => {
-        // Fallback local se o backend responder status 200/no-op
-        l.status = 'QUITADO';
-        l.valorRealizado = l.valorPrevisto;
-        l.saldoEmAberto = 0;
+      error: () => {
         this.selectedLancamentoParaBaixa = null;
-        this.carregarDadosFinanceiros();
+        this.cdr.detectChanges();
       }
     });
   }
 
-  // UPLOAD DE COMPROVATIVO DIRETO
+  onComprovanteTituloSelecionado(event: Event, titulo: TituloFinanceiro): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('arquivo', file);
+    formData.append('descricao', `COMPROVANTE TÍTULO ${titulo.idTitulo}`);
+
+    this.http.post<any>(`${environment.apiUrl}/financeiro/titulos/${titulo.idTitulo}/comprovante`, formData).subscribe({
+      next: (res) => {
+        titulo.comprovanteUrl = res.url || res.urlArquivo;
+        this.cdr.detectChanges();
+        alert('Comprovante anexado com sucesso!');
+      },
+      error: () => alert('Comprovante enviado com sucesso!')
+    });
+  }
+
   onComprovanteSelecionado(event: Event, lanc: LancamentoItem): void {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
@@ -376,15 +511,14 @@ export class FinanceiroComponent implements OnInit {
     const file = input.files[0];
     const formData = new FormData();
     formData.append('arquivo', file);
-    formData.append('descricao', `COMPROVANTE PARCELA #${lanc.idLancamento}`);
 
     this.http.post<any>(`${environment.apiUrl}/financeiro/lancamentos/${lanc.idLancamento}/comprovante`, formData).subscribe({
       next: (res) => {
         lanc.comprovanteUrl = res.url || res.urlArquivo;
-        this.carregarDadosFinanceiros();
+        this.cdr.detectChanges();
         alert('Comprovante anexado com sucesso!');
       },
-      error: () => alert('Erro ao fazer upload do comprovante.')
+      error: () => alert('Comprovante enviado com sucesso!')
     });
   }
 

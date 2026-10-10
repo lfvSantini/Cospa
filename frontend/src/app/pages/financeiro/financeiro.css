@@ -666,21 +666,6 @@
 .tipo-rec { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
 .tipo-pag { background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); }
 
-.badge-check {
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-muted);
-}
-
-.badge-check.check-sim {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
 .btn-comprovante {
   background: rgba(0, 102, 214, 0.12);
   border: 1px solid rgba(0, 102, 214, 0.3);
@@ -838,13 +823,13 @@
 }
 
 .cell-select {
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 4px;
+  background: var(--btn-action-bg);
+  border: 1px solid var(--btn-action-border);
+  border-radius: 6px;
   color: var(--text-main);
   font-size: 0.78rem;
   font-weight: 700;
-  padding: 4px 6px;
+  padding: 4px 8px;
   cursor: pointer;
   outline: none;
   text-align: center;
@@ -853,7 +838,6 @@
 .cell-select:hover,
 .cell-select:focus {
   border-color: #0066d6;
-  background-color: var(--btn-action-bg);
 }
 
 .btn-anexar {
@@ -933,6 +917,35 @@
   font-size: 0.92rem;
   line-height: 1.45;
   color: var(--text-main);
+}
+
+.f-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  text-align: left;
+}
+
+.f-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.modal-input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  background-color: var(--btn-action-bg);
+  border: 1px solid var(--btn-action-border);
+  border-radius: 6px;
+  color: var(--text-main);
+  font-size: 0.90rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.modal-input:focus {
+  border-color: #0066d6;
 }
 
 .modal-footer {

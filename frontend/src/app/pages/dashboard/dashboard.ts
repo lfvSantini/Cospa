@@ -569,7 +569,6 @@ export class DashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // CORREÇÃO PONTUAL: Não sobrescrever o Perfil/Carroceria da viagem pela placa do veículo
   onPlacaSelectChange(): void {
     if (!this.tripForm.placa) return;
     let placaBusca = this.tripForm.placa.trim().toUpperCase();
@@ -584,7 +583,6 @@ export class DashboardComponent implements OnInit {
       if (veic.fornecedor) {
         this.tripForm.agencia = veic.fornecedor;
       }
-      // O perfil e carroceria são preenchidos conforme o cliente solicita e NÃO são alterados automaticamente pela placa
     }
     this.cdr.detectChanges();
   }
@@ -1194,12 +1192,12 @@ export class DashboardComponent implements OnInit {
     if (!this.motoristaForm.nome.trim()) return;
 
     const cpfLimpo = (this.motoristaForm.cpf || '').replace(/\D/g, '').trim();
-    const idAtual = this.isEditingMotorista ? this.motoristaForm.id : null;
+    const idAtual = this.isEditingMotorista ? Number(this.motoristaForm.id) : null;
 
     if (cpfLimpo) {
       const motoristaExistente = this.motoristasList.find(m => {
         const cpfCadastrado = (m.cpf || '').replace(/\D/g, '').trim();
-        return cpfCadastrado === cpfLimpo && m.id !== idAtual;
+        return cpfCadastrado === cpfLimpo && Number(m.id) !== idAtual;
       });
 
       if (motoristaExistente) {
@@ -1209,7 +1207,7 @@ export class DashboardComponent implements OnInit {
     }
 
     const payload: any = {
-      id: this.isEditingMotorista ? this.motoristaForm.id : undefined,
+      id: this.isEditingMotorista ? Number(this.motoristaForm.id) : undefined,
       nome: this.motoristaForm.nome.toUpperCase(),
       cpf: this.motoristaForm.cpf.toUpperCase(),
       telefone: (this.motoristaForm.telefone || '').toUpperCase(),
@@ -1217,7 +1215,7 @@ export class DashboardComponent implements OnInit {
       fornecedor: this.motoristaForm.fornecedorVinculado || 'Frota Própria',
       situacao: this.motoristaForm.situacao,
       ativo: this.motoristaForm.situacao === 'ATIVO',
-      informacoesAdicionais: this.motoristaForm.informacoesAdicionais
+      informacoesAdicionais: (this.motoristaForm.informacoesAdicionais || '').toUpperCase()
     };
 
     this.motoristaService.salvar(payload).subscribe({
@@ -1360,9 +1358,9 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    const idAtual = this.isEditingVeiculo ? this.veiculoForm.id : null;
+    const idAtual = this.isEditingVeiculo ? Number(this.veiculoForm.id) : null;
     const placaExistente = this.veiculosList.find(v =>
-      v.placa.toUpperCase().trim() === placaLimpa && v.id !== idAtual
+      v.placa.toUpperCase().trim() === placaLimpa && Number(v.id) !== idAtual
     );
 
     if (placaExistente) {
@@ -1371,7 +1369,7 @@ export class DashboardComponent implements OnInit {
     }
 
     const payload: any = {
-      id: this.isEditingVeiculo ? this.veiculoForm.id : undefined,
+      id: this.isEditingVeiculo ? Number(this.veiculoForm.id) : undefined,
       placa: placaLimpa,
       tipoVeiculo: this.veiculoForm.tipoVeiculo || 'Truck',
       tipoCarroceria: this.veiculoForm.tipoCarroceria || 'Nenhum',
@@ -1596,12 +1594,12 @@ export class DashboardComponent implements OnInit {
     if (!this.clienteForm.nomeFantasia.trim()) return;
 
     const docLimpo = (this.clienteForm.cnpjCpf || '').replace(/\D/g, '').trim();
-    const idAtual = this.isEditingCliente ? this.clienteForm.id : null;
+    const idAtual = this.isEditingCliente ? Number(this.clienteForm.id) : null;
 
     if (docLimpo) {
       const clienteExistente = this.clientesList.find(c => {
         const docCadastrado = (c.cnpjCpf || '').replace(/\D/g, '').trim();
-        return docCadastrado === docLimpo && c.id !== idAtual;
+        return docCadastrado === docLimpo && Number(c.id) !== idAtual;
       });
 
       if (clienteExistente) {
@@ -1611,17 +1609,17 @@ export class DashboardComponent implements OnInit {
     }
 
     const payload: Cliente = {
-      id: this.isEditingCliente ? this.clienteForm.id : undefined,
+      id: this.isEditingCliente ? Number(this.clienteForm.id) : undefined,
       nome: this.clienteForm.nomeFantasia.toUpperCase(),
       nomeFantasia: this.clienteForm.nomeFantasia.toUpperCase(),
-      razaoSocial: this.clienteForm.razaoSocial.toUpperCase(),
+      razaoSocial: (this.clienteForm.razaoSocial || '').toUpperCase(),
       cnpjCpf: this.clienteForm.cnpjCpf.toUpperCase(),
-      nomeContato: this.clienteForm.nomeContato.toUpperCase(),
-      telefone: this.clienteForm.telefone.toUpperCase(),
-      email: this.clienteForm.email.toUpperCase(),
+      nomeContato: (this.clienteForm.nomeContato || '').toUpperCase(),
+      telefone: (this.clienteForm.telefone || '').toUpperCase(),
+      email: (this.clienteForm.email || '').toUpperCase(),
       situacao: this.clienteForm.situacao,
       ativo: this.clienteForm.situacao === 'ATIVO',
-      obs: this.clienteForm.obs
+      obs: (this.clienteForm.obs || '').toUpperCase()
     };
 
     this.clienteService.salvar(payload).subscribe({
@@ -1710,12 +1708,12 @@ export class DashboardComponent implements OnInit {
     if (!this.fornecedorForm.nome.trim()) return;
 
     const docLimpo = (this.fornecedorForm.cnpjCpf || '').replace(/\D/g, '').trim();
-    const idAtual = this.isEditingFornecedor ? this.fornecedorForm.id : null;
+    const idAtual = this.isEditingFornecedor ? Number(this.fornecedorForm.id) : null;
 
     if (docLimpo) {
       const docExistente = this.fornecedoresList.find(f => {
         const docCadastrado = (f.cnpjCpf || '').replace(/\D/g, '').trim();
-        return docCadastrado === docLimpo && f.id !== idAtual;
+        return docCadastrado === docLimpo && Number(f.id) !== idAtual;
       });
 
       if (docExistente) {
@@ -1725,18 +1723,18 @@ export class DashboardComponent implements OnInit {
     }
 
     const payload: any = {
-      id: this.isEditingFornecedor ? this.fornecedorForm.id : undefined,
+      id: this.isEditingFornecedor ? Number(this.fornecedorForm.id) : undefined,
       nome: this.fornecedorForm.nome.toUpperCase(),
       cnpjCpf: this.fornecedorForm.cnpjCpf.toUpperCase(),
-      nomeContato: this.fornecedorForm.nomeContato.toUpperCase(),
-      telefone: this.fornecedorForm.telefone.toUpperCase(),
-      email: this.fornecedorForm.email.toUpperCase(),
-      chavePix: this.fornecedorForm.chavePix.toUpperCase(),
+      nomeContato: (this.fornecedorForm.nomeContato || '').toUpperCase(),
+      telefone: (this.fornecedorForm.telefone || '').toUpperCase(),
+      email: (this.fornecedorForm.email || '').toUpperCase(),
+      chavePix: (this.fornecedorForm.chavePix || '').toUpperCase(),
       formaPagamento: (this.fornecedorForm.formaPagamento || '').toUpperCase(),
       forma_pagamento: (this.fornecedorForm.formaPagamento || '').toUpperCase(),
       situacao: this.fornecedorForm.situacao,
       ativo: this.fornecedorForm.situacao === 'ATIVO',
-      obs: this.fornecedorForm.obs
+      obs: (this.fornecedorForm.obs || '').toUpperCase()
     };
 
     this.fornecedorService.salvar(payload).subscribe({

@@ -362,7 +362,7 @@
   </main>
 
   <!-- MODAL: COMPROVANTES DA VIAGEM -->
-  <div class="cospa-modal-overlay" *ngIf="modalType === 'PHOTO' && !previewImageUrl" (click)="closeModal()">
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'PHOTO' && !previewImageUrl">
     <div class="cospa-modal-box modal-photo-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <h3>Comprovantes da Rota #{{ selectedViagem?.rawId }} {{ selectedViagem?.numeroOperacional ? '(' + selectedViagem?.numeroOperacional + ')' : '' }}</h3>
@@ -397,6 +397,7 @@
           </div>
 
           <div class="modal-actions-right">
+            <button type="button" class="btn-sec-cospa" (click)="closeModal()">Cancelar</button>
             <button type="button" class="btn-pri-cospa" (click)="adicionarComprovante()">Adicionar à Lista</button>
           </div>
         </div>
@@ -427,13 +428,17 @@
           <div class="empty-photos" *ngIf="!selectedViagem?.fotos?.length">
             <p>Nenhum comprovante anexado a esta rota.</p>
           </div>
+
+          <div class="modal-actions-right">
+            <button type="button" class="btn-sec-cospa" (click)="closeModal()">Fechar</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- MODAL: DOCUMENTOS / FOTOS DO MOTORISTA -->
-  <div class="cospa-modal-overlay" *ngIf="modalType === 'MOTORISTA_PHOTO' && !previewImageUrl" (click)="closeModal()">
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'MOTORISTA_PHOTO' && !previewImageUrl">
     <div class="cospa-modal-box modal-photo-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <h3>Documentos e Fotos: {{ selectedMotorista?.nome }}</h3>
@@ -466,6 +471,7 @@
           </div>
 
           <div class="modal-actions-right">
+            <button type="button" class="btn-sec-cospa" (click)="closeModal()">Cancelar</button>
             <button type="button" class="btn-pri-cospa" (click)="adicionarDocMotorista()">Adicionar Documento</button>
           </div>
         </div>
@@ -496,13 +502,17 @@
           <div class="empty-photos" *ngIf="!selectedMotorista?.documentos?.length">
             <p>Nenhum documento anexado para este motorista.</p>
           </div>
+
+          <div class="modal-actions-right">
+            <button type="button" class="btn-sec-cospa" (click)="closeModal()">Fechar</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- MODAL: DOCUMENTOS / FOTOS DO VEÍCULO -->
-  <div class="cospa-modal-overlay" *ngIf="modalType === 'VEICULO_PHOTO' && !previewImageUrl" (click)="closeModal()">
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'VEICULO_PHOTO' && !previewImageUrl">
     <div class="cospa-modal-box modal-photo-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <h3>Documentos e Fotos: {{ selectedVeiculo?.placa }}</h3>
@@ -535,6 +545,7 @@
           </div>
 
           <div class="modal-actions-right">
+            <button type="button" class="btn-sec-cospa" (click)="closeModal()">Cancelar</button>
             <button type="button" class="btn-pri-cospa" (click)="adicionarDocVeiculo()">Adicionar Documento</button>
           </div>
         </div>
@@ -565,6 +576,10 @@
           <div class="empty-photos" *ngIf="!selectedVeiculo?.documentos?.length">
             <p>Nenhum documento ou foto anexado para este veículo.</p>
           </div>
+
+          <div class="modal-actions-right">
+            <button type="button" class="btn-sec-cospa" (click)="closeModal()">Fechar</button>
+          </div>
         </div>
       </div>
     </div>
@@ -582,7 +597,7 @@
   </div>
 
   <!-- MODAL: NOVA / EDITAR VIAGEM -->
-  <div class="cospa-modal-overlay" *ngIf="modalType === 'TRIP_FORM'" (click)="closeModal()">
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'TRIP_FORM'">
     <div class="cospa-modal-box modal-trip-form" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <h3>{{ isEditing ? 'Editar Rota: #' + (selectedViagem?.rawId || tripForm.id) : 'Cadastrar Nova Rota' }}</h3>
@@ -952,15 +967,15 @@
         </div>
 
         <div class="modal-trip-footer">
-          <button type="submit" class="btn-cadastrar-blue">{{ isEditing ? 'Salvar Alterações' : 'Cadastrar' }}</button>
           <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-cadastrar-blue">{{ isEditing ? 'Salvar Alterações' : 'Cadastrar' }}</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- GERENCIAR ROTAS & LOCAIS -->
-  <div class="cospa-modal-overlay" *ngIf="modalType === 'ROTA'" (click)="closeModal()">
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'ROTA'">
     <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <h3>Gerenciar Rotas e Locais</h3>
@@ -996,13 +1011,23 @@
           </div>
 
           <div class="form-row-2">
+            <!-- CAMPO DE CLIENTE VINCULADO PESQUISÁVEL COM DATALIST -->
             <div class="f-group">
               <label>Cliente Vinculado *</label>
-              <select [(ngModel)]="rotaForm.clienteId" name="clienteId" required>
-                <option [value]="0" disabled selected>Selecione o Cliente</option>
-                <option *ngFor="let c of clientesList" [value]="c.id">{{ c.nomeFantasia }}</option>
-              </select>
+              <input 
+                type="text" 
+                [(ngModel)]="rotaClienteBusca" 
+                (ngModelChange)="onClienteRotaDigitado($event)" 
+                list="lista_clientes_rota_auto" 
+                name="rotaClienteBusca" 
+                placeholder="DIGITE OU SELECIONE O CLIENTE..." 
+                required 
+              />
+              <datalist id="lista_clientes_rota_auto">
+                <option *ngFor="let c of clientesList" [value]="c.nomeFantasia">{{ c.nomeFantasia }}</option>
+              </datalist>
             </div>
+
             <div class="f-group">
               <label>Nome do Local (Ponto de Apoio / Fornecedor) *</label>
               <input type="text" [(ngModel)]="rotaForm.nomeLocal" name="nomeLocal" placeholder="EX: CD SÃO PAULO, FÁBRICA CURITIBA" required />
@@ -1042,6 +1067,7 @@
 
           <div class="modal-actions-right">
             <button *ngIf="isEditingRota" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoRota()">Cancelar Edição</button>
+            <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
             <button type="submit" class="btn-pri-cospa">{{ isEditingRota ? 'Salvar Alterações' : 'Cadastrar Local' }}</button>
           </div>
         </form>
@@ -1079,7 +1105,7 @@
   </div>
 
   <!-- GERENCIAR FORNECEDORES -->
-  <div class="cospa-modal-overlay" *ngIf="modalType === 'FORNECEDOR'" (click)="closeModal()">
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'FORNECEDOR'">
     <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <h3>Gerenciar Fornecedores</h3>
@@ -1121,6 +1147,7 @@
 
           <div class="modal-actions-right">
             <button *ngIf="isEditingFornecedor" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoFornecedor()">Cancelar Edição</button>
+            <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
             <button type="submit" class="btn-pri-cospa">{{ isEditingFornecedor ? 'Salvar Alterações' : 'Cadastrar Fornecedor' }}</button>
           </div>
         </form>
@@ -1156,7 +1183,7 @@
   </div>
 
   <!-- GERENCIAR CLIENTES -->
-  <div class="cospa-modal-overlay" *ngIf="modalType === 'CLIENTE'" (click)="closeModal()">
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'CLIENTE'">
     <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <h3>Gerenciar Clientes</h3>
@@ -1194,6 +1221,7 @@
 
           <div class="modal-actions-right">
             <button *ngIf="isEditingCliente" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoCliente()">Cancelar Edição</button>
+            <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
             <button type="submit" class="btn-pri-cospa">{{ isEditingCliente ? 'Salvar Alterações' : 'Cadastrar Cliente' }}</button>
           </div>
         </form>
@@ -1229,7 +1257,7 @@
   </div>
 
   <!-- GERENCIAR MOTORISTAS -->
-  <div class="cospa-modal-overlay" *ngIf="modalType === 'MOTORISTA'" (click)="closeModal()">
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'MOTORISTA'">
     <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <h3>Gerenciar Motoristas</h3>
@@ -1274,6 +1302,7 @@
 
           <div class="modal-actions-right">
             <button *ngIf="isEditingMotorista" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoMotorista()">Cancelar Edição</button>
+            <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
             <button type="submit" class="btn-pri-cospa">{{ isEditingMotorista ? 'Salvar Alterações' : 'Cadastrar Motorista' }}</button>
           </div>
         </form>
@@ -1315,7 +1344,7 @@
   </div>
 
   <!-- GERENCIAR VEÍCULOS -->
-  <div class="cospa-modal-overlay" *ngIf="modalType === 'VEICULO'" (click)="closeModal()">
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'VEICULO'">
     <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <h3>Gerenciar Veículos</h3>
@@ -1467,6 +1496,7 @@
 
           <div class="modal-actions-right">
             <button *ngIf="isEditingVeiculo" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoVeiculo()">Cancelar Edição</button>
+            <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
             <button type="submit" class="btn-pri-cospa">{{ isEditingVeiculo ? 'Salvar Alterações' : 'Cadastrar Veículo' }}</button>
           </div>
         </form>
@@ -1507,7 +1537,7 @@
   </div>
 
   <!-- MODAL OBS -->
-  <div class="cospa-modal-overlay" *ngIf="modalType === 'OBS'" (click)="closeModal()">
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'OBS'">
     <div class="cospa-modal-box modal-sm" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <h3>Observação da Rota #{{ selectedViagem?.rawId }} {{ selectedViagem?.numeroOperacional ? '(' + selectedViagem?.numeroOperacional + ')' : '' }}</h3>
@@ -1517,6 +1547,7 @@
       <div class="modal-pane-content" *ngIf="selectedViagem">
         <textarea rows="4" [(ngModel)]="selectedViagem.obs" placeholder="Digite as observações da rota..."></textarea>
         <div class="modal-actions-right">
+          <button type="button" class="btn-sec-cospa" (click)="closeModal()">Cancelar</button>
           <button type="button" class="btn-pri-cospa" (click)="salvarObs()">Salvar</button>
         </div>
       </div>
@@ -1524,7 +1555,7 @@
   </div>
 
   <!-- MODAL CANCELAR VIAGEM -->
-  <div class="cospa-modal-overlay" *ngIf="modalType === 'CANCELAR'" (click)="closeModal()">
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'CANCELAR'">
     <div class="cospa-modal-box modal-sm" (click)="$event.stopPropagation()">
       <div class="modal-head">
         <h3>Cancelar Rota #{{ selectedViagem?.rawId }} {{ selectedViagem?.numeroOperacional ? '(' + selectedViagem?.numeroOperacional + ')' : '' }}</h3>
@@ -1542,7 +1573,1589 @@
         </div>
 
         <div class="modal-actions-right">
-          <button type="button" class="btn-sec-cospa" (click)="closeModal()">Voltar</button>
+          <button type="button" class="btn-sec-cospa" (click)="closeModal()">Cancelar</button>
+          <button type="button" class="btn-cancelar-viagem" (click)="confirmarCancelamento()">Confirmar Cancelamento</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><div class="dashboard-wrapper" [class.light-mode]="!isDarkMode" (click)="closeAllMenus()">
+  <div class="sidebar-backdrop" *ngIf="isSidebarOpen" (click)="closeSidebar()"></div>
+
+  <!-- Sidebar Lateral -->
+  <aside class="sidebar" [class.open]="isSidebarOpen" (click)="$event.stopPropagation()">
+    <div class="sidebar-header">
+      <img src="assets/img/Logo.png" alt="COSPA" class="sidebar-logo" />
+      <button type="button" class="btn-close-sidebar" (click)="closeSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="sidebar-section-title">MÓDULOS</div>
+    <nav class="sidebar-nav">
+      <button type="button" class="sidebar-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="3" width="15" height="13"></rect>
+          <polygon points="16 8 20 8 23 11 23 16 16 8"></polygon>
+          <circle cx="5.5" cy="18.5" r="2.5"></circle>
+          <circle cx="18.5" cy="18.5" r="2.5"></circle>
+        </svg>
+        <span>Painel de Viagens</span>
+      </button>
+      <button type="button" class="sidebar-item" (click)="goToFinanceiro()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+        <span>Financeiro</span>
+      </button>
+      <button type="button" class="sidebar-item disabled">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path
+            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        <span>Estoque & Pátio</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-section-title">BANCO DE DADOS & ARQUIVOS</div>
+    <div class="sidebar-backup-group">
+      <button type="button" class="sidebar-item btn-backup-action" (click)="baixarBackupZip()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Baixar Backup (.zip)</span>
+      </button>
+
+      <input #sidebarRestaurarZip type="file" accept=".zip" (change)="onRestaurarBackupSelected($event)" style="display: none;" />
+      <button type="button" class="sidebar-item btn-backup-action" (click)="sidebarRestaurarZip.click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <span>Restaurar Backup (.zip)</span>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-version">
+        <span>COSPA {{ appVersion }}</span>
+      </div>
+      <button type="button" class="btn-hub" (click)="goToModules()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <span>Trocar de Módulo</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Navbar -->
+  <header class="navbar" (click)="$event.stopPropagation()">
+    <div class="navbar-left">
+      <button type="button" class="btn-hamburger" (click)="toggleSidebar()" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <img src="assets/img/Logo.png" alt="COSPA" class="navbar-logo" />
+      <div class="navbar-divider"></div>
+      <span class="navbar-title">Painel de Viagens</span>
+    </div>
+
+    <div class="navbar-right">
+      <button type="button" class="theme-toggle" (click)="toggleTheme()" aria-label="Tema">
+        <div class="toggle-track" [class.dark]="isDarkMode">
+          <div class="toggle-thumb">
+            <svg *ngIf="!isDarkMode" class="theme-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="12" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg *ngIf="isDarkMode" class="theme-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </div>
+        </div>
+      </button>
+
+      <!-- Dropdown Gerenciar -->
+      <div class="dropdown-wrapper">
+        <button type="button" class="btn-nav-action" (click)="toggleManageMenu($event)" [class.active]="isManageOpen">
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 21v-7"></path><path d="M4 10V3"></path><path d="M12 21v-9"></path><path d="M12 8V3"></path><path d="M20 21v-5"></path><path d="M20 12V3"></path><circle cx="4" cy="14" r="2"></circle><circle cx="12" cy="8" r="2"></circle><circle cx="20" cy="16" r="2"></circle>
+          </svg>
+          <span>Gerenciar</span>
+          <svg class="chevron-icon" [class.rotate]="isManageOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <div class="dropdown-menu" *ngIf="isManageOpen">
+          <button type="button" class="dropdown-item" (click)="openGerenciarClientes()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <span>Gerenciar Clientes</span>
+          </button>
+          <button type="button" class="dropdown-item" (click)="openGerenciarFornecedores()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <span>Gerenciar Fornecedores</span>
+          </button>
+          <button type="button" class="dropdown-item" (click)="openGerenciarMotoristas()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg>
+            <span>Gerenciar Motoristas</span>
+          </button>
+          <button type="button" class="dropdown-item" (click)="openGerenciarVeiculos()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <span>Gerenciar Veículos</span>
+          </button>
+          <button type="button" class="dropdown-item" (click)="openGerenciarRotas()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+            <span>Gerenciar Rotas & Locais</span>
+          </button>
+        </div>
+      </div>
+
+      <button type="button" class="btn-primary-action" (click)="openNovaViagemModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <span>Nova Viagem</span>
+      </button>
+
+      <button type="button" class="btn-logout-nav" (click)="logout()" title="Encerrar Sessão">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <span>Sair</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="dashboard-content">
+
+    <!-- BARRA SUPERIOR DE CONTADORES POR STATUS -->
+    <div class="status-counter-bar">
+      <div class="status-counter-card" *ngFor="let st of listaStatus">
+        <span class="status-counter-name">{{ st }}</span>
+        <strong class="status-counter-qty">{{ contarPorStatus(st) }}</strong>
+      </div>
+    </div>
+
+    <!-- 1. VIAGENS EM ANDAMENTO -->
+    <section class="accordion-section">
+      <button type="button" class="accordion-header" (click)="showAndamento = !showAndamento">
+        <span class="accordion-title">Viagens em Andamento ({{ viagensAndamento.length }})</span>
+        <svg class="accordion-arrow" [class.open]="showAndamento" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+
+      <div class="accordion-collapse" [class.expanded]="showAndamento" *ngIf="showAndamento">
+        <div class="accordion-inner">
+          <div class="table-container">
+            <table class="cospa-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nº ROTA</th>
+                  <th>CLIENTE</th>
+                  <th>ORIGEM</th>
+                  <th>DESTINO</th>
+                  <th>COLETA PREVISTA</th>
+                  <th>ENTREGA PREVISTA</th>
+                  <th>PLACA</th>
+                  <th>MOTORISTA</th>
+                  <th>STATUS</th>
+                  <th>OBS</th>
+                  <th class="actions-th">AÇÕES</th>
+                </tr>
+                <tr class="filter-row">
+                  <th><input type="text" [(ngModel)]="filtroColunas.id" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.numeroRota" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.cliente" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.origem" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.destino" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.coletaPrevista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.entregaPrevista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.placa" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.motorista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.status" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.obs" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of filtrarListaViagens(viagensAndamento)" [class.row-menu-open]="openedActionMenuId === item.rawId">
+                  <td class="col-id"><span class="badge-system-id">#{{ item.rawId }}</span></td>
+                  <td class="col-rota">{{ item.numeroOperacional || '-' }}</td>
+                  <td class="col-cliente">{{ item.cliente }}</td>
+                  <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
+                  <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
+                  <td class="col-multiline">
+                    <div *ngFor="let dtCol of (item.coletaPrevista || '').split(';')">{{ dtCol.trim() }}</div>
+                  </td>
+                  <td class="col-multiline">
+                    <div *ngFor="let dtEnt of (item.entregaPrevista || '').split(';')">{{ dtEnt.trim() }}</div>
+                  </td>
+                  <td class="col-placa">{{ item.placa }}</td>
+                  <td class="col-motorista" [class.to-hire]="item.motorista === 'A Contratar'">{{ item.motorista }}</td>
+                  <td class="col-status">
+                    <select class="select-status-inline" [ngModel]="item.status" (ngModelChange)="alterarStatusRapido(item, $event)">
+                      <option *ngFor="let st of listaStatus" [value]="st">{{ st }}</option>
+                    </select>
+                  </td>
+                  <td class="col-obs">
+                    <button *ngIf="item.obs && item.obs !== '-'" type="button" class="btn-obs" (click)="openObsModal(item)">
+                      {{ (item.obs.length > 9) ? (item.obs | slice:0:8) + '...' : item.obs }}
+                    </button>
+                    <span *ngIf="!item.obs || item.obs === '-'" class="dash-text">-</span>
+                  </td>
+                  <td class="col-acoes">
+                    <div class="row-dropdown-wrapper">
+                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.rawId)" [class.active]="openedActionMenuId === item.rawId">
+                        <span>Ações</span>
+                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.rawId" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </button>
+                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.rawId" (click)="$event.stopPropagation()">
+                        <button type="button" class="row-menu-item item-finalizar" (click)="finalizarViagem(item)">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                          <span>Finalizar Viagem</span>
+                        </button>
+                        <div class="row-menu-divider"></div>
+                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
+                        <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'andamento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
+                        <button type="button" class="row-menu-item item-cancelar" (click)="openCancelarModal(item, 'andamento')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                          <span>Cancelar Rota</span>
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. VIAGENS FINALIZADAS -->
+    <section class="accordion-section">
+      <button type="button" class="accordion-header" (click)="showFinalizadas = !showFinalizadas">
+        <span class="accordion-title">Viagens Finalizadas ({{ viagensFinalizadas.length }})</span>
+        <svg class="accordion-arrow" [class.open]="showFinalizadas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+
+      <div class="accordion-collapse" [class.expanded]="showFinalizadas" *ngIf="showFinalizadas">
+        <div class="accordion-inner">
+          <div class="table-container">
+            <table class="cospa-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nº ROTA</th>
+                  <th>CLIENTE</th>
+                  <th>ORIGEM</th>
+                  <th>DESTINO</th>
+                  <th>COLETA PREVISTA</th>
+                  <th>ENTREGA PREVISTA</th>
+                  <th>PLACA</th>
+                  <th>MOTORISTA</th>
+                  <th>STATUS</th>
+                  <th>OBS</th>
+                  <th class="actions-th">AÇÕES</th>
+                </tr>
+                <tr class="filter-row">
+                  <th><input type="text" [(ngModel)]="filtroColunas.id" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.numeroRota" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.cliente" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.origem" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.destino" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.coletaPrevista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.entregaPrevista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.placa" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.motorista" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.status" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th><input type="text" [(ngModel)]="filtroColunas.obs" placeholder="Filtrar..." class="table-filter-input"></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of filtrarListaViagens(viagensFinalizadas)" [class.row-menu-open]="openedActionMenuId === item.rawId">
+                  <td class="col-id"><span class="badge-system-id">#{{ item.rawId }}</span></td>
+                  <td class="col-rota">{{ item.numeroOperacional || '-' }}</td>
+                  <td class="col-cliente">{{ item.cliente }}</td>
+                  <td class="col-multiline"><div *ngFor="let orig of item.origem">{{ orig }}</div></td>
+                  <td class="col-multiline"><div *ngFor="let dest of item.destino">{{ dest }}</div></td>
+                  <td class="col-multiline">
+                    <div *ngFor="let dtCol of (item.coletaPrevista || '').split(';')">{{ dtCol.trim() }}</div>
+                  </td>
+                  <td class="col-multiline">
+                    <div *ngFor="let dtEnt of (item.entregaPrevista || '').split(';')">{{ dtEnt.trim() }}</div>
+                  </td>
+                  <td class="col-placa">{{ item.placa }}</td>
+                  <td class="col-motorista">{{ item.motorista }}</td>
+                  <td class="col-status">
+                    <select class="select-status-inline" [ngModel]="item.status" (ngModelChange)="alterarStatusRapido(item, $event)">
+                      <option *ngFor="let st of listaStatus" [value]="st">{{ st }}</option>
+                      <option *ngIf="item.status === 'CANCELADA'" value="CANCELADA">CANCELADA</option>
+                    </select>
+                  </td>
+                  <td class="col-obs">
+                    <button *ngIf="item.obs && item.obs !== '-'" type="button" class="btn-obs" (click)="openObsModal(item)">
+                      {{ (item.obs.length > 9) ? (item.obs | slice:0:8) + '...' : item.obs }}
+                    </button>
+                    <span *ngIf="!item.obs || item.obs === '-'" class="dash-text">-</span>
+                  </td>
+                  <td class="col-acoes">
+                    <div class="row-dropdown-wrapper">
+                      <button type="button" class="btn-row-action" (click)="toggleRowActions($event, item.rawId)" [class.active]="openedActionMenuId === item.rawId">
+                        <span>Ações</span>
+                        <svg class="chevron-icon" [class.rotate]="openedActionMenuId === item.rawId" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </button>
+                      <div class="row-dropdown-menu" *ngIf="openedActionMenuId === item.rawId" (click)="$event.stopPropagation()">
+                        <button type="button" class="row-menu-item item-foto" (click)="openFotoModal(item)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><span>Ver Foto</span></button>
+                        <button type="button" class="row-menu-item item-alterar" (click)="openEditarModal(item, 'finalizadas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>Alterar</span></button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL: COMPROVANTES DA VIAGEM -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'PHOTO' && !previewImageUrl">
+    <div class="cospa-modal-box modal-photo-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Comprovantes da Rota #{{ selectedViagem?.rawId }} {{ selectedViagem?.numeroOperacional ? '(' + selectedViagem?.numeroOperacional + ')' : '' }}</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activePhotoTab === 'ADICIONAR'" (click)="trocarAbaFoto('ADICIONAR', $event)">
+          + Adicionar Comprovante
+        </button>
+        <button type="button" [class.active]="activePhotoTab === 'LISTAR'" (click)="trocarAbaFoto('LISTAR', $event)">
+          Ver Cadastrados / Fotos ({{ selectedViagem?.fotos?.length || 0 }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <div *ngIf="activePhotoTab === 'ADICIONAR'" class="modal-pane-compact">
+          <div class="comprovante-form-row">
+            <div class="f-group desc-group">
+              <label>Descrição do Comprovante</label>
+              <input type="text" [(ngModel)]="novoComprovante.descricao" placeholder="Ex: CANHOTO ASSINADO, MANIFESTO, ETC." />
+            </div>
+
+            <div class="f-group file-group">
+              <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
+              <div class="comprovante-dropzone" [class.drag-over]="isDraggingComprovante" (click)="fileInputComp.click()" (dragover)="onComprovanteDragOver($event)" (dragleave)="onComprovanteDragLeave($event)" (drop)="onComprovanteDrop($event)">
+                <input #fileInputComp type="file" (change)="onComprovanteFileSelected($event)" style="display: none;" accept="image/*,.pdf" />
+                <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>{{ novoComprovante.nomeArquivo || 'Clique, arraste ou use Ctrl+V' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions-right">
+            <button type="button" class="btn-sec-cospa" (click)="closeModal()">Cancelar</button>
+            <button type="button" class="btn-pri-cospa" (click)="adicionarComprovante()">Adicionar à Lista</button>
+          </div>
+        </div>
+
+        <div *ngIf="activePhotoTab === 'LISTAR'" class="modal-pane-compact">
+          <div class="photo-gallery" *ngIf="selectedViagem?.fotos?.length">
+            <div class="comprovante-card" *ngFor="let f of selectedViagem?.fotos" (click)="abrirPreviewFoto(f.url)" title="Clique para ver o arquivo">
+              <div class="comp-img-wrapper" *ngIf="!isPdf(f.url)">
+                <img [src]="f.url" alt="Comprovante" />
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, docUrl(f.url))" title="Abrir em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerComprovante($event, f.id)" title="Excluir">✕</button>
+              </div>
+
+              <div class="comp-pdf-wrapper" *ngIf="isPdf(f.url)">
+                <svg class="pdf-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span class="pdf-badge">DOCUMENTO PDF</span>
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, docUrl(f.url))" title="Abrir PDF em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerComprovante($event, f.id)" title="Excluir">✕</button>
+              </div>
+
+              <div class="comp-info-footer">
+                <strong>{{ f.descricao }}</strong>
+                <span>{{ f.nomeArquivo }} • {{ f.dataEnvio }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-photos" *ngIf="!selectedViagem?.fotos?.length">
+            <p>Nenhum comprovante anexado a esta rota.</p>
+          </div>
+
+          <div class="modal-actions-right">
+            <button type="button" class="btn-sec-cospa" (click)="closeModal()">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DOCUMENTOS / FOTOS DO MOTORISTA -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'MOTORISTA_PHOTO' && !previewImageUrl">
+    <div class="cospa-modal-box modal-photo-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Documentos e Fotos: {{ selectedMotorista?.nome }}</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeMotoristaPhotoTab === 'ADICIONAR'" (click)="trocarAbaMotoristaFoto('ADICIONAR', $event)">
+          + Adicionar Documento
+        </button>
+        <button type="button" [class.active]="activeMotoristaPhotoTab === 'LISTAR'" (click)="trocarAbaMotoristaFoto('LISTAR', $event)">
+          Documentos Cadastrados ({{ selectedMotorista?.documentos?.length || 0 }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <div *ngIf="activeMotoristaPhotoTab === 'ADICIONAR'" class="modal-pane-compact">
+          <div class="f-group">
+            <label>Nome / Tipo do Documento</label>
+            <input type="text" [(ngModel)]="novoDocMotorista.nome" placeholder="DIGITE O NOME (EX: CNH, COMPROVANTE DE RESIDÊNCIA)" />
+          </div>
+
+          <div class="f-group">
+            <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
+            <div class="comprovante-dropzone" [class.drag-over]="isDraggingMotoristaDoc" (click)="fileInputMotorista.click()" (dragover)="onMotoristaDocDragOver($event)" (dragleave)="onMotoristaDocDragLeave($event)" (drop)="onMotoristaDocDrop($event)">
+              <input #fileInputMotorista type="file" (change)="onMotoristaDocSelected($event)" style="display: none;" accept="image/*,.pdf" />
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span>{{ novoDocMotorista.nomeArquivo || 'Clique, arraste o arquivo (PDF/Imagem) ou use Ctrl+V' }}</span>
+            </div>
+          </div>
+
+          <div class="modal-actions-right">
+            <button type="button" class="btn-sec-cospa" (click)="closeModal()">Cancelar</button>
+            <button type="button" class="btn-pri-cospa" (click)="adicionarDocMotorista()">Adicionar Documento</button>
+          </div>
+        </div>
+
+        <div *ngIf="activeMotoristaPhotoTab === 'LISTAR'" class="modal-pane-compact">
+          <div class="photo-gallery" *ngIf="selectedMotorista?.documentos?.length">
+            <div class="comprovante-card" *ngFor="let doc of selectedMotorista?.documentos" (click)="abrirPreviewFoto(doc.url)" title="Clique para ver o arquivo">
+              <div class="comp-img-wrapper" *ngIf="!isPdf(doc.url)">
+                <img [src]="doc.url" alt="Documento Motorista" />
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerDocMotorista($event, doc.id)" title="Excluir">✕</button>
+              </div>
+
+              <div class="comp-pdf-wrapper" *ngIf="isPdf(doc.url)">
+                <svg class="pdf-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span class="pdf-badge">DOCUMENTO PDF</span>
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir PDF em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerDocMotorista($event, doc.id)" title="Excluir">✕</button>
+              </div>
+
+              <div class="comp-info-footer">
+                <strong>{{ doc.descricao }}</strong>
+                <span>{{ doc.nomeArquivo }} • {{ doc.dataEnvio }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-photos" *ngIf="!selectedMotorista?.documentos?.length">
+            <p>Nenhum documento anexado para este motorista.</p>
+          </div>
+
+          <div class="modal-actions-right">
+            <button type="button" class="btn-sec-cospa" (click)="closeModal()">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DOCUMENTOS / FOTOS DO VEÍCULO -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'VEICULO_PHOTO' && !previewImageUrl">
+    <div class="cospa-modal-box modal-photo-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Documentos e Fotos: {{ selectedVeiculo?.placa }}</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeVeiculoPhotoTab === 'ADICIONAR'" (click)="trocarAbaVeiculoFoto('ADICIONAR', $event)">
+          + Adicionar Documento
+        </button>
+        <button type="button" [class.active]="activeVeiculoPhotoTab === 'LISTAR'" (click)="trocarAbaVeiculoFoto('LISTAR', $event)">
+          Documentos Cadastrados ({{ selectedVeiculo?.documentos?.length || 0 }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <div *ngIf="activeVeiculoPhotoTab === 'ADICIONAR'" class="modal-pane-compact">
+          <div class="f-group">
+            <label>Nome / Tipo do Documento</label>
+            <input type="text" [(ngModel)]="novoDocVeiculo.nome" placeholder="DIGITE O NOME (EX: CRLV, ANTT, LAUDO, FOTO BAÚ)" />
+          </div>
+
+          <div class="f-group">
+            <label>Arquivo (Arraste, Clique ou Cole com Ctrl+V)</label>
+            <div class="comprovante-dropzone" [class.drag-over]="isDraggingVeiculoDoc" (click)="fileInputVeiculoModal.click()" (dragover)="$event.preventDefault(); isDraggingVeiculoDoc = true;" (dragleave)="$event.preventDefault(); isDraggingVeiculoDoc = false;" (drop)="onVeiculoDocDrop($event)">
+              <input #fileInputVeiculoModal type="file" (change)="onVeiculoDocSelected($event)" style="display: none;" accept="image/*,.pdf" />
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span>{{ novoDocVeiculo.nomeArquivo || 'Clique, arraste o arquivo (PDF/Imagem) ou use Ctrl+V' }}</span>
+            </div>
+          </div>
+
+          <div class="modal-actions-right">
+            <button type="button" class="btn-sec-cospa" (click)="closeModal()">Cancelar</button>
+            <button type="button" class="btn-pri-cospa" (click)="adicionarDocVeiculo()">Adicionar Documento</button>
+          </div>
+        </div>
+
+        <div *ngIf="activeVeiculoPhotoTab === 'LISTAR'" class="modal-pane-compact">
+          <div class="photo-gallery" *ngIf="selectedVeiculo?.documentos?.length">
+            <div class="comprovante-card" *ngFor="let doc of selectedVeiculo?.documentos" (click)="abrirPreviewFoto(doc.url)" title="Clique para ver o arquivo">
+             <div class="comp-img-wrapper" *ngIf="!isPdf(doc.url)">
+                <img [src]="doc.url" alt="Documento Veiculo">
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerDocVeiculo($event, doc.id)" title="Excluir">✕</button>
+              </div>
+
+              <div class="comp-pdf-wrapper" *ngIf="isPdf(doc.url)">
+                <svg class="pdf-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span class="pdf-badge">DOCUMENTO PDF</span>
+                <button type="button" class="btn-open-ext" (click)="abrirImagemNovaAba($event, doc.url)" title="Abrir PDF em nova aba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+                <button type="button" class="btn-del-photo" (click)="removerDocVeiculo($event, doc.id)" title="Excluir">✕</button>
+              </div>
+
+              <div class="comp-info-footer">
+                <strong>{{ doc.descricao }}</strong>
+                <span>{{ doc.nomeArquivo }} • {{ doc.dataEnvio }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-photos" *ngIf="!selectedVeiculo?.documentos?.length">
+            <p>Nenhum documento ou foto anexado para este veículo.</p>
+          </div>
+
+          <div class="modal-actions-right">
+            <button type="button" class="btn-sec-cospa" (click)="closeModal()">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX PARA FOTOS -->
+  <div class="lightbox-overlay" *ngIf="previewImageUrl" (click)="fecharPreviewFoto()">
+    <div class="lightbox-content" (click)="$event.stopPropagation()">
+      <button type="button" class="btn-close-lightbox" (click)="fecharPreviewFoto()">✕</button>
+      <img [src]="previewImageUrl" alt="Visualização em Tela Cheia" />
+      <div class="lightbox-actions">
+        <button type="button" class="btn-pri-cospa" (click)="abrirImagemNovaAba($event, previewImageUrl)">Abrir Imagem em Nova Aba</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVA / EDITAR VIAGEM -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'TRIP_FORM'">
+    <div class="cospa-modal-box modal-trip-form" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>{{ isEditing ? 'Editar Rota: #' + (selectedViagem?.rawId || tripForm.id) : 'Cadastrar Nova Rota' }}</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <form (ngSubmit)="salvarViagemForm()" (keydown.enter)="$event.preventDefault()" class="modal-trip-scroll">
+        <div class="f-group">
+          <label>Nº Rota (ID Operacional / Minuta / Romaneio)</label>
+          <input type="text" [(ngModel)]="tripForm.id" name="id" placeholder="EX: 6848963, 105, 30..." />
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Cliente *</label>
+            <input 
+              type="text" 
+              [(ngModel)]="tripForm.clienteSelect" 
+              (ngModelChange)="onClienteSelectChange($event)" 
+              list="lista_clientes_auto" 
+              name="clienteSelect" 
+              placeholder="DIGITE OU SELECIONE O CLIENTE..." 
+              required 
+            />
+            <datalist id="lista_clientes_auto">
+              <option *ngFor="let c of clientesList" [value]="c.nomeFantasia">{{ c.nomeFantasia }}</option>
+            </datalist>
+          </div>
+          <div class="f-group">
+            <label>Tipo de Operação *</label>
+            <select [(ngModel)]="tripForm.tipoOperacao" name="tipoOperacao" required>
+              <option *ngFor="let op of tiposOperacaoOpcoes" [value]="op">{{ op }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="f-group">
+            <label>Perfil do Veículo</label>
+            <select [(ngModel)]="tripForm.perfilVeiculo" name="perfilVeiculo">
+              <option value="">Selecione o Perfil do Veículo...</option>
+              <option *ngFor="let opt of tiposVeiculosOpcoes" [value]="opt">{{ opt }}</option>
+            </select>
+          </div>
+          <div class="f-group">
+            <label>Carroceria do Veículo</label>
+            <select [(ngModel)]="tripForm.carroceriaVeiculo" name="carroceriaVeiculo">
+              <option *ngFor="let opt of tiposCarroceriaOpcoes" [value]="opt">{{ opt }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Linha: Motorista, Veículo 1 e Veículo 2 com busca digitável -->
+        <div class="form-row-3">
+          <div class="f-group">
+            <label>Motorista </label>
+            <input 
+              type="text" 
+              [(ngModel)]="tripForm.motorista" 
+              (ngModelChange)="onMotoristaSelectChange()" 
+              list="lista_motoristas_auto" 
+              name="motorista" 
+              placeholder="SEM MOTORISTA (A CONTRATAR)" 
+            />
+            <datalist id="lista_motoristas_auto">
+              <option value="A Contratar">A Contratar</option>
+              <option *ngFor="let m of motoristasList" [value]="m.nome">{{ m.nome }} (CPF: {{ m.cpf || '-' }})</option>
+            </datalist>
+          </div>
+
+          <div class="f-group">
+            <label>Veículo 1 - Cavalo/Tração (Digite a placa)</label>
+            <input 
+              type="text" 
+              [(ngModel)]="tripForm.placa" 
+              (ngModelChange)="onPlacaSelectChange()" 
+              list="lista_veiculos1_auto" 
+              name="placa" 
+              placeholder="DIGITE OU ESCOLHA A PLACA" 
+            />
+            <datalist id="lista_veiculos1_auto">
+              <option *ngFor="let v of veiculosList" [value]="v.placa">{{ v.placa }} - {{ v.tipoVeiculo }} ({{ v.fornecedor }})</option>
+            </datalist>
+          </div>
+
+          <div class="f-group">
+            <label>Veículo 2 - Baú/Carreta (Digite a placa)</label>
+            <input 
+              type="text" 
+              [(ngModel)]="tripForm.placaSecundaria" 
+              list="lista_veiculos2_auto" 
+              name="placaSecundaria" 
+              placeholder="DIGITE OU ESCOLHA A PLACA" 
+            />
+            <datalist id="lista_veiculos2_auto">
+              <option *ngFor="let v of veiculosList" [value]="v.placa">{{ v.placa }} - {{ v.tipoVeiculo }} ({{ v.fornecedor }})</option>
+            </datalist>
+          </div>
+        </div>
+
+        <!-- Linha: Fornecedor, Agenciador e Especialista Cospa com busca digitável -->
+        <div class="form-row-3">
+          <div class="f-group">
+            <label>Fornecedor </label>
+            <input 
+              type="text" 
+              [(ngModel)]="tripForm.agencia" 
+              list="lista_fornecedores_auto" 
+              name="agencia" 
+              placeholder="FROTA PRÓPRIA OU FORNECEDOR" 
+            />
+            <datalist id="lista_fornecedores_auto">
+              <option value="Frota Própria">Frota Própria</option>
+              <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+            </datalist>
+          </div>
+
+          <div class="f-group">
+            <label>Agenciador </label>
+            <input 
+              type="text" 
+              [(ngModel)]="tripForm.agenciador" 
+              list="lista_agenciadores_auto" 
+              name="agenciador" 
+              placeholder="NENHUM / DIRETO" 
+            />
+            <datalist id="lista_agenciadores_auto">
+              <option value="">Nenhum / Direto</option>
+              <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+            </datalist>
+          </div>
+
+          <div class="f-group">
+            <label>Especialista Cospa </label>
+            <input 
+              type="text" 
+              [(ngModel)]="tripForm.especialistaCospa" 
+              list="lista_especialistas_auto" 
+              name="especialistaCospa" 
+              placeholder="NENHUM" 
+            />
+            <datalist id="lista_especialistas_auto">
+              <option value="">Nenhum</option>
+              <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+            </datalist>
+          </div>
+        </div>
+
+        <!-- MÓDULO UNIFICADO: ITINERÁRIO & CRONOGRAMA -->
+        <div class="schedule-unified-card">
+          <div class="schedule-columns-grid">
+            <div class="schedule-col">
+              <div class="schedule-col-head">
+                <span class="col-tag">Origem / Coleta ({{ tripForm.origens.length }})</span>
+                <button type="button" class="btn-schedule-add" (click)="addOrigem()" title="Adicionar outra coleta">+ Nova Coleta</button>
+              </div>
+
+              <div class="schedule-items-stack">
+                <div class="itinerary-card" *ngFor="let orig of tripForm.origens; let i = index">
+                  <div class="itinerary-card-head" *ngIf="tripForm.origens.length > 1">
+                    <span class="itinerary-index-badge">COLETA #{{ i + 1 }}</span>
+                    <button type="button" class="btn-stop-del" (click)="removeOrigem(i)" title="Remover coleta">✕</button>
+                  </div>
+
+                  <div class="f-group">
+                    <label>Ponto de Coleta</label>
+                    <input 
+                      type="text" 
+                      [(ngModel)]="orig.local" 
+                      (ngModelChange)="onOrigemLocalSelect(i, $event)" 
+                      [attr.list]="'locais_orig_' + i" 
+                      [name]="'orig_local_' + i" 
+                      placeholder="SELECIONE OU DIGITE O LOCAL" 
+                    />
+                    <datalist [id]="'locais_orig_' + i">
+                      <option *ngFor="let loc of locaisDoClienteSelecionado" [value]="loc.nomeLocal">{{ loc.cidade }}/{{ loc.uf }} - {{ loc.endereco }}</option>
+                    </datalist>
+                  </div>
+
+                  <div class="f-group">
+                    <label>Endereço Completo</label>
+                    <input type="text" [(ngModel)]="orig.endereco" [name]="'orig_end_' + i" placeholder="ENDEREÇO PREENCHIDO AUTOMATICAMENTE OU DIGITE MANUAL" />
+                  </div>
+
+                  <div class="f-group">
+                    <label>Link da Localização (Maps / Waze)</label>
+                    <div class="input-with-action">
+                      <input type="url" [(ngModel)]="orig.linkLocalizacao" [name]="'orig_link_' + i" placeholder="HTTPS://MAPS.GOOGLE.COM/..." />
+                      <a *ngIf="orig.linkLocalizacao" [href]="orig.linkLocalizacao" target="_blank" class="btn-open-ext" title="Abrir Mapa" style="position: static; width: 38px; height: 38px; border-radius: 8px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                      </a>
+                    </div>
+                  </div>
+
+                  <div class="stop-dates-row">
+                    <div class="f-group">
+                      <label>Data Prevista</label>
+                      <input type="text" [(ngModel)]="orig.dataPrevista" [name]="'orig_prev_' + i" placeholder="EX: 13/08/2026 14:00" />
+                    </div>
+                    <div class="f-group">
+                      <label>Data Realizada</label>
+                      <input type="text" [(ngModel)]="orig.dataReal" [name]="'orig_real_' + i" placeholder="EX: 13/08/2026 14:30" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="schedule-col">
+              <div class="schedule-col-head">
+                <span class="col-tag">Destino / Entrega ({{ tripForm.destinos.length }})</span>
+                <button type="button" class="btn-schedule-add" (click)="addDestino()" title="Adicionar outra entrega">+ Nova Entrega</button>
+              </div>
+
+              <div class="schedule-items-stack">
+                <div class="itinerary-card" *ngFor="let dest of tripForm.destinos; let j = index">
+                  <div class="itinerary-card-head" *ngIf="tripForm.destinos.length > 1">
+                    <span class="itinerary-index-badge">ENTREGA #{{ j + 1 }}</span>
+                    <button type="button" class="btn-stop-del" (click)="removeDestino(j)" title="Remover entrega">✕</button>
+                  </div>
+
+                  <div class="f-group">
+                    <label>Ponto de Entrega</label>
+                    <input 
+                      type="text" 
+                      [(ngModel)]="dest.local" 
+                      (ngModelChange)="onDestinoLocalSelect(j, $event)" 
+                      [attr.list]="'locais_dest_' + j" 
+                      [name]="'dest_local_' + j" 
+                      placeholder="SELECIONE OU DIGITE O LOCAL" 
+                    />
+                    <datalist [id]="'locais_dest_' + j">
+                      <option *ngFor="let loc of locaisDoClienteSelecionado" [value]="loc.nomeLocal">{{ loc.cidade }}/{{ loc.uf }} - {{ loc.endereco }}</option>
+                    </datalist>
+                  </div>
+
+                  <div class="f-group">
+                    <label>Endereço Completo</label>
+                    <input type="text" [(ngModel)]="dest.endereco" [name]="'dest_end_' + j" placeholder="ENDEREÇO PREENCHIDO AUTOMATICAMENTE OU DIGITE MANUAL" />
+                  </div>
+
+                  <div class="f-group">
+                    <label>Link da Localização (Maps / Waze)</label>
+                    <div class="input-with-action">
+                      <input type="url" [(ngModel)]="dest.linkLocalizacao" [name]="'dest_link_' + j" placeholder="HTTPS://MAPS.GOOGLE.COM/..." />
+                      <a *ngIf="dest.linkLocalizacao" [href]="dest.linkLocalizacao" target="_blank" class="btn-open-ext" title="Abrir Mapa" style="position: static; width: 38px; height: 38px; border-radius: 8px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                      </a>
+                    </div>
+                  </div>
+
+                  <div class="stop-dates-row">
+                    <div class="f-group">
+                      <label>Data Prevista</label>
+                      <input type="text" [(ngModel)]="dest.dataPrevista" [name]="'dest_prev_' + j" placeholder="EX: 14/08/2026 10:00" />
+                    </div>
+                    <div class="f-group">
+                      <label>Data Realizada</label>
+                      <input type="text" [(ngModel)]="dest.dataReal" [name]="'dest_real_' + j" placeholder="EX: 14/08/2026 10:45" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row-3">
+          <div class="f-group">
+            <label>Valor a Receber (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.valorReceber" name="valorReceber" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="f-group">
+            <label>Valor Adicional a Receber (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.adicionalReceber" name="adicionalReceber" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="f-group">
+            <label>Tipo de Adicional a Receber</label>
+            <select [(ngModel)]="tripForm.tipoAdicionalReceber" name="tipoAdicionalReceber">
+              <option value="">Nenhum</option>
+              <option *ngFor="let opt of tiposAdicionalOpcoes" [value]="opt">{{ opt }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row-3">
+          <div class="f-group">
+            <label>Valor a Pagar Motorista (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.valorPagarMotorista" name="valorPagarMotorista" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="f-group">
+            <label>Valor Adicional a Pagar (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.adicionalPagarMotorista" name="adicionalPagarMotorista" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="f-group">
+            <label>Tipo de Adicional a Pagar</label>
+            <select [(ngModel)]="tripForm.tipoAdicionalPagar" name="tipoAdicionalPagar">
+              <option value="">Nenhum</option>
+              <option *ngFor="let opt of tiposAdicionalOpcoes" [value]="opt">{{ opt }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row-3">
+          <div class="f-group">
+            <label>Valor do Agenciador (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.valorAgenciador" name="valorAgenciador" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="f-group">
+            <label>Valor do Especialista Cospa (R$)</label>
+            <input type="number" [(ngModel)]="tripForm.valorEspecialistaCospa" name="valorEspecialistaCospa" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="f-group">
+            <label>Liberação</label>
+            <div class="checkbox-container" style="height: 44px;">
+              <input type="checkbox" id="liberadoCheck" [(ngModel)]="tripForm.pagamentoLiberado" name="pagamentoLiberado" />
+              <label for="liberadoCheck">Pagamento Liberado?</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-checks-block">
+          <div class="payment-check-row">
+            <div class="f-group check-input-col">
+              <label>Data do Adiantamento</label>
+              <input type="text" [(ngModel)]="tripForm.dataAdiantamento" name="dataAdiantamento" placeholder="EX: 14/08/2026 15:45" />
+            </div>
+            <div class="checkbox-container inline-check">
+              <input type="checkbox" id="pagoAdiantamentoCheck" [(ngModel)]="tripForm.pagoAdiantamento" name="pagoAdiantamento" />
+              <label for="pagoAdiantamentoCheck">Pago?</label>
+            </div>
+          </div>
+
+          <div class="payment-check-row">
+            <div class="f-group check-input-col">
+              <label>Data do Saldo</label>
+              <input type="text" [(ngModel)]="tripForm.dataSaldo" name="dataSaldo" placeholder="EX: 15/08/2026 11:30" />
+            </div>
+            <div class="checkbox-container inline-check">
+              <input type="checkbox" id="pagoSaldoCheck" [(ngModel)]="tripForm.pagoSaldo" name="pagoSaldo" />
+              <label for="pagoSaldoCheck">Pago?</label>
+            </div>
+          </div>
+
+          <div class="payment-check-row">
+            <div class="f-group check-input-col">
+              <label>Data do Adicional</label>
+              <input type="text" [(ngModel)]="tripForm.dataAdicional" name="dataAdicional" placeholder="EX: 16/08/2026 09:00" />
+            </div>
+            <div class="checkbox-container inline-check">
+              <input type="checkbox" id="pagoAdicionalCheck" [(ngModel)]="tripForm.pagoAdicional" name="pagoAdicional" />
+              <label for="pagoAdicionalCheck">Pago?</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="f-group">
+          <label>Status Inicial</label>
+          <select [(ngModel)]="tripForm.statusInicial" name="statusInicial">
+            <option *ngFor="let st of listaStatus" [value]="st">{{ st }}</option>
+          </select>
+        </div>
+
+        <div class="f-group">
+          <label>Observação</label>
+          <textarea rows="3" [(ngModel)]="tripForm.observacao" name="observacao" placeholder=""></textarea>
+        </div>
+
+        <div class="modal-trip-footer">
+          <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-cadastrar-blue">{{ isEditing ? 'Salvar Alterações' : 'Cadastrar' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- GERENCIAR ROTAS & LOCAIS -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'ROTA'">
+    <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Gerenciar Rotas e Locais</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
+          {{ isEditingRota ? 'Editar Local' : '+ Cadastrar Novo Local' }}
+        </button>
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
+          Locais Cadastrados ({{ rotasList.length }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarRota()" class="modal-pane-content">
+          <div class="f-group" style="margin-bottom: 0.5rem;">
+            <label>Pesquisar / Carregar Local Existente</label>
+            <input 
+              type="text" 
+              [(ngModel)]="buscaLocalCadastro" 
+              (ngModelChange)="onSelecionarLocalBusca($event)" 
+              list="lista_locais_existentes" 
+              name="buscaLocalCadastro" 
+              placeholder="DIGITE PARA BUSCAR E CARREGAR UM LOCAL JÁ CADASTRADO..." 
+            />
+            <datalist id="lista_locais_existentes">
+              <option *ngFor="let r of rotasList" [value]="r.nomeLocal">
+                {{ r.clienteNome }} - {{ r.cidade }}/{{ r.uf }} ({{ r.endereco }})
+              </option>
+            </datalist>
+          </div>
+
+          <div class="form-row-2">
+            <!-- CAMPO DE CLIENTE VINCULADO PESQUISÁVEL COM DATALIST -->
+            <div class="f-group">
+              <label>Cliente Vinculado *</label>
+              <input 
+                type="text" 
+                [(ngModel)]="rotaClienteBusca" 
+                (ngModelChange)="onClienteRotaDigitado($event)" 
+                list="lista_clientes_rota_auto" 
+                name="rotaClienteBusca" 
+                placeholder="DIGITE OU SELECIONE O CLIENTE..." 
+                required 
+              />
+              <datalist id="lista_clientes_rota_auto">
+                <option *ngFor="let c of clientesList" [value]="c.nomeFantasia">{{ c.nomeFantasia }}</option>
+              </datalist>
+            </div>
+
+            <div class="f-group">
+              <label>Nome do Local (Ponto de Apoio / Fornecedor) *</label>
+              <input type="text" [(ngModel)]="rotaForm.nomeLocal" name="nomeLocal" placeholder="EX: CD SÃO PAULO, FÁBRICA CURITIBA" required />
+            </div>
+          </div>
+
+          <div class="form-row-3">
+            <div class="f-group" style="grid-column: span 2;">
+              <label>Endereço *</label>
+              <input type="text" [(ngModel)]="rotaForm.endereco" name="endereco" placeholder="RUA / AVENIDA / NÚMERO" required />
+            </div>
+            <div class="f-group">
+              <label>CEP</label>
+              <input type="text" [(ngModel)]="rotaForm.cep" name="cep" placeholder="00000-000" />
+            </div>
+          </div>
+
+          <div class="form-row-3">
+            <div class="f-group">
+              <label>Cidade *</label>
+              <input type="text" [(ngModel)]="rotaForm.cidade" name="cidade" placeholder="EX: MARINGÁ" required />
+            </div>
+            <div class="f-group">
+              <label>UF *</label>
+              <input type="text" [(ngModel)]="rotaForm.uf" name="uf" placeholder="PR" maxlength="2" required />
+            </div>
+            <div class="f-group">
+              <label>Complemento / Bairro</label>
+              <input type="text" [(ngModel)]="rotaForm.complemento" name="complemento" placeholder="GALPÃO 3, DISTRITO INDUSTRIAL" />
+            </div>
+          </div>
+
+          <div class="f-group">
+            <label>Link da Localização (Google Maps / Waze)</label>
+            <input type="url" [(ngModel)]="rotaForm.linkLocalizacao" name="linkLocalizacao" placeholder="HTTPS://MAPS.GOOGLE.COM/... OU LINK DO WAZE" />
+          </div>
+
+          <div class="modal-actions-right">
+            <button *ngIf="isEditingRota" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoRota()">Cancelar Edição</button>
+            <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingRota ? 'Salvar Alterações' : 'Cadastrar Local' }}</button>
+          </div>
+        </form>
+
+        <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
+          <div class="manage-search-bar">
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarRotas()" placeholder="Buscar por cliente, nome do local, cidade ou endereço..." />
+          </div>
+          <div class="crud-items-list">
+            <div class="crud-item-card" *ngFor="let r of filteredRotas">
+              <div class="crud-item-info">
+                <div class="crud-title-row">
+                  <h4>{{ r.nomeLocal }}</h4>
+                  <span class="badge-status badge-active">{{ r.clienteNome }}</span>
+                </div>
+                <p class="crud-subtext">{{ r.endereco }} {{ r.complemento ? ' - ' + r.complemento : '' }} • {{ r.cidade }}/{{ r.uf }} {{ r.cep ? '(' + r.cep + ')' : '' }}</p>
+                <p class="crud-subtext" *ngIf="r.linkLocalizacao">
+                  <a [href]="r.linkLocalizacao" target="_blank" style="color: #60a5fa; text-decoration: underline;">Abrir no Mapa ↗</a>
+                </p>
+              </div>
+              <div class="crud-item-actions">
+                <button type="button" class="btn-edit-inline" (click)="editarRota(r)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Editar</span>
+                </button>
+                <button type="button" class="btn-del-inline" (click)="excluirRota(r.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GERENCIAR FORNECEDORES -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'FORNECEDOR'">
+    <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Gerenciar Fornecedores</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
+          {{ isEditingFornecedor ? 'Editar Fornecedor' : '+ Cadastrar Novo' }}
+        </button>
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
+          Gerenciar Cadastrados ({{ fornecedoresList.length }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarFornecedor()" class="modal-pane-content">
+          <div class="form-row-3">
+            <input type="text" [(ngModel)]="fornecedorForm.nome" name="nome" placeholder="NOME DO FORNECEDOR" required />
+            <input type="text" [(ngModel)]="fornecedorForm.cnpjCpf" name="cnpjCpf" placeholder="CNPJ / CPF" />
+            <input type="text" [(ngModel)]="fornecedorForm.nomeContato" name="nomeContato" placeholder="NOME DE CONTATO" />
+          </div>
+
+          <div class="form-row-2">
+            <input type="text" [(ngModel)]="fornecedorForm.telefone" name="telefone" placeholder="TELEFONE / WHATSAPP" />
+            <input type="email" [(ngModel)]="fornecedorForm.email" name="email" placeholder="E-MAIL" />
+          </div>
+
+          <div class="form-row-3">
+            <input type="text" [(ngModel)]="fornecedorForm.chavePix" name="chavePix" placeholder="CHAVE PIX" />
+            <input type="text" [(ngModel)]="fornecedorForm.formaPagamento" name="formaPagamento" placeholder="FORMA DE PAGAMENTO (EX: PIX, BOLETO, TED)" />
+            <select [(ngModel)]="fornecedorForm.situacao" name="situacao">
+              <option value="ATIVO">Situação: ATIVO</option>
+              <option value="INATIVO">Situação: INATIVO</option>
+            </select>
+          </div>
+
+          <textarea rows="3" [(ngModel)]="fornecedorForm.obs" name="obs" placeholder="OBSERVAÇÕES ADICIONAIS..."></textarea>
+
+          <div class="modal-actions-right">
+            <button *ngIf="isEditingFornecedor" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoFornecedor()">Cancelar Edição</button>
+            <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingFornecedor ? 'Salvar Alterações' : 'Cadastrar Fornecedor' }}</button>
+          </div>
+        </form>
+
+        <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
+          <div class="manage-search-bar">
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarFornecedores()" placeholder="Buscar por fornecedor, CNPJ, contato ou forma de pagamento..." />
+          </div>
+          <div class="crud-items-list">
+            <div class="crud-item-card" *ngFor="let f of filteredFornecedores">
+              <div class="crud-item-info">
+                <div class="crud-title-row">
+                  <h4>{{ f.nome }}</h4>
+                  <span class="badge-status" [class.badge-active]="f.situacao === 'ATIVO'" [class.badge-inactive]="f.situacao === 'INATIVO'">{{ f.situacao }}</span>
+                </div>
+                <p class="crud-subtext">{{ f.cnpjCpf }} • Contato: {{ f.nomeContato || '-' }} • {{ f.telefone || '-' }}</p>
+                <p class="crud-subtext" *ngIf="f.formaPagamento">Forma de Pagto: <strong>{{ f.formaPagamento }}</strong></p>
+              </div>
+              <div class="crud-item-actions">
+                <button type="button" class="btn-edit-inline" (click)="editarFornecedor(f)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Editar</span>
+                </button>
+                <button type="button" class="btn-del-inline" (click)="excluirFornecedor(f.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GERENCIAR CLIENTES -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'CLIENTE'">
+    <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Gerenciar Clientes</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
+          {{ isEditingCliente ? 'Editar Cliente' : '+ Cadastrar Novo' }}
+        </button>
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
+          Gerenciar Cadastrados ({{ clientesList.length }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarCliente()" class="modal-pane-content">
+          <div class="form-row-3">
+            <input type="text" [(ngModel)]="clienteForm.nomeFantasia" name="nomeFantasia" placeholder="NOME FANTASIA / IDENTIFICAÇÃO" required />
+            <input type="text" [(ngModel)]="clienteForm.razaoSocial" name="razaoSocial" placeholder="RAZÃO SOCIAL" />
+            <input type="text" [(ngModel)]="clienteForm.cnpjCpf" name="cnpjCpf" placeholder="CNPJ / CPF" />
+          </div>
+
+          <div class="form-row-3-fixed">
+            <input type="text" [(ngModel)]="clienteForm.nomeContato" name="nomeContato" placeholder="NOME DO CONTATO" />
+            <input type="text" [(ngModel)]="clienteForm.telefone" name="telefone" placeholder="TELEFONE" />
+            <input type="email" [(ngModel)]="clienteForm.email" name="email" placeholder="E-MAIL" />
+            <select [(ngModel)]="clienteForm.situacao" name="situacao">
+              <option value="ATIVO">Situação: ATIVO</option>
+              <option value="INATIVO">Situação: INATIVO</option>
+            </select>
+          </div>
+
+          <textarea rows="3" [(ngModel)]="clienteForm.obs" name="obs" placeholder="OBSERVAÇÕES DO CLIENTE..."></textarea>
+
+          <div class="modal-actions-right">
+            <button *ngIf="isEditingCliente" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoCliente()">Cancelar Edição</button>
+            <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingCliente ? 'Salvar Alterações' : 'Cadastrar Cliente' }}</button>
+          </div>
+        </form>
+
+        <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
+          <div class="manage-search-bar">
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarClientes()" placeholder="Buscar por cliente, razão social ou CNPJ..." />
+          </div>
+
+          <div class="crud-items-list">
+            <div class="crud-item-card" *ngFor="let c of filteredClientes">
+              <div class="crud-item-info">
+                <div class="crud-title-row">
+                  <h4>{{ c.nomeFantasia }}</h4>
+                  <span class="badge-status" [class.badge-active]="c.situacao === 'ATIVO'" [class.badge-inactive]="c.situacao === 'INATIVO'">{{ c.situacao }}</span>
+                </div>
+                <p class="crud-subtext">{{ c.razaoSocial }} • {{ c.cnpjCpf }} • Contato: {{ c.nomeContato || '-' }}</p>
+              </div>
+              <div class="crud-item-actions">
+                <button type="button" class="btn-edit-inline" (click)="editarCliente(c)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Editar</span>
+                </button>
+                <button type="button" class="btn-del-inline" (click)="excluirCliente(c.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GERENCIAR MOTORISTAS -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'MOTORISTA'">
+    <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Gerenciar Motoristas</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
+          {{ isEditingMotorista ? 'Editar Motorista' : '+ Cadastrar Novo' }}
+        </button>
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
+          Gerenciar Cadastrados ({{ motoristasList.length }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarMotorista()" class="modal-pane-content">
+          <div class="form-row-2">
+            <input type="text" [(ngModel)]="motoristaForm.nome" name="nome" placeholder="NOME DO MOTORISTA" required />
+            <input type="text" [(ngModel)]="motoristaForm.cpf" name="cpf" placeholder="CPF" />
+          </div>
+
+          <div class="form-row-2">
+            <input type="text" [(ngModel)]="motoristaForm.telefone" name="telefone" placeholder="TELEFONE / WHATSAPP" />
+            <input type="email" [(ngModel)]="motoristaForm.email" name="email" placeholder="E-MAIL" />
+          </div>
+
+          <div class="form-row-2">
+            <select [(ngModel)]="motoristaForm.fornecedorVinculado" name="fornecedor">
+              <option value="" disabled selected>Selecione o Fornecedor</option>
+              <option value="Frota Própria">Frota Própria</option>
+              <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+            </select>
+
+            <select [(ngModel)]="motoristaForm.situacao" name="situacao">
+              <option value="ATIVO">Situação: ATIVO</option>
+              <option value="INATIVO">Situação: INATIVO</option>
+            </select>
+          </div>
+
+          <textarea rows="4" [(ngModel)]="motoristaForm.informacoesAdicionais" name="info" placeholder="INFORMAÇÕES ADICIONAIS..."></textarea>
+
+          <div class="modal-actions-right">
+            <button *ngIf="isEditingMotorista" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoMotorista()">Cancelar Edição</button>
+            <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingMotorista ? 'Salvar Alterações' : 'Cadastrar Motorista' }}</button>
+          </div>
+        </form>
+
+        <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
+          <div class="manage-search-bar">
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarMotoristas()" placeholder="Buscar por motorista, CPF, telefone..." />
+          </div>
+
+          <div class="crud-items-list">
+            <div class="crud-item-card" *ngFor="let m of filteredMotoristas">
+              <div class="crud-item-info">
+                <div class="crud-title-row">
+                  <h4>{{ m.nome }}</h4>
+                  <span class="badge-status" [class.badge-active]="m.situacao === 'ATIVO'" [class.badge-inactive]="m.situacao === 'INATIVO'">{{ m.situacao }}</span>
+                </div>
+                <p class="crud-subtext">CPF: {{ m.cpf || '-' }} • Tel: {{ m.telefone || '-' }} • Vínculo: <strong>{{ m.fornecedorVinculado }}</strong></p>
+              </div>
+              <div class="crud-item-actions">
+                <button type="button" class="btn-photo-inline" (click)="openMotoristaFotosModal(m)" title="Ver Documentos e Fotos">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <span>Documentos</span>
+                </button>
+
+                <button type="button" class="btn-edit-inline" (click)="editarMotorista(m)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Editar</span>
+                </button>
+
+                <button type="button" class="btn-del-inline" (click)="excluirMotorista(m.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GERENCIAR VEÍCULOS -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'VEICULO'">
+    <div class="cospa-modal-box modal-fixed-frame" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Gerenciar Veículos</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-subtabs">
+        <button type="button" [class.active]="activeManageTab === 'CADASTRAR'" (click)="trocarAbaGerenciar('CADASTRAR', $event)">
+          {{ isEditingVeiculo ? 'Editar Veículo' : '+ Cadastrar Novo' }}
+        </button>
+        <button type="button" [class.active]="activeManageTab === 'LISTAR'" (click)="trocarAbaGerenciar('LISTAR', $event)">
+          Gerenciar Cadastrados ({{ veiculosList.length }})
+        </button>
+      </div>
+
+      <div class="modal-body-container">
+        <form *ngIf="activeManageTab === 'CADASTRAR'" (ngSubmit)="salvarVeiculo()" class="modal-pane-content">
+          <!-- Campo de pesquisa instantânea para buscar e carregar veículo existente -->
+          <div class="f-group" style="margin-bottom: 0.5rem;">
+            <label>Pesquisar / Carregar Veículo Existente</label>
+            <input 
+              type="text" 
+              [(ngModel)]="buscaVeiculoCadastro" 
+              (ngModelChange)="onSelecionarVeiculoBusca($event)" 
+              list="lista_veiculos_existentes" 
+              name="buscaVeiculoCadastro" 
+              placeholder="DIGITE A PLACA OU FORNECEDOR PARA CARREGAR UM VEÍCULO JÁ CADASTRADO..." 
+            />
+            <datalist id="lista_veiculos_existentes">
+              <option *ngFor="let v of veiculosList" [value]="v.placa">
+                {{ v.placa }} - {{ v.tipoVeiculo }} ({{ v.fornecedor }})
+              </option>
+            </datalist>
+          </div>
+
+          <div class="form-row-4">
+            <div class="f-group">
+              <label>Placa *</label>
+              <input type="text" [(ngModel)]="veiculoForm.placa" name="placa" placeholder="EX: ABC1D23" required />
+            </div>
+            <div class="f-group">
+              <label>Tipo de Veículo *</label>
+              <select [(ngModel)]="veiculoForm.tipoVeiculo" name="tipoVeiculo" required>
+                <option *ngFor="let opt of tiposVeiculosOpcoes" [value]="opt">{{ opt }}</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Tipo de Carroceria</label>
+              <select [(ngModel)]="veiculoForm.tipoCarroceria" name="tipoCarroceria">
+                <option *ngFor="let opt of tiposCarroceriaOpcoes" [value]="opt">{{ opt }}</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Adicional</label>
+              <select [(ngModel)]="veiculoForm.adicional" name="adicional">
+                <option value="">Nenhum</option>
+                <option value="Delivery">Delivery</option>
+                <option value="Rodagem dupla">Rodagem dupla</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row-4">
+            <div class="f-group">
+              <label>Nº Eixos</label>
+              <input type="text" [(ngModel)]="veiculoForm.numeroEixos" name="numeroEixos" placeholder="EX: 2, 3, 4" />
+            </div>
+            <div class="f-group">
+              <label>Cubagem Baú</label>
+              <input type="text" [(ngModel)]="veiculoForm.cubagemBau" name="cubagemBau" placeholder="EX: 45 M³" />
+            </div>
+            <div class="f-group">
+              <label>Capacidade Peso</label>
+              <input type="text" [(ngModel)]="veiculoForm.capacidadePeso" name="capacidadePeso" placeholder="EX: 14.000 KG" />
+            </div>
+            <div class="f-group">
+              <label>Nº Paletes</label>
+              <input type="text" [(ngModel)]="veiculoForm.numeroPaletes" name="numeroPaletes" placeholder="EX: 12 PALETES" />
+            </div>
+          </div>
+
+          <div class="form-row-4">
+            <div class="f-group">
+              <label>Ano Fabricação</label>
+              <input type="text" [(ngModel)]="veiculoForm.anoFabricacao" name="anoFabricacao" placeholder="EX: 2022" />
+            </div>
+            <div class="f-group">
+              <label>Ano do Exercício</label>
+              <input type="text" [(ngModel)]="veiculoForm.dataVencimento" name="dataVencimento" placeholder="EX: 2026" />
+            </div>
+            <div class="f-group">
+              <label>Cidade/UF</label>
+              <input type="text" [(ngModel)]="veiculoForm.cidadeUf" name="cidadeUf" placeholder="EX: MARINGÁ/PR" />
+            </div>
+            
+            <div class="f-group">
+              <label>Fornecedor (Dono)</label>
+              <input 
+                type="text" 
+                [(ngModel)]="veiculoForm.fornecedor" 
+                list="lista_fornecedores_veiculo_auto" 
+                name="veiculoFornecedor" 
+                placeholder="FROTA PRÓPRIA OU FORNECEDOR" 
+              />
+              <datalist id="lista_fornecedores_veiculo_auto">
+                <option value="Frota Própria">Frota Própria</option>
+                <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+              </datalist>
+            </div>
+          </div>
+
+          <div class="form-row-4">
+            <div class="f-group">
+              <label>Agenciador</label>
+              <select [(ngModel)]="veiculoForm.agenciador" name="agenciador">
+                <option value="">Nenhum / Direto</option>
+                <option *ngFor="let f of fornecedoresList" [value]="f.nome">{{ f.nome }}</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Nº ANTT</label>
+              <input type="text" [(ngModel)]="veiculoForm.numeroAntt" name="numeroAntt" placeholder="EX: 12345678" />
+            </div>
+            <div class="f-group">
+              <label>Tipo de Rastreador</label>
+              <input type="text" [(ngModel)]="veiculoForm.tipoRastreador" name="tipoRastreador" placeholder="EX: AUTOTRAC, OMNILINK" />
+            </div>
+            <div class="f-group">
+              <label>Id Rastreador (Nº de Série)</label>
+              <input type="text" [(ngModel)]="veiculoForm.idRastreador" name="idRastreador" placeholder="EX: ID / SÉRIE 98412" />
+            </div>
+          </div>
+
+          <div class="form-row-2" style="margin-top: 0.25rem;">
+            <div class="f-group">
+              <label>Tag Pedágio</label>
+              <select [(ngModel)]="veiculoForm.tagPedagio" name="tagPedagio">
+                <option *ngFor="let opt of tiposTagPedagioOpcoes" [value]="opt">{{ opt }}</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Situação</label>
+              <select [(ngModel)]="veiculoForm.situacao" name="situacao">
+                <option value="ATIVO">Situação: ATIVO</option>
+                <option value="INATIVO">Situação: INATIVO</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-actions-right">
+            <button *ngIf="isEditingVeiculo" type="button" class="btn-sec-cospa" (click)="cancelarEdicaoVeiculo()">Cancelar Edição</button>
+            <button type="button" class="btn-cancelar-gray" (click)="closeModal()">Cancelar</button>
+            <button type="submit" class="btn-pri-cospa">{{ isEditingVeiculo ? 'Salvar Alterações' : 'Cadastrar Veículo' }}</button>
+          </div>
+        </form>
+
+        <div *ngIf="activeManageTab === 'LISTAR'" class="modal-pane-content">
+          <div class="manage-search-bar">
+            <input type="text" [(ngModel)]="manageSearchTerm" (ngModelChange)="filtrarVeiculos()" placeholder="Buscar por placa, ID rastreador, tipo de veículo, cidade ou fornecedor..." />
+          </div>
+
+          <div class="crud-items-list">
+            <div class="crud-item-card" *ngFor="let v of filteredVeiculos">
+              <div class="crud-item-info">
+                <div class="crud-title-row">
+                  <h4>{{ v.placa }}</h4>
+                  <span class="badge-status" [class.badge-active]="v.situacao === 'ATIVO'" [class.badge-inactive]="v.situacao === 'INATIVO'">{{ v.situacao }}</span>
+                </div>
+                <p class="crud-subtext">{{ v.tipoVeiculo }} • {{ v.tipoCarroceria }} • {{ v.cidadeUf ? v.cidadeUf + ' • ' : '' }}Exercício: {{ v.dataVencimento || '-' }}</p>
+                <p class="crud-subtext">Fornecedor: <strong>{{ v.fornecedor }}</strong> • Agenciador: <strong>{{ v.agenciador || '-' }}</strong> • Tag: <strong>{{ v.tagPedagio || 'Nenhum' }}</strong></p>
+              </div>
+              <div class="crud-item-actions">
+                <button type="button" class="btn-photo-inline" (click)="openVeiculoFotosModal(v)" title="Ver Documentos e Fotos">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <span>Documentos</span>
+                </button>
+                <button type="button" class="btn-edit-inline" (click)="editarVeiculo(v)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Editar</span>
+                </button>
+                <button type="button" class="btn-del-inline" (click)="excluirVeiculo(v.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL OBS -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'OBS'">
+    <div class="cospa-modal-box modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Observação da Rota #{{ selectedViagem?.rawId }} {{ selectedViagem?.numeroOperacional ? '(' + selectedViagem?.numeroOperacional + ')' : '' }}</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-pane-content" *ngIf="selectedViagem">
+        <textarea rows="4" [(ngModel)]="selectedViagem.obs" placeholder="Digite as observações da rota..."></textarea>
+        <div class="modal-actions-right">
+          <button type="button" class="btn-sec-cospa" (click)="closeModal()">Cancelar</button>
+          <button type="button" class="btn-pri-cospa" (click)="salvarObs()">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CANCELAR VIAGEM -->
+  <div class="cospa-modal-overlay" *ngIf="modalType === 'CANCELAR'">
+    <div class="cospa-modal-box modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h3>Cancelar Rota #{{ selectedViagem?.rawId }} {{ selectedViagem?.numeroOperacional ? '(' + selectedViagem?.numeroOperacional + ')' : '' }}</h3>
+        <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-pane-content">
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin: 0;">
+          A viagem receberá o status <strong>CANCELADA</strong> e será transferida para a tabela de viagens finalizadas.
+        </p>
+
+        <div class="f-group" style="margin-top: 0.5rem;">
+          <label>Motivo do Cancelamento *</label>
+          <textarea rows="3" [(ngModel)]="motivoCancelamento" placeholder="DIGITE O MOTIVO (EX: CLIENTE CANCELOU, FALTA DE CARGA, ETC.)"></textarea>
+        </div>
+
+        <div class="modal-actions-right">
+          <button type="button" class="btn-sec-cospa" (click)="closeModal()">Cancelar</button>
           <button type="button" class="btn-cancelar-viagem" (click)="confirmarCancelamento()">Confirmar Cancelamento</button>
         </div>
       </div>

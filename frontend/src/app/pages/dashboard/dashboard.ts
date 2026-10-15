@@ -178,6 +178,7 @@ export class DashboardComponent implements OnInit {
   manageSearchTerm: string = '';
   buscaLocalCadastro: string = '';
   buscaVeiculoCadastro: string = '';
+  rotaClienteBusca: string = '';
 
   activePhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
   activeMotoristaPhotoTab: 'ADICIONAR' | 'LISTAR' = 'ADICIONAR';
@@ -448,6 +449,7 @@ export class DashboardComponent implements OnInit {
     this.manageSearchTerm = '';
     this.buscaLocalCadastro = '';
     this.buscaVeiculoCadastro = '';
+    this.rotaClienteBusca = '';
     this.previewImageUrl = null;
     this.motivoCancelamento = '';
     this.isDraggingComprovante = false;
@@ -625,8 +627,21 @@ export class DashboardComponent implements OnInit {
     };
   }
 
+  onClienteRotaDigitado(nomeCliente: string): void {
+    if (!nomeCliente) {
+      this.rotaForm.clienteId = 0;
+      return;
+    }
+    const nomeNorm = this.normalizarTexto(nomeCliente);
+    const encontrado = this.clientesList.find(c => this.normalizarTexto(c.nomeFantasia) === nomeNorm);
+    if (encontrado) {
+      this.rotaForm.clienteId = encontrado.id;
+    }
+  }
+
   openGerenciarRotas(): void {
     this.rotaForm = this.getEmptyRota();
+    this.rotaClienteBusca = '';
     this.isEditingRota = false;
     this.activeManageTab = 'CADASTRAR';
     this.modalType = 'ROTA';
@@ -672,8 +687,12 @@ export class DashboardComponent implements OnInit {
   }
 
   salvarRota(): void {
+    if (!this.rotaForm.clienteId && this.rotaClienteBusca) {
+      this.onClienteRotaDigitado(this.rotaClienteBusca);
+    }
+
     if (!this.rotaForm.clienteId || !this.rotaForm.nomeLocal.trim() || !this.rotaForm.endereco.trim()) {
-      alert('Selecione o cliente e informe o nome do local e o endereço.');
+      alert('Selecione ou digite um cliente válido e informe o nome do local e o endereço.');
       return;
     }
 
@@ -693,6 +712,7 @@ export class DashboardComponent implements OnInit {
         this.carregarRotas();
         this.activeManageTab = 'LISTAR';
         this.rotaForm = this.getEmptyRota();
+        this.rotaClienteBusca = '';
         this.isEditingRota = false;
         this.buscaLocalCadastro = '';
         if (this.tripForm.clienteSelect) {
@@ -706,6 +726,8 @@ export class DashboardComponent implements OnInit {
 
   editarRota(r: LocalCliente): void {
     this.rotaForm = { ...r };
+    const clienteRef = this.clientesList.find(c => c.id === r.clienteId);
+    this.rotaClienteBusca = clienteRef ? clienteRef.nomeFantasia : (r.clienteNome || '');
     this.isEditingRota = true;
     this.activeManageTab = 'CADASTRAR';
     this.cdr.detectChanges();
@@ -713,6 +735,7 @@ export class DashboardComponent implements OnInit {
 
   cancelarEdicaoRota(): void {
     this.rotaForm = this.getEmptyRota();
+    this.rotaClienteBusca = '';
     this.isEditingRota = false;
     this.buscaLocalCadastro = '';
     this.cdr.detectChanges();
